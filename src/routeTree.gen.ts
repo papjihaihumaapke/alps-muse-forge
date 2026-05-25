@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PressRouteImport } from './routes/press'
 import { Route as PersonalCareRouteImport } from './routes/personal-care'
 import { Route as MyJourneyRouteImport } from './routes/my-journey'
@@ -23,6 +24,11 @@ import { Route as AccessoriesRouteImport } from './routes/accessories'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductProductIdRouteImport } from './routes/product.$productId'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PressRoute = PressRouteImport.update({
   id: '/press',
   path: '/press',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/my-journey': typeof MyJourneyRoute
   '/personal-care': typeof PersonalCareRoute
   '/press': typeof PressRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/product/$productId': typeof ProductProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/my-journey': typeof MyJourneyRoute
   '/personal-care': typeof PersonalCareRoute
   '/press': typeof PressRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/product/$productId': typeof ProductProductIdRoute
 }
 export interface FileRoutesById {
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/my-journey': typeof MyJourneyRoute
   '/personal-care': typeof PersonalCareRoute
   '/press': typeof PressRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/product/$productId': typeof ProductProductIdRoute
 }
 export interface FileRouteTypes {
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/my-journey'
     | '/personal-care'
     | '/press'
+    | '/sitemap.xml'
     | '/product/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/my-journey'
     | '/personal-care'
     | '/press'
+    | '/sitemap.xml'
     | '/product/$productId'
   id:
     | '__root__'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/my-journey'
     | '/personal-care'
     | '/press'
+    | '/sitemap.xml'
     | '/product/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -196,11 +208,19 @@ export interface RootRouteChildren {
   MyJourneyRoute: typeof MyJourneyRoute
   PersonalCareRoute: typeof PersonalCareRoute
   PressRoute: typeof PressRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ProductProductIdRoute: typeof ProductProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/press': {
       id: '/press'
       path: '/press'
@@ -308,6 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyJourneyRoute: MyJourneyRoute,
   PersonalCareRoute: PersonalCareRoute,
   PressRoute: PressRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ProductProductIdRoute: ProductProductIdRoute,
 }
 export const routeTree = rootRouteImport
