@@ -1,0 +1,166 @@
+import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Minus, Plus, ChevronDown } from "lucide-react";
+import { Shell } from "@/components/alps/Shell";
+import { PRODUCTS, PRODUCT_COLORS, FEATURES } from "@/lib/alps-data";
+
+export const Route = createFileRoute("/product/$productId")({
+  head: ({ params }) => {
+    const p = PRODUCTS.find((x) => x.id === params.productId);
+    return {
+      meta: [
+        { title: `${p?.name ?? "product"} — ALPS Annie Ling` },
+        { name: "description", content: p ? `${p.name} — ALPS Annie Ling` : "ALPS Annie Ling product" },
+      ],
+    };
+  },
+  component: ProductPage,
+  notFoundComponent: () => (
+    <Shell>
+      <div className="max-w-3xl mx-auto py-32 px-6 text-center">
+        <h1 className="text-3xl font-light">product not found</h1>
+        <Link to="/" className="link-red mt-6 inline-block">return home</Link>
+      </div>
+    </Shell>
+  ),
+});
+
+function ProductPage() {
+  const { productId } = Route.useParams();
+  const product = PRODUCTS.find((p) => p.id === productId);
+  if (!product) throw notFound();
+
+  const [color, setColor] = useState(product.colors[0]);
+  const [size, setSize] = useState(product.sizes[0]);
+  const [qty, setQty] = useState(1);
+
+  return (
+    <Shell>
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="space-y-4">
+          <div
+            className="aspect-square flex items-center justify-center"
+            style={{ background: PRODUCT_COLORS[color] }}
+          >
+            <span className="text-white/80 text-sm tracking-wide mix-blend-difference px-6 text-center">
+              {product.name}
+            </span>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {product.colors.map((c) => (
+              <button
+                key={c}
+                onClick={() => setColor(c)}
+                className="aspect-square border"
+                style={{
+                  background: PRODUCT_COLORS[c],
+                  borderColor: color === c ? "var(--brand-red)" : "var(--border)",
+                }}
+                aria-label={c}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <span className="num text-[11px] tracking-[0.3em] text-primary uppercase">
+            {product.category.replace("-", " ")}
+          </span>
+          <h1 className="text-3xl md:text-4xl font-light mt-2">{product.name}</h1>
+          <p className="num text-lg mt-4">
+            CAD {product.priceCAD} <span className="text-foreground/40">·</span> HKD {product.priceHKD}
+          </p>
+
+          <div className="mt-8">
+            <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">colour — {color}</h3>
+            <div className="flex gap-2">
+              {product.colors.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setColor(c)}
+                  className="h-7 w-7 border-2"
+                  style={{
+                    background: PRODUCT_COLORS[c],
+                    borderColor: color === c ? "var(--brand-red)" : "var(--border)",
+                  }}
+                  title={c}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">size</h3>
+            <div className="flex flex-wrap gap-2">
+              {product.sizes.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSize(s)}
+                  className={`px-4 py-2 text-xs border ${
+                    size === s ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">quantity</h3>
+            <div className="inline-flex items-center border border-border">
+              <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-2 hover:bg-muted"><Minus className="h-3 w-3" /></button>
+              <span className="num w-10 text-center">{qty}</span>
+              <button onClick={() => setQty(qty + 1)} className="p-2 hover:bg-muted"><Plus className="h-3 w-3" /></button>
+            </div>
+          </div>
+
+          <button className="w-full mt-8 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition">
+            add to bag
+          </button>
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            {product.features.map((fk) => {
+              const f = FEATURES.find((x) => x.key === fk);
+              if (!f) return null;
+              return (
+                <span key={fk} className="text-[10px] tracking-wide px-2 py-1 border border-border" title={f.desc}>
+                  {f.name}
+                </span>
+              );
+            })}
+          </div>
+
+          <div className="mt-10 divide-y divide-border border-y border-border">
+            <Accordion title="description">
+              precision-constructed in our hong kong atelier from performance textiles selected for their behaviour
+              as much as their look. cut for movement, finished for longevity.
+            </Accordion>
+            <Accordion title="care">
+              cold machine wash inside out. do not bleach. line dry away from direct sunlight. cool iron if needed.
+            </Accordion>
+            <Accordion title="size guide">
+              standard hong kong sizing. unisex sizing runs true to size. contact us for a personal fitting consultation.
+            </Accordion>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+function Accordion({ title, children }: { title: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between py-4 text-sm hover:text-primary"
+      >
+        {title}
+        <ChevronDown className={`h-4 w-4 transition ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && <div className="pb-4 text-sm text-foreground/70 leading-relaxed">{children}</div>}
+    </div>
+  );
+}
