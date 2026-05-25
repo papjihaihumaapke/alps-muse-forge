@@ -1,25 +1,8 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Link, notFound } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
 import { CATEGORIES, PRODUCTS, PRODUCT_COLORS, type CategorySlug } from "@/lib/alps-data";
 
-function makeRoute(slug: CategorySlug) {
-  return createFileRoute(`/${slug}` as any)({
-    head: () => {
-      const cat = CATEGORIES.find((c) => c.slug === slug)!;
-      return {
-        meta: [
-          { title: `${cat.name} — ALPS Annie Ling` },
-          { name: "description", content: cat.blurb },
-          { property: "og:title", content: `${cat.name} — ALPS Annie Ling` },
-          { property: "og:description", content: cat.blurb },
-        ],
-      };
-    },
-    component: () => <CategoryPage slug={slug} />,
-  });
-}
-
-export function CategoryPage({ slug }: { slug: CategorySlug }) {
+export function CategoryView({ slug }: { slug: CategorySlug }) {
   const cat = CATEGORIES.find((c) => c.slug === slug);
   if (!cat) throw notFound();
   const items = PRODUCTS.filter((p) => p.category === slug);
@@ -34,20 +17,20 @@ export function CategoryPage({ slug }: { slug: CategorySlug }) {
         </div>
       </section>
 
-      <section className="border-b border-border bg-background">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-5 flex flex-wrap gap-6 text-[11px] tracking-wide">
-          <FilterMenu label="colour" options={["all", "black", "navy", "red", "ivory", "khaki"]} />
-          <FilterMenu label="size" options={["all", "XS", "S", "M", "L", "XL", "one size"]} />
-          <FilterMenu label="feature" options={["all", "water repellent", "stretch", "anti-virus", "vegan"]} />
-          <span className="ml-auto num text-foreground/60">{items.length} items</span>
+      <section className="border-b border-border bg-background sticky top-16 z-30">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex flex-wrap gap-6 text-[11px] tracking-wide">
+          <Filter label="colour" options={["all", "black", "navy", "red", "ivory", "khaki"]} />
+          <Filter label="size" options={["all", "XS", "S", "M", "L", "XL"]} />
+          <Filter label="feature" options={["all", "water repellent", "stretch", "vegan"]} />
+          <span className="ml-auto num text-foreground/60 self-center">{items.length} items</span>
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 py-12">
+      <section className="max-w-7xl mx-auto px-6 lg:px-10 py-14">
         {items.length === 0 ? (
           <p className="text-foreground/60 text-sm">new pieces dropping soon.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
             {items.map((p) => (
               <Link
                 key={p.id}
@@ -56,9 +39,7 @@ export function CategoryPage({ slug }: { slug: CategorySlug }) {
                 className="group block"
               >
                 <div className="aspect-[3/4] bg-brand-light flex items-center justify-center overflow-hidden">
-                  <span className="text-foreground/30 text-xs tracking-wide px-6 text-center">
-                    {p.name}
-                  </span>
+                  <span className="text-foreground/30 text-xs tracking-wide px-6 text-center">{p.name}</span>
                 </div>
                 <div className="mt-4 flex items-start justify-between">
                   <div>
@@ -87,13 +68,13 @@ export function CategoryPage({ slug }: { slug: CategorySlug }) {
   );
 }
 
-function FilterMenu({ label, options }: { label: string; options: string[] }) {
+function Filter({ label, options }: { label: string; options: string[] }) {
   return (
-    <details className="group">
-      <summary className="cursor-pointer list-none link-red">
+    <details className="relative">
+      <summary className="cursor-pointer list-none link-red select-none">
         {label} <span className="text-foreground/40">▾</span>
       </summary>
-      <div className="absolute mt-2 bg-card border border-border p-3 flex flex-col gap-2 z-10">
+      <div className="absolute left-0 top-full mt-2 bg-card border border-border p-3 flex flex-col gap-2 z-20 min-w-[140px]">
         {options.map((o) => (
           <button key={o} className="text-left hover:text-primary">{o}</button>
         ))}
@@ -101,5 +82,3 @@ function FilterMenu({ label, options }: { label: string; options: string[] }) {
     </details>
   );
 }
-
-export const innovationRoute = makeRoute;
