@@ -135,7 +135,7 @@ const SelfAdhesive = ({ className }: IconProps) => (
 
 type Feature = {
   label: string;
-  Icon: (p: IconProps) => JSX.Element;
+  Icon: (p: IconProps) => React.ReactElement;
   bg: string;
 };
 
