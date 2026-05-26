@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Minus, Plus, ChevronDown } from "lucide-react";
 import { Shell } from "@/components/alps/Shell";
 import { PRODUCTS, PRODUCT_COLORS, FEATURES } from "@/lib/alps-data";
+import { useCart, buildCartItem } from "@/lib/cart";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$productId")({
   head: ({ params }) => {
@@ -33,6 +35,12 @@ function ProductPage() {
   const [color, setColor] = useState(product.colors[0]);
   const [size, setSize] = useState(product.sizes[0]);
   const [qty, setQty] = useState(1);
+  const { add } = useCart();
+  const onAdd = () => {
+    const it = buildCartItem(product!.id, color, size, qty);
+    if (it) { add(it); toast.success("added to bag"); }
+  };
+
 
   return (
     <Shell>
@@ -115,7 +123,7 @@ function ProductPage() {
             </div>
           </div>
 
-          <button className="w-full mt-8 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition">
+          <button onClick={onAdd} className="w-full mt-8 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition">
             add to bag
           </button>
 

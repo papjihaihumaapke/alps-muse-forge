@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Search, User, ShoppingBag, Globe, Menu, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/auth";
 import logoBlack from "@/assets/alps-logo-black.png";
 
 const NAV = [
@@ -19,6 +21,8 @@ const NAV = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const { count, currency, setCurrency } = useCart();
+  const { isAdmin } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur border-b border-border">
@@ -52,13 +56,23 @@ export function Header() {
             <User className="h-4 w-4" />
           </Link>
 
-          <button aria-label="language" className="hidden md:flex items-center gap-1 text-[11px] hover:text-primary transition-colors">
-            <Globe className="h-4 w-4" /> eng / 中文
+          <button
+            aria-label="currency"
+            onClick={() => setCurrency(currency === "HKD" ? "CAD" : "HKD")}
+            className="hidden md:flex items-center gap-1 text-[11px] hover:text-primary transition-colors num"
+          >
+            <Globe className="h-4 w-4" /> {currency}
           </button>
+
+          {isAdmin && (
+            <Link to="/admin" className="hidden lg:inline text-[11px] link-red">admin</Link>
+          )}
 
           <Link to="/cart" aria-label="cart" className="relative hover:text-primary transition-colors">
             <ShoppingBag className="h-4 w-4" />
-            <span className="num absolute -top-2 -right-3 text-[10px] bg-primary text-primary-foreground px-1">0</span>
+            {count > 0 && (
+              <span className="num absolute -top-2 -right-3 text-[10px] bg-primary text-primary-foreground px-1">{count}</span>
+            )}
           </Link>
 
           {/* Mobile hamburger */}
