@@ -57,8 +57,7 @@ const VIDEOS = [
 function Home() {
   return (
     <Shell>
-      <Hero />
-      <Categories />
+      <EditorialHero />
       <BrandVideo />
       <Innovation />
       <BrandIntro />
@@ -68,61 +67,66 @@ function Home() {
   );
 }
 
-function Hero() {
-  return (
-    <section className="relative h-[88vh] w-full overflow-hidden bg-brand-black">
-      <img
-        src={hero}
-        alt="ALPS Annie Ling collection"
-        className="absolute inset-0 h-full w-full object-cover opacity-90"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
-      <div className="relative z-10 h-full flex flex-col items-center justify-end pb-24 text-center text-white">
-        <span className="text-[11px] tracking-[0.35em] uppercase mb-4 opacity-80">ALPS · annie ling</span>
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight max-w-4xl">
-          timeless <span className="italic font-serif">with a twist</span>
-        </h1>
-        <p className="num text-[12px] tracking-[0.3em] mt-6 opacity-70">when fashion meets innovation</p>
-        <div className="mt-16 flex items-center gap-2 text-[11px] tracking-[0.25em] opacity-70">
-          scroll <ArrowDown className="h-3 w-3 animate-bounce" />
-        </div>
-      </div>
-    </section>
-  );
-}
+function EditorialHero() {
+  const cards = [
+    { slug: "innovation", label: "innovation", img: catInnovation },
+    { slug: "contemporary", label: "contemporary", img: catContemporary },
+    { slug: "accessories", label: "accessories", img: catAccessories },
+    { slug: "collaborations", label: "collaborations", img: catCollab },
+  ] as const;
 
-function Categories() {
   return (
-    <section className="py-20 md:py-28 px-6 lg:px-10 max-w-7xl mx-auto">
-      <div className="mb-12 flex items-end justify-between">
-        <div>
-          <span className="num text-[11px] tracking-[0.3em] text-primary">01 / collection</span>
-          <h2 className="text-3xl md:text-4xl mt-3 font-light">the five worlds of alps</h2>
-        </div>
-        <Link to="/innovation" className="link-red text-[12px] hidden md:inline">view everything</Link>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-px bg-border">
-        {CATEGORIES.map((c) => (
-          <Link
-            key={c.slug}
-            to={`/${c.slug}`}
-            className="group bg-card relative overflow-hidden aspect-[3/4]"
-          >
-            <img
-              src={CAT_IMAGES[c.slug]}
-              alt={c.name}
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-              <h3 className="text-sm font-medium tracking-wide">{c.name}</h3>
-              <p className="text-[11px] opacity-80 mt-1">{c.blurb}</p>
-              <span className="link-red text-[11px] mt-3 inline-block">view all</span>
+    <section className="relative bg-background px-6 lg:px-10 pt-6 pb-40">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="grid grid-cols-12 gap-3">
+          {/* Top-left: white framed hero image */}
+          <div className="col-span-12 lg:col-span-9">
+            <div className="aspect-[16/7] w-full border border-border bg-card overflow-hidden">
+              <img src={hero} alt="ALPS editorial" className="h-full w-full object-cover" />
             </div>
-          </Link>
-        ))}
+          </div>
+
+          {/* Top-right: solid red */}
+          <div className="col-span-6 lg:col-span-3">
+            <div className="aspect-[16/7] lg:aspect-auto lg:h-full w-full bg-primary" />
+          </div>
+
+          {/* Bottom-left: black band */}
+          <div className="col-span-12 lg:col-span-9">
+            <div className="aspect-[16/6] w-full bg-brand-black" />
+          </div>
+
+          {/* Bottom-right: two grey blocks stacked */}
+          <div className="col-span-12 lg:col-span-3 flex flex-col gap-3">
+            <div className="flex-[3] min-h-[140px] bg-muted" />
+            <div className="flex-[1] min-h-[40px] bg-muted-foreground/40" />
+          </div>
+        </div>
+
+        {/* Floating category cards overlapping the black band */}
+        <div className="relative -mt-24 md:-mt-32 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto bg-background px-6 md:px-10 pt-8 pb-10 w-full max-w-3xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+              {cards.map((c) => (
+                <Link key={c.slug} to={`/${c.slug}`} className="group flex flex-col items-center text-center">
+                  <div className="text-[11px] tracking-[0.15em] leading-tight">
+                    <div className="font-medium">ALPS</div>
+                    <div className="text-foreground/80">{c.label}</div>
+                  </div>
+                  <div className="mt-3 w-full aspect-square overflow-hidden bg-muted">
+                    <img
+                      src={c.img}
+                      alt={`ALPS ${c.label}`}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <span className="link-red text-[11px] mt-3 inline-block">view all</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
