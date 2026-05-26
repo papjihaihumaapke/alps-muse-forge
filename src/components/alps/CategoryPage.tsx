@@ -1,63 +1,127 @@
+import { useMemo, useState } from "react";
 import { Link, notFound } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
-import { CATEGORIES, PRODUCTS, PRODUCT_COLORS, type CategorySlug } from "@/lib/alps-data";
+import {
+  ACCESSORY_TAGS,
+  CATEGORIES,
+  PRODUCTS,
+  PRODUCT_COLORS,
+  type AccessoryTag,
+  type CategorySlug,
+} from "@/lib/alps-data";
+
+type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
 export function CategoryView({ slug }: { slug: CategorySlug }) {
   const cat = CATEGORIES.find((c) => c.slug === slug);
   if (!cat) throw notFound();
-  const items = PRODUCTS.filter((p) => p.category === slug);
+
+  const [activeTag, setActiveTag] = useState<"all" | AccessoryTag>("all");
+  const [sort, setSort] = useState<SortKey>("default");
+
+  const items = useMemo(() => {
+    let list = PRODUCTS.filter((p) => p.category === slug);
+    if (slug === "accessories" && activeTag !== "all") {
+      list = list.filter((p) => p.tags?.includes(activeTag));
+    }
+    switch (sort) {
+      case "price-asc":
+        return [...list].sort((a, b) => a.priceHKD - b.priceHKD);
+      case "price-desc":
+        return [...list].sort((a, b) => b.priceHKD - a.priceHKD);
+      case "name":
+        return [...list].sort((a, b) => a.name.localeCompare(b.name));
+      default:
+        return list;
+    }
+  }, [slug, activeTag, sort]);
+
+  const showTagBar = slug === "accessories";
 
   return (
     <Shell>
-      <section className="bg-brand-black text-white py-20 md:py-28 px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto">
-          <span className="num text-[11px] tracking-[0.3em] text-primary">collection</span>
-          <h1 className="text-4xl md:text-6xl font-light mt-3">{cat.name}</h1>
-          <p className="mt-4 text-white/70 max-w-xl">{cat.blurb}</p>
+      <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pt-10 pb-6">
+        <div className="flex items-start justify-between flex-wrap gap-6">
+          <h1 className="text-primary text-[15px] tracking-wide">{cat.name}</h1>
+
+          <div className="flex flex-col items-end gap-4 ml-auto">
+            <div className="relative">
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as SortKey)}
+                className="appearance-none bg-card border border-border text-[12px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
+              >
+                <option value="default">Default Sorting</option>
+                <option value="name">Sort by name</option>
+                <option value="price-asc">Price: low to high</option>
+                <option value="price-desc">Price: high to low</option>
+              </select>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[10px]">
+                ▾
+              </span>
+            </div>
+
+            {showTagBar && (
+              <div className="flex flex-wrap justify-end gap-1.5 max-w-[760px]">
+                {ACCESSORY_TAGS.map((t) => {
+                  const active = activeTag === t.key;
+                  return (
+                    <button
+                      key={t.key}
+                      onClick={() => setActiveTag(t.key)}
+                      className={
+                        "px-3 py-1 text-[11px] tracking-wide transition-colors border " +
+                        (active
+                          ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
+                          : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
+                      }
+                    >
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="border-b border-border bg-background sticky top-16 z-30">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex flex-wrap gap-6 text-[11px] tracking-wide">
-          <Filter label="colour" options={["all", "black", "navy", "red", "ivory", "khaki"]} />
-          <Filter label="size" options={["all", "XS", "S", "M", "L", "XL"]} />
-          <Filter label="feature" options={["all", "water repellent", "stretch", "vegan"]} />
-          <span className="ml-auto num text-foreground/60 self-center">{items.length} items</span>
-        </div>
-      </section>
-
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 py-14">
+      <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pb-20">
         {items.length === 0 ? (
-          <p className="text-foreground/60 text-sm">new pieces dropping soon.</p>
+          <p className="text-foreground/60 text-sm">no items match this filter.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-10">
             {items.map((p) => (
               <Link
                 key={p.id}
                 to="/product/$productId"
                 params={{ productId: p.id }}
-                className="group block"
+                className="group block text-center"
               >
-                <div className="aspect-[3/4] bg-brand-light flex items-center justify-center overflow-hidden">
-                  <span className="text-foreground/30 text-xs tracking-wide px-6 text-center">{p.name}</span>
+                <div className="aspect-square bg-brand-light flex items-center justify-center overflow-hidden">
+                  <span className="text-foreground/30 text-[10px] tracking-wide px-4 text-center leading-snug">
+                    {p.name}
+                  </span>
                 </div>
-                <div className="mt-4 flex items-start justify-between">
-                  <div>
-                    <h3 className="text-sm group-hover:text-primary transition">{p.name}</h3>
-                    <p className="num text-[12px] text-foreground/70 mt-1">
-                      CAD {p.priceCAD} · HKD {p.priceHKD}
-                    </p>
-                  </div>
-                  <div className="flex gap-1.5 mt-1">
-                    {p.colors.slice(0, 4).map((c) => (
-                      <span
-                        key={c}
-                        title={c}
-                        className="h-3 w-3 border border-border"
-                        style={{ background: PRODUCT_COLORS[c] }}
-                      />
-                    ))}
-                  </div>
+                <div className="mt-3 px-2">
+                  <h3 className="text-[12px] leading-snug text-foreground group-hover:text-primary transition-colors">
+                    {p.name}
+                  </h3>
+                  <p className="num text-[11px] text-foreground/50 mt-1.5">
+                    ${p.priceHKD.toFixed(2)}
+                  </p>
+                  {p.colors.length > 1 && (
+                    <div className="flex gap-1 justify-center mt-2">
+                      {p.colors.slice(0, 5).map((c) => (
+                        <span
+                          key={c}
+                          title={c}
+                          className="h-2 w-2 border border-border/60"
+                          style={{ background: PRODUCT_COLORS[c] }}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </Link>
             ))}
@@ -65,20 +129,5 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
         )}
       </section>
     </Shell>
-  );
-}
-
-function Filter({ label, options }: { label: string; options: string[] }) {
-  return (
-    <details className="relative">
-      <summary className="cursor-pointer list-none link-red select-none">
-        {label} <span className="text-foreground/40">▾</span>
-      </summary>
-      <div className="absolute left-0 top-full mt-2 bg-card border border-border p-3 flex flex-col gap-2 z-20 min-w-[140px]">
-        {options.map((o) => (
-          <button key={o} className="text-left hover:text-primary">{o}</button>
-        ))}
-      </div>
-    </details>
   );
 }
