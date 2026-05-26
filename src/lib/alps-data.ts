@@ -59,6 +59,17 @@ export const FEATURES: { key: string; name: string; desc: string }[] = [
   { key: "vegan", name: "vegan", desc: "100% animal-free materials and processes." },
 ];
 
+export type AccessoryTag =
+  | "all-season"
+  | "fall-winter"
+  | "women"
+  | "unisex"
+  | "kids"
+  | "handbag"
+  | "home"
+  | "travel"
+  | "wearable";
+
 export type Product = {
   id: string;
   name: string;
@@ -68,15 +79,88 @@ export type Product = {
   colors: string[];
   sizes: string[];
   features: string[];
+  tags?: AccessoryTag[];
 };
+
+export const ACCESSORY_TAGS: { key: "all" | AccessoryTag; label: string }[] = [
+  { key: "all", label: "all" },
+  { key: "all-season", label: "all season" },
+  { key: "fall-winter", label: "fall/ winter" },
+  { key: "women", label: "women" },
+  { key: "unisex", label: "unisex" },
+  { key: "kids", label: "kids" },
+  { key: "handbag", label: "handbag" },
+  { key: "home", label: "home" },
+  { key: "travel", label: "travel" },
+  { key: "wearable", label: "wearable" },
+];
 
 export const PRODUCTS: Product[] = [
   { id: "muted-coat", name: "winter II muted coat", category: "innovation", priceCAD: 480, priceHKD: 2800, colors: ["navy", "black"], sizes: ["XS","S","M","L"], features: ["instant-heat","water-repellent","stretch"] },
   { id: "warrior-jacket", name: "summer V warrior jacket", category: "innovation", priceCAD: 420, priceHKD: 2450, colors: ["black","khaki"], sizes: ["S","M","L"], features: ["quick-dry","breathable","uv-resistant"] },
   { id: "bind-dress", name: "winter V bind dress", category: "contemporary", priceCAD: 360, priceHKD: 2100, colors: ["red","wine","black"], sizes: ["XS","S","M","L"], features: ["multi-style","stretch"] },
   { id: "sugar-skirt", name: "summer III sugar crush skirt", category: "contemporary", priceCAD: 220, priceHKD: 1280, colors: ["red","pink","ivory"], sizes: ["XS","S","M"], features: ["super-soft","natural"] },
-  { id: "cabas-220", name: "CABAS 220 shoulder bag", category: "accessories", priceCAD: 280, priceHKD: 1650, colors: ["black","almond","navy"], sizes: ["one size"], features: ["water-repellent","self-cleaning"] },
-  { id: "checker-socks", name: "checker tube socks", category: "accessories", priceCAD: 28, priceHKD: 160, colors: ["black","white"], sizes: ["S","M","L"], features: ["anti-odor","stretch"] },
+
+  // accessories — wearable / women / unisex
+  { id: "little-prince-bucket-ivory", name: "the little prince® anti-bacterial silver ion COOLMAX® reversible bucket hat", category: "accessories", priceCAD: 150, priceHKD: 880, colors: ["ivory","navy"], sizes: ["one size"], features: ["silver-ion","anti-virus","uv-resistant"], tags: ["all-season","women","unisex","wearable"] },
+  { id: "little-prince-bucket-navy", name: "the little prince® anti-bacterial reversible bucket hat", category: "accessories", priceCAD: 150, priceHKD: 880, colors: ["navy"], sizes: ["one size"], features: ["silver-ion","uv-resistant"], tags: ["all-season","women","unisex","wearable"] },
+  { id: "little-prince-mask-adult", name: "the little prince® silver ion anti-bacterial COOLMAX® 3D adult fabric face mask", category: "accessories", priceCAD: 62, priceHKD: 360, colors: ["red","navy"], sizes: ["adult"], features: ["silver-ion","anti-virus","breathable"], tags: ["all-season","women","unisex","wearable"] },
+  { id: "little-prince-mask-kids", name: "the little prince® silver ion anti-bacterial COOLMAX® 3D kids fabric face mask", category: "accessories", priceCAD: 48, priceHKD: 280, colors: ["navy","red"], sizes: ["kids"], features: ["silver-ion","anti-virus","breathable"], tags: ["all-season","kids","wearable"] },
+  { id: "vegan-fur-neck-magnet", name: "vegan fur neck cover with magnet closure", category: "accessories", priceCAD: 55, priceHKD: 320, colors: ["black","brown"], sizes: ["one size"], features: ["super-soft","vegan"], tags: ["fall-winter","women","wearable"] },
+  { id: "vegan-fur-neck-toggle", name: "vegan fur neck cover with back metal toggle", category: "accessories", priceCAD: 55, priceHKD: 320, colors: ["brown","black"], sizes: ["one size"], features: ["super-soft","vegan"], tags: ["fall-winter","women","wearable"] },
+  { id: "light-fresh-bucket-blue", name: "anti-bacterial light fresh® reversible bucket hat", category: "accessories", priceCAD: 116, priceHKD: 680, colors: ["navy","black"], sizes: ["one size"], features: ["self-cleaning","silver-ion"], tags: ["all-season","women","unisex","wearable"] },
+  { id: "light-fresh-bucket-navy", name: "anti-bacterial light fresh® reversible bucket hat", category: "accessories", priceCAD: 116, priceHKD: 680, colors: ["navy"], sizes: ["one size"], features: ["self-cleaning"], tags: ["all-season","women","unisex","wearable"] },
+  { id: "checker-socks", name: "black and white checker pattern comfort crew socks", category: "accessories", priceCAD: 18, priceHKD: 98, colors: ["black","white"], sizes: ["S","M","L"], features: ["anti-odor","stretch"], tags: ["all-season","women","unisex","wearable"] },
+  { id: "handkerchief", name: "silver ion anti-bacterial COOLMAX® quick dry button long handkerchief", category: "accessories", priceCAD: 14, priceHKD: 70, colors: ["black"], sizes: ["one size"], features: ["silver-ion","quick-dry"], tags: ["all-season","unisex","wearable"] },
+  { id: "visor", name: "silver ion anti-bacterial COOLMAX® quick dry visor", category: "accessories", priceCAD: 48, priceHKD: 280, colors: ["black"], sizes: ["one size"], features: ["silver-ion","uv-resistant","quick-dry"], tags: ["all-season","unisex","wearable"] },
+  { id: "mask-adult-3d", name: "silver ion anti-bacterial COOLMAX® 3D adult fabric face mask", category: "accessories", priceCAD: 52, priceHKD: 300, colors: ["navy","black"], sizes: ["adult"], features: ["silver-ion","anti-virus","breathable"], tags: ["all-season","women","unisex","wearable"] },
+  { id: "eye-mask", name: "silver ion anti-bacterial COOLMAX® eye mask", category: "accessories", priceCAD: 30, priceHKD: 180, colors: ["navy"], sizes: ["one size"], features: ["silver-ion","super-soft"], tags: ["all-season","travel","unisex","wearable"] },
+  { id: "travel-mask-adult", name: "silver ion anti-bacterial COOLMAX® quick dry laser cut travel lite adult face mask", category: "accessories", priceCAD: 42, priceHKD: 250, colors: ["black"], sizes: ["adult"], features: ["silver-ion","quick-dry","anti-virus"], tags: ["all-season","travel","unisex","wearable"] },
+  { id: "travel-mask-kids", name: "silver ion anti-bacterial COOLMAX® quick dry laser cut travel lite kids face mask", category: "accessories", priceCAD: 38, priceHKD: 220, colors: ["navy","fuchsia"], sizes: ["kids"], features: ["silver-ion","quick-dry"], tags: ["all-season","travel","kids","wearable"] },
+  { id: "protect-mask-adult", name: "silver ion anti-bacterial COOLMAX® quick dry protection adult fabric face mask", category: "accessories", priceCAD: 48, priceHKD: 280, colors: ["navy"], sizes: ["adult"], features: ["silver-ion","anti-virus"], tags: ["all-season","unisex","wearable"] },
+
+  // accessories — handbag
+  { id: "petit-pouch-red", name: "the little prince® silver ion anti-bacterial COOLMAX® petit pouch", category: "accessories", priceCAD: 16, priceHKD: 95, colors: ["red"], sizes: ["one size"], features: ["silver-ion"], tags: ["all-season","handbag","women"] },
+  { id: "petit-pouch-print", name: "silver ion anti-bacterial COOLMAX® petit pouch", category: "accessories", priceCAD: 14, priceHKD: 80, colors: ["red","white"], sizes: ["one size"], features: ["silver-ion"], tags: ["all-season","handbag","women","unisex"] },
+  { id: "vegan-fur-pouch", name: "vegan fur pouch", category: "accessories", priceCAD: 28, priceHKD: 160, colors: ["black"], sizes: ["one size"], features: ["vegan","super-soft"], tags: ["fall-winter","handbag","women"] },
+  { id: "backpack-light-fresh-ivory", name: "anti-bacterial light fresh® back pack sac à dos", category: "accessories", priceCAD: 286, priceHKD: 1680, colors: ["ivory"], sizes: ["one size"], features: ["self-cleaning"], tags: ["all-season","handbag","women","unisex"] },
+  { id: "backpack-silver-red", name: "anti-bacterial silver ion COOLMAX® light fresh® back pack sac à dos", category: "accessories", priceCAD: 286, priceHKD: 1680, colors: ["red"], sizes: ["one size"], features: ["silver-ion","self-cleaning"], tags: ["all-season","handbag","women","unisex"] },
+  { id: "boulette-sac-ivory", name: "anti-bacterial light fresh® drawstring boulette SAC", category: "accessories", priceCAD: 286, priceHKD: 1680, colors: ["ivory"], sizes: ["one size"], features: ["self-cleaning"], tags: ["all-season","handbag","women"] },
+  { id: "boulette-sac-checker", name: "anti-bacterial silver ion COOLMAX® light fresh® drawstring boulette SAC", category: "accessories", priceCAD: 286, priceHKD: 1680, colors: ["black","white"], sizes: ["one size"], features: ["silver-ion","self-cleaning"], tags: ["all-season","handbag","women"] },
+  { id: "enorme-silver-checker", name: "ènorme drawstring anti-bacterial silver ion COOLMAX® shoulder bag", category: "accessories", priceCAD: 286, priceHKD: 1680, colors: ["red","white"], sizes: ["one size"], features: ["silver-ion"], tags: ["all-season","handbag","women"] },
+  { id: "enorme-light-navy", name: "ènorme drawstring anti-bacterial light fresh® shoulder bag", category: "accessories", priceCAD: 286, priceHKD: 1680, colors: ["navy"], sizes: ["one size"], features: ["self-cleaning"], tags: ["all-season","handbag","women"] },
+  { id: "enorme-silver-light", name: "ènorme drawstring anti-bacterial silver ion COOLMAX® light fresh® shoulder bag", category: "accessories", priceCAD: 286, priceHKD: 1680, colors: ["red","white"], sizes: ["one size"], features: ["silver-ion","self-cleaning"], tags: ["all-season","handbag","women"] },
+  { id: "cabas-mini-light", name: "CABAS mini anti-bacterial light fresh® shoulder bag", category: "accessories", priceCAD: 252, priceHKD: 1480, colors: ["navy"], sizes: ["mini"], features: ["self-cleaning"], tags: ["all-season","handbag","women"] },
+  { id: "cabas-mini-silver", name: "CABAS mini anti-bacterial silver ion COOLMAX® light fresh® shoulder bag", category: "accessories", priceCAD: 252, priceHKD: 1480, colors: ["navy","white"], sizes: ["mini"], features: ["silver-ion","self-cleaning"], tags: ["all-season","handbag","women"] },
+  { id: "bouffie-bag", name: "bouffie bag anti-bacterial silver ion COOLMAX® shoulder bag", category: "accessories", priceCAD: 235, priceHKD: 1380, colors: ["black"], sizes: ["one size"], features: ["silver-ion","super-soft"], tags: ["all-season","handbag","women"] },
+  { id: "cravate-bag", name: "silver ion anti-bacterial COOLMAX® quick dry water proof cravate bag", category: "accessories", priceCAD: 44, priceHKD: 260, colors: ["white","navy"], sizes: ["one size"], features: ["silver-ion","water-repellent"], tags: ["all-season","handbag","unisex"] },
+  { id: "reves-tote", name: "silver ion anti-bacterial COOLMAX® quick dry rêves tote bag", category: "accessories", priceCAD: 55, priceHKD: 320, colors: ["navy"], sizes: ["one size"], features: ["silver-ion","quick-dry"], tags: ["all-season","handbag","women","unisex"] },
+  { id: "cabas-220", name: "CABAS 220 anti-bacterial light fresh® shoulder bag", category: "accessories", priceCAD: 302, priceHKD: 1780, colors: ["ivory","navy","black"], sizes: ["one size"], features: ["self-cleaning","water-repellent"], tags: ["all-season","handbag","women"] },
+  { id: "cabas-220-silver", name: "CABAS 220 anti-bacterial silver ion COOLMAX® light fresh® shoulder bag", category: "accessories", priceCAD: 302, priceHKD: 1780, colors: ["navy"], sizes: ["one size"], features: ["silver-ion","self-cleaning"], tags: ["all-season","handbag","women"] },
+  { id: "duffle-bag", name: "silver ion anti-bacterial COOLMAX® quick dry foldable travel / gym duffle bag", category: "accessories", priceCAD: 167, priceHKD: 980, colors: ["navy"], sizes: ["one size"], features: ["silver-ion","quick-dry"], tags: ["all-season","handbag","travel","unisex"] },
+  { id: "tote-bag", name: "silver ion anti-bacterial COOLMAX® quick dry tote bag", category: "accessories", priceCAD: 55, priceHKD: 320, colors: ["navy"], sizes: ["one size"], features: ["silver-ion","quick-dry"], tags: ["all-season","handbag","unisex"] },
+
+  // accessories — travel
+  { id: "pocket-square", name: "silver ion anti-bacterial COOLMAX® quick dry pocket square", category: "accessories", priceCAD: 9, priceHKD: 55, colors: ["fuchsia","navy","almond"], sizes: ["one size"], features: ["silver-ion","quick-dry"], tags: ["all-season","travel","unisex"] },
+  { id: "placemat", name: "silver ion anti-bacterial COOLMAX® quick dry water proof placemat", category: "accessories", priceCAD: 55, priceHKD: 320, colors: ["navy"], sizes: ["one size"], features: ["silver-ion","water-repellent"], tags: ["all-season","travel","home"] },
+  { id: "toiletry-bag", name: "silver ion anti-bacterial COOLMAX® quick dry foldable travel toiletry bag", category: "accessories", priceCAD: 74, priceHKD: 430, colors: ["navy"], sizes: ["one size"], features: ["silver-ion","quick-dry"], tags: ["all-season","travel","unisex"] },
+  { id: "packing-cube-sm", name: "silver ion anti-bacterial COOLMAX® quick dry foldable small packing cube", category: "accessories", priceCAD: 44, priceHKD: 260, colors: ["navy"], sizes: ["S"], features: ["silver-ion","quick-dry"], tags: ["all-season","travel","unisex"] },
+  { id: "packing-cube-lg", name: "silver ion anti-bacterial COOLMAX® quick dry foldable large packing cube", category: "accessories", priceCAD: 55, priceHKD: 320, colors: ["navy"], sizes: ["L"], features: ["silver-ion","quick-dry"], tags: ["all-season","travel","unisex"] },
+  { id: "sleepbag", name: "silver ion anti-bacterial COOLMAX® quick dry sleepbag", category: "accessories", priceCAD: 167, priceHKD: 980, colors: ["navy"], sizes: ["one size"], features: ["silver-ion","quick-dry"], tags: ["all-season","travel","unisex"] },
+  { id: "naturfan-spray", name: "naturfan insect repellent spray", category: "accessories", priceCAD: 14, priceHKD: 80, colors: ["white"], sizes: ["100ml"], features: ["natural","vegan"], tags: ["all-season","travel"] },
+  { id: "silvalight-spray", name: "silvaLIGHT covid-virus elimination spray", category: "accessories", priceCAD: 30, priceHKD: 180, colors: ["white"], sizes: ["100ml"], features: ["silvalight","anti-virus"], tags: ["all-season","travel"] },
+
+  // accessories — home
+  { id: "bedsheet-single", name: "anti-bacterial silver ion COOLMAX® single size fitted bedsheet", category: "accessories", priceCAD: 102, priceHKD: 599, colors: ["navy"], sizes: ["single"], features: ["silver-ion","super-soft"], tags: ["all-season","home"] },
+  { id: "blanket-single", name: "anti-bacterial silver ion COOLMAX® single size blanket", category: "accessories", priceCAD: 119, priceHKD: 699, colors: ["navy"], sizes: ["single"], features: ["silver-ion","super-soft"], tags: ["all-season","home"] },
+  { id: "bedsheet-queen", name: "anti-bacterial silver ion COOLMAX® queen size fitted bedsheet", category: "accessories", priceCAD: 136, priceHKD: 799, colors: ["navy"], sizes: ["queen"], features: ["silver-ion","super-soft"], tags: ["all-season","home"] },
+  { id: "blanket-queen", name: "anti-bacterial silver ion COOLMAX® queen size blanket", category: "accessories", priceCAD: 153, priceHKD: 899, colors: ["navy"], sizes: ["queen"], features: ["silver-ion","super-soft"], tags: ["all-season","home"] },
+  { id: "pillow-2", name: "anti-bacterial silver ion COOLMAX® pillow case x 2", category: "accessories", priceCAD: 39, priceHKD: 229, colors: ["navy"], sizes: ["pair"], features: ["silver-ion"], tags: ["all-season","home"] },
+  { id: "pillow-1", name: "anti-bacterial silver ion COOLMAX® pillow case x 1", category: "accessories", priceCAD: 22, priceHKD: 129, colors: ["navy"], sizes: ["one"], features: ["silver-ion"], tags: ["all-season","home"] },
+  { id: "bedsheet-double", name: "anti-bacterial silver ion COOLMAX® double size fitted bedsheet", category: "accessories", priceCAD: 119, priceHKD: 699, colors: ["navy"], sizes: ["double"], features: ["silver-ion"], tags: ["all-season","home"] },
+  { id: "blanket-double", name: "anti-bacterial silver ion COOLMAX® small double size blanket", category: "accessories", priceCAD: 136, priceHKD: 799, colors: ["navy"], sizes: ["double"], features: ["silver-ion"], tags: ["all-season","home"] },
+
+  // collaborations / personal-care
   { id: "one-and-all", name: "one and all parade coat", category: "collaborations", priceCAD: 540, priceHKD: 3200, colors: ["navy","red"], sizes: ["S","M","L"], features: ["multi-style","water-repellent"] },
   { id: "travel-mask", name: "travel lite face mask", category: "collaborations", priceCAD: 24, priceHKD: 140, colors: ["black","white","red"], sizes: ["one size"], features: ["anti-virus","silver-ion","breathable"] },
   { id: "vegan-cleanser", name: "riman vegan cleanser", category: "personal-care", priceCAD: 48, priceHKD: 280, colors: ["white"], sizes: ["150ml"], features: ["vegan","natural"] },
