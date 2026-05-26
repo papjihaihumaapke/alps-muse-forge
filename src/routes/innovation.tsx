@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CategoryView } from "@/components/alps/CategoryPage";
+import { FabricTechnology } from "@/components/alps/FabricTechnology";
 
 export const Route = createFileRoute("/innovation")({
   head: () => ({
@@ -10,5 +11,10 @@ export const Route = createFileRoute("/innovation")({
       { property: "og:description", content: "Where fashion meets innovation." },
     ],
   }),
-  component: () => <CategoryView slug="innovation" />,
+  component: () => (
+    <>
+      <FabricTechnology />
+      <CategoryView slug="innovation" />
+    </>
+  ),
 });
