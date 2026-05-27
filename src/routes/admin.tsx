@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,27 +10,64 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { listAdmins, grantAdminByEmail, revokeAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
-function AdminPage() {
-  const { user, isAdmin, loading } = useAuth();
-
-  if (loading) return <Shell><div className="p-10">Loading…</div></Shell>;
-  if (!user) return (
+function AdminLogin() {
+  const { signIn } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    const { error } = await signIn(email, password);
+    setBusy(false);
+    if (error) toast.error(error);
+  };
+  return (
     <Shell>
-      <div className="p-10 max-w-md">
-        <h1 className="text-2xl mb-4">Admin</h1>
-        <p className="mb-4">Please <Link to="/account" className="link-red">sign in</Link>.</p>
+      <div className="p-10 max-w-sm mx-auto">
+        <h1 className="text-2xl mb-6">Admin sign in</h1>
+        <form onSubmit={submit} className="space-y-4">
+          <div><Label className="text-xs text-muted-foreground mb-1 block">Email</Label>
+            <Input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} /></div>
+          <div><Label className="text-xs text-muted-foreground mb-1 block">Password</Label>
+            <Input type="password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} /></div>
+          <Button type="submit" disabled={busy} className="w-full">{busy ? "Signing in…" : "Sign in"}</Button>
+        </form>
       </div>
     </Shell>
   );
-  if (!isAdmin) return <Shell><div className="p-10">Access denied.</div></Shell>;
+}
+
+function AdminPage() {
+  const { user, isAdmin, loading, signOut } = useAuth();
+
+  if (loading) return <Shell><div className="p-10">Loading…</div></Shell>;
+  if (!user) return <AdminLogin />;
+  if (!isAdmin) return (
+    <Shell>
+      <div className="p-10 max-w-md">
+        <h1 className="text-2xl mb-4">Access denied</h1>
+        <p className="mb-4 text-sm text-muted-foreground">Signed in as {user.email} — this account is not an admin.</p>
+        <Button variant="outline" onClick={signOut}>Sign out</Button>
+      </div>
+    </Shell>
+  );
 
   return (
     <Shell>
       <div className="px-6 lg:px-10 py-10">
-        <h1 className="text-3xl mb-8">Admin Panel</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl">Admin Panel</h1>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span>{user.email}</span>
+            <button onClick={signOut} className="link-red">sign out</button>
+          </div>
+        </div>
         <Tabs defaultValue="products">
           <TabsList>
             <TabsTrigger value="products">Products</TabsTrigger>
@@ -38,15 +75,80 @@ function AdminPage() {
             <TabsTrigger value="customers">Customers</TabsTrigger>
             <TabsTrigger value="promos">Promo Codes</TabsTrigger>
             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
+            <TabsTrigger value="admins">Admins</TabsTrigger>
           </TabsList>
           <TabsContent value="products"><ProductsTab /></TabsContent>
           <TabsContent value="orders"><OrdersTab /></TabsContent>
           <TabsContent value="customers"><CustomersTab /></TabsContent>
           <TabsContent value="promos"><PromosTab /></TabsContent>
           <TabsContent value="newsletter"><NewsletterTab /></TabsContent>
+          <TabsContent value="admins"><AdminsTab /></TabsContent>
         </Tabs>
       </div>
     </Shell>
+  );
+}
+
+/* ----------------- ADMINS ----------------- */
+function AdminsTab() {
+  const list = useServerFn(listAdmins);
+  const grant = useServerFn(grantAdminByEmail);
+  const revoke = useServerFn(revokeAdmin);
+  const [rows, setRows] = useState<Array<{ user_id: string; email: string; created_at: string }>>([]);
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const load = async () => {
+    try { setRows(await list()); }
+    catch (e: any) { toast.error(e.message); }
+  };
+  useEffect(() => { load(); }, []);
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await grant({ data: { email } });
+      toast.success("Admin granted");
+      setEmail("");
+      load();
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  };
+
+  const remove = async (user_id: string, em: string) => {
+    if (!confirm(`Revoke admin from ${em}?`)) return;
+    try { await revoke({ data: { user_id } }); toast.success("Revoked"); load(); }
+    catch (e: any) { toast.error(e.message); }
+  };
+
+  return (
+    <div className="py-6 space-y-6">
+      <form onSubmit={add} className="flex gap-3 items-end max-w-xl">
+        <div className="flex-1">
+          <Label className="text-xs text-muted-foreground mb-1 block">Grant admin by email</Label>
+          <Input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" />
+        </div>
+        <Button type="submit" disabled={busy}>Grant</Button>
+      </form>
+      <p className="text-xs text-muted-foreground">User must have signed up first.</p>
+      <table className="w-full text-sm">
+        <thead><tr className="text-left text-muted-foreground border-b border-border">
+          <th className="py-2">Email</th><th>Granted</th><th></th>
+        </tr></thead>
+        <tbody>
+          {rows.map(r => (
+            <tr key={r.user_id} className="border-b border-border">
+              <td className="py-2">{r.email}</td>
+              <td className="text-xs">{new Date(r.created_at).toLocaleDateString()}</td>
+              <td className="text-right">
+                <button onClick={() => remove(r.user_id, r.email)} className="link-red">revoke</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
