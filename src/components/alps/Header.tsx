@@ -28,8 +28,8 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur border-b border-border">
       <div className="mx-auto flex h-16 items-center justify-between px-6 lg:px-10">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 shrink-0">
-          <img src={logoBlack} alt="ALPS Annie Ling" className="h-7 w-auto" />
+        <Link to="/" aria-label="ALPS home" className="flex items-center gap-3 shrink-0">
+          <img src={logoBlack} alt="ALPS Annie Ling" className="h-12 md:h-14 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
