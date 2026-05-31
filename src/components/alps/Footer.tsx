@@ -1,6 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, Youtube, Twitter } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, MessageCircle } from "lucide-react";
 import { SOCIALS, FEATURES } from "@/lib/alps-data";
+
+const AWARDS = [
+  { year: "2024", outlet: "DFA Awards — fashion innovation finalist" },
+  { year: "2023", outlet: "Tatler Asia — hong kong designers to watch" },
+  { year: "2022", outlet: "HKTDC — made in hong kong showcase" },
+  { year: "2022", outlet: "Vogue HK — the science of timeless" },
+];
 
 export function Footer() {
   return (
@@ -13,14 +20,6 @@ export function Footer() {
           <span className="text-foreground/80 leading-snug">
             kenichi multi function self cleaning backpack include one inner tie bag and one inner carry bag
           </span>
-        </Col>
-
-        <Col title="pinkoi">
-          <span className="text-foreground/80 leading-snug">seasonless multi-layer mesh reversible skirt</span>
-          <span className="text-foreground/80 leading-snug">anti-viral logo mid-length sleeve top</span>
-          <span className="text-foreground/80 leading-snug">anti-viral logo tee</span>
-          <span className="text-foreground/80 leading-snug">silver ion COOLMAX anti-bacterial foldable travel / gym shoulder bag</span>
-          <span className="text-foreground/80 leading-snug">silver ion COOLMAX anti-bacterial protection adult face mask</span>
         </Col>
 
         <Col title="size info">
@@ -38,15 +37,41 @@ export function Footer() {
           </div>
         </Col>
 
-        <Col title="find us">
-          <div className="flex gap-3 text-foreground/80 mt-1">
-            <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="facebook" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
-            <a href={SOCIALS.x} target="_blank" rel="noreferrer" aria-label="x" className="hover:text-primary"><Twitter className="h-4 w-4" /></a>
-            <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="instagram" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
-            <a href={SOCIALS.youtube} target="_blank" rel="noreferrer" aria-label="youtube" className="hover:text-primary"><Youtube className="h-4 w-4" /></a>
+        <Col title="awards & accolades">
+          <div className="grid gap-1.5">
+            {AWARDS.map((a, i) => (
+              <span key={i} className="text-foreground/80 leading-snug">
+                <span className="num text-primary mr-2">{a.year}</span>{a.outlet}
+              </span>
+            ))}
+            <Link to="/press" className="link-red mt-2 inline-block">view all press →</Link>
           </div>
-          <h4 className="text-[12px] tracking-wide text-foreground font-medium mt-6 mb-2">contact</h4>
-          <a href={`mailto:${SOCIALS.email}`} className="text-foreground/80 hover:text-primary">{SOCIALS.email}</a>
+        </Col>
+
+        <Col title="find us">
+          <div className="space-y-3">
+            <div>
+              <p className="text-[11px] text-foreground/60 mb-1.5">ALPS</p>
+              <div className="flex gap-3 text-foreground/80">
+                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="ALPS facebook" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
+                <a href={SOCIALS.x} target="_blank" rel="noreferrer" aria-label="ALPS x" className="hover:text-primary"><Twitter className="h-4 w-4" /></a>
+                <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="ALPS instagram" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
+                <a href={SOCIALS.youtube} target="_blank" rel="noreferrer" aria-label="ALPS youtube" className="hover:text-primary"><Youtube className="h-4 w-4" /></a>
+                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="ALPS thread" className="hover:text-primary"><MessageCircle className="h-4 w-4" /></a>
+              </div>
+            </div>
+            <div>
+              <p className="text-[11px] text-foreground/60 mb-1.5">vegan skincare</p>
+              <div className="flex gap-3 text-foreground/80">
+                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="skincare facebook" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
+                <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="skincare instagram" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
+              </div>
+            </div>
+            <div className="pt-2">
+              <p className="text-[11px] text-foreground/60 mb-1">contact</p>
+              <a href={`mailto:${SOCIALS.email}`} className="text-foreground/80 hover:text-primary">{SOCIALS.email}</a>
+            </div>
+          </div>
         </Col>
 
         <Col title="pre-order">

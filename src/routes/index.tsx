@@ -62,7 +62,6 @@ function Home() {
       <Innovation />
       <BrandIntro />
       <Designer />
-      <Features />
     </Shell>
   );
 }
@@ -73,22 +72,23 @@ function EditorialHero() {
     { slug: "contemporary", label: "contemporary", img: catContemporary },
     { slug: "accessories", label: "accessories", img: catAccessories },
     { slug: "collaborations", label: "collaborations", img: catCollab },
+    { slug: "personal-care", label: "vegan skin & personal care", img: catPersonal },
   ] as const;
 
   return (
-    <section className="relative bg-background px-6 lg:px-10 pt-6 pb-40">
+    <section className="relative bg-background px-6 lg:px-10 pt-6 pb-32 md:pb-40">
       <div className="mx-auto max-w-[1400px]">
         <div className="grid grid-cols-12 gap-3">
-          {/* Top-left: white framed hero image */}
+          {/* Top-left: hero image, half height */}
           <div className="col-span-12 lg:col-span-9">
-            <div className="aspect-[16/7] w-full border border-border bg-card overflow-hidden">
+            <div className="aspect-[16/4] w-full border border-border bg-card overflow-hidden">
               <img src={hero} alt="ALPS editorial" className="h-full w-full object-cover" />
             </div>
           </div>
 
           {/* Top-right: solid red */}
           <div className="col-span-6 lg:col-span-3">
-            <div className="aspect-[16/7] lg:aspect-auto lg:h-full w-full bg-primary" />
+            <div className="aspect-[16/4] lg:aspect-auto lg:h-full w-full bg-primary" />
           </div>
 
           {/* Bottom-left: black band */}
@@ -103,10 +103,10 @@ function EditorialHero() {
           </div>
         </div>
 
-        {/* Floating category cards overlapping the black band */}
-        <div className="relative -mt-24 md:-mt-32 flex justify-center pointer-events-none">
-          <div className="pointer-events-auto bg-background px-6 md:px-10 pt-8 pb-10 w-full max-w-3xl">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+        {/* Floating category cards — full width on mobile, bigger on desktop */}
+        <div className="relative -mt-20 md:-mt-32 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto bg-background px-4 md:px-10 pt-8 pb-10 w-full max-w-6xl">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5 md:gap-6">
               {cards.map((c) => (
                 <Link key={c.slug} to={`/${c.slug}`} className="group flex flex-col items-center text-center">
                   <div className="text-[11px] tracking-[0.15em] leading-tight">
@@ -137,16 +137,13 @@ function BrandVideo() {
     <section className="bg-brand-black text-white py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <div className="mb-10 flex items-end justify-between">
-          <div>
-            <span className="num text-[11px] tracking-[0.3em] text-primary">02 / film</span>
-            <h2 className="text-3xl md:text-4xl mt-3 font-light">brand film</h2>
-          </div>
+          <h2 className="text-3xl md:text-4xl font-light">ALPS fashion shows</h2>
         </div>
         <div className="relative aspect-video bg-zinc-900 overflow-hidden group cursor-pointer">
           <iframe
             className="absolute inset-0 h-full w-full"
             src="https://www.youtube.com/embed/videoseries?list=UUQkObngC_R1tDpdfV5Ebcmg&autoplay=1&mute=1&loop=1"
-            title="ALPS Annie Ling — brand film"
+            title="ALPS Annie Ling — fashion shows"
             allow="autoplay; encrypted-media"
           />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
