@@ -1,8 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Play, ArrowDown, X } from "lucide-react";
+import { Play } from "lucide-react";
 import { Shell } from "@/components/alps/Shell";
-import { CATEGORIES, FEATURES } from "@/lib/alps-data";
 import hero from "@/assets/hero.jpg";
 import textile from "@/assets/innovation-textile.jpg";
 import designer from "@/assets/designer.jpg";
@@ -246,58 +244,3 @@ function Designer() {
   );
 }
 
-function Features() {
-  const [active, setActive] = useState<null | (typeof FEATURES)[number]>(null);
-
-  return (
-    <section className="bg-brand-light py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        <div className="mb-12">
-          <span className="num text-[11px] tracking-[0.3em] text-primary">05 / technology</span>
-          <h2 className="text-3xl md:text-4xl mt-3 font-light">features</h2>
-          <p className="text-foreground/70 mt-3 max-w-xl text-sm">
-            click any icon to read about the technology behind it.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-px bg-border">
-          {FEATURES.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setActive(f)}
-              className="bg-card aspect-square flex flex-col items-center justify-center p-3 text-center hover:bg-primary hover:text-primary-foreground transition group"
-            >
-              <span className="num text-[10px] opacity-60 group-hover:opacity-100">
-                {String(FEATURES.indexOf(f) + 1).padStart(2, "0")}
-              </span>
-              <span className="text-[10px] leading-tight mt-2">{f.name}</span>
-            </button>
-          ))}
-        </div>
-
-        {active && (
-          <div
-            className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6"
-            onClick={() => setActive(null)}
-          >
-            <div
-              className="bg-card max-w-md w-full p-8 relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                aria-label="close"
-                onClick={() => setActive(null)}
-                className="absolute top-4 right-4 text-foreground/60 hover:text-primary"
-              >
-                <X className="h-4 w-4" />
-              </button>
-              <span className="num text-[11px] text-primary tracking-[0.3em]">feature</span>
-              <h3 className="text-2xl font-light mt-2">{active.name}</h3>
-              <p className="mt-4 text-sm text-foreground/80 leading-relaxed">{active.desc}</p>
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
