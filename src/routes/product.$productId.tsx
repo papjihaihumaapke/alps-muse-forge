@@ -32,6 +32,8 @@ function ProductPage() {
   const product = PRODUCTS.find((p) => p.id === productId);
   if (!product) throw notFound();
 
+  const isPersonalCare = product.category === "personal-care";
+
   const [color, setColor] = useState(product.colors[0]);
   const [size, setSize] = useState(product.sizes[0]);
   const [qty, setQty] = useState(1);
@@ -41,33 +43,34 @@ function ProductPage() {
     if (it) { add(it); toast.success("added to bag"); }
   };
 
-
   return (
     <Shell>
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div className="space-y-4">
           <div
             className="aspect-square flex items-center justify-center"
-            style={{ background: PRODUCT_COLORS[color] }}
+            style={{ background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] }}
           >
-            <span className="text-white/80 text-sm tracking-wide mix-blend-difference px-6 text-center">
+            <span className={`text-sm tracking-wide px-6 text-center ${isPersonalCare ? "text-foreground/60" : "text-white/80 mix-blend-difference"}`}>
               {product.name}
             </span>
           </div>
-          <div className="grid grid-cols-4 gap-2">
-            {product.colors.map((c) => (
-              <button
-                key={c}
-                onClick={() => setColor(c)}
-                className="aspect-square border"
-                style={{
-                  background: PRODUCT_COLORS[c],
-                  borderColor: color === c ? "var(--brand-red)" : "var(--border)",
-                }}
-                aria-label={c}
-              />
-            ))}
-          </div>
+          {!isPersonalCare && (
+            <div className="grid grid-cols-4 gap-2">
+              {product.colors.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setColor(c)}
+                  className="aspect-square border"
+                  style={{
+                    background: PRODUCT_COLORS[c],
+                    borderColor: color === c ? "var(--brand-red)" : "var(--border)",
+                  }}
+                  aria-label={c}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
@@ -79,23 +82,25 @@ function ProductPage() {
             CAD {product.priceCAD} <span className="text-foreground/40">·</span> HKD {product.priceHKD}
           </p>
 
-          <div className="mt-8">
-            <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">colour — {color}</h3>
-            <div className="flex gap-2">
-              {product.colors.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setColor(c)}
-                  className="h-7 w-7 border-2"
-                  style={{
-                    background: PRODUCT_COLORS[c],
-                    borderColor: color === c ? "var(--brand-red)" : "var(--border)",
-                  }}
-                  title={c}
-                />
-              ))}
+          {!isPersonalCare && (
+            <div className="mt-8">
+              <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">colour — {color}</h3>
+              <div className="flex gap-2">
+                {product.colors.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setColor(c)}
+                    className="h-7 w-7 border-2"
+                    style={{
+                      background: PRODUCT_COLORS[c],
+                      borderColor: color === c ? "var(--brand-red)" : "var(--border)",
+                    }}
+                    title={c}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="mt-6">
             <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">size</h3>
@@ -140,16 +145,32 @@ function ProductPage() {
           </div>
 
           <div className="mt-10 divide-y divide-border border-y border-border">
-            <Accordion title="description">
-              precision-constructed in our hong kong atelier from performance textiles selected for their behaviour
-              as much as their look. cut for movement, finished for longevity.
-            </Accordion>
-            <Accordion title="care">
-              cold machine wash inside out. do not bleach. line dry away from direct sunlight. cool iron if needed.
-            </Accordion>
-            <Accordion title="size guide">
-              standard hong kong sizing. unisex sizing runs true to size. contact us for a personal fitting consultation.
-            </Accordion>
+            {isPersonalCare ? (
+              <>
+                <Accordion title="description">
+                  formulated with plant-based actives and clean preservation. vegan, cruelty-free, made in small batches.
+                </Accordion>
+                <Accordion title="benefits">
+                  gentle daily care that respects skin barrier function — hydrating, balancing, and free from animal-derived ingredients.
+                </Accordion>
+                <Accordion title="how to use">
+                  apply to clean skin morning and evening. follow with serum and moisturiser. avoid direct contact with eyes.
+                </Accordion>
+              </>
+            ) : (
+              <>
+                <Accordion title="description">
+                  precision-constructed in our hong kong atelier from performance textiles selected for their behaviour
+                  as much as their look. cut for movement, finished for longevity.
+                </Accordion>
+                <Accordion title="care">
+                  cold machine wash inside out. do not bleach. line dry away from direct sunlight. cool iron if needed.
+                </Accordion>
+                <Accordion title="size guide">
+                  standard hong kong sizing. unisex sizing runs true to size. contact us for a personal fitting consultation.
+                </Accordion>
+              </>
+            )}
           </div>
         </div>
       </div>
