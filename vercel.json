@@ -1,0 +1,22 @@
+{
+  "buildCommand": "bun run build",
+  "outputDirectory": "dist/client",
+  "rewrites": [
+    {
+      "source": "/_build/(.*)",
+      "destination": "/_build/$1"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap.xml"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/_shell.html"
+    }
+  ]
+}
