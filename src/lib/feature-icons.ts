@@ -20,6 +20,8 @@ import recycled from "@/assets/features/recycled.png";
 import bluesign from "@/assets/features/bluesign.png";
 import oekoTex from "@/assets/features/oeko-tex.png";
 import superSoft from "@/assets/features/super-soft.png";
+import stretch from "@/assets/features/stretch.png";
+import natural from "@/assets/features/natural.png";
 
 export const FEATURE_ICONS: Record<string, string> = {
   "multi-style": multiStyle,
@@ -48,6 +50,9 @@ export const FEATURE_ICONS: Record<string, string> = {
   "oeko-tex": oekoTex,
   "oekotex": oekoTex,
   "super-soft": superSoft,
+  "stretch": stretch,
+  "natural": natural,
+  "natural-fiber": natural,
 };
 
 export function featureIcon(key: string): string | undefined {
