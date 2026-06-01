@@ -1,9 +1,12 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Minus, Plus, ChevronDown } from "lucide-react";
 import { Shell } from "@/components/alps/Shell";
 import { PRODUCTS, PRODUCT_COLORS, FEATURES } from "@/lib/alps-data";
-import { productImage } from "@/lib/accessory-images";
+import {
+  productImageForColor,
+  productGallery,
+} from "@/lib/accessory-images";
 import { colorSwatch } from "@/lib/color-swatches";
 import { useCart, buildCartItem } from "@/lib/cart";
 import { toast } from "sonner";
@@ -39,6 +42,21 @@ function ProductPage() {
   const [color, setColor] = useState(product.colors[0]);
   const [size, setSize] = useState(product.sizes[0]);
   const [qty, setQty] = useState(1);
+
+  const gallery = useMemo(
+    () => productGallery(product.id, product.colors),
+    [product.id, product.colors],
+  );
+  const [activeImage, setActiveImage] = useState<string | undefined>(
+    () => productImageForColor(product.id, product.colors[0]) ?? gallery[0],
+  );
+
+  // Sync main image when the selected colour changes.
+  useEffect(() => {
+    const next = productImageForColor(product.id, color);
+    if (next) setActiveImage(next);
+  }, [color, product.id]);
+
   const { add } = useCart();
   const onAdd = () => {
     const it = buildCartItem(product!.id, color, size, qty);
@@ -47,146 +65,164 @@ function ProductPage() {
 
   return (
     <Shell>
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div className="space-y-4">
-          <div
-            className="aspect-square flex items-center justify-center overflow-hidden bg-brand-light"
-            style={!productImage(product.id) ? { background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] } : undefined}
-          >
-            {productImage(product.id) ? (
-              <img src={productImage(product.id)} alt={product.name} className="h-full w-full object-cover" />
-            ) : (
-              <span className={`text-sm tracking-wide px-6 text-center ${isPersonalCare ? "text-foreground/60" : "text-white/80 mix-blend-difference"}`}>
-                {product.name}
-              </span>
-            )}
-          </div>
-          {!isPersonalCare && (
-            <div className="grid grid-cols-4 gap-2">
-              {product.colors.map((c) => {
-                const sw = colorSwatch(c);
+      <div className="max-w-[1760px] mx-auto px-4 lg:px-10 py-10">
+        {/* 3-column: description LEFT · image CENTER · controls RIGHT */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] gap-8 lg:gap-10">
+          {/* LEFT — description */}
+          <aside className="order-3 lg:order-1">
+            <span className="num text-[11px] tracking-[0.3em] text-primary uppercase">
+              {product.category.replace("-", " ")}
+            </span>
+            <h1 className="text-2xl md:text-3xl font-light mt-2 leading-tight">{product.name}</h1>
+            <p className="num text-base mt-3 text-foreground/80">
+              CAD {product.priceCAD} <span className="text-foreground/40">·</span> HKD {product.priceHKD}
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {product.features.map((fk) => {
+                const f = FEATURES.find((x) => x.key === fk);
+                if (!f) return null;
                 return (
-                  <button
-                    key={c}
-                    onClick={() => setColor(c)}
-                    className="aspect-square rounded-full overflow-hidden border-2 flex items-center justify-center"
-                    style={{
-                      background: sw ? "transparent" : PRODUCT_COLORS[c],
-                      borderColor: color === c ? "var(--brand-red)" : "var(--border)",
-                    }}
-                    aria-label={c}
-                  >
-                    {sw && <img src={sw} alt={c} className="h-full w-full object-cover" />}
-                  </button>
+                  <span key={fk} className="text-[10px] tracking-wide px-2 py-1 border border-border" title={f.desc}>
+                    {f.name}
+                  </span>
                 );
               })}
             </div>
-          )}
-        </div>
 
-        <div>
-          <span className="num text-[11px] tracking-[0.3em] text-primary uppercase">
-            {product.category.replace("-", " ")}
-          </span>
-          <h1 className="text-3xl md:text-4xl font-light mt-2">{product.name}</h1>
-          <p className="num text-lg mt-4">
-            CAD {product.priceCAD} <span className="text-foreground/40">·</span> HKD {product.priceHKD}
-          </p>
+            <div className="mt-8 divide-y divide-border border-y border-border">
+              {isPersonalCare ? (
+                <>
+                  <Accordion title="description" defaultOpen>
+                    formulated with plant-based actives and clean preservation. vegan, cruelty-free, made in small batches.
+                  </Accordion>
+                  <Accordion title="benefits">
+                    gentle daily care that respects skin barrier function — hydrating, balancing, and free from animal-derived ingredients.
+                  </Accordion>
+                  <Accordion title="how to use">
+                    apply to clean skin morning and evening. follow with serum and moisturiser. avoid direct contact with eyes.
+                  </Accordion>
+                </>
+              ) : (
+                <>
+                  <Accordion title="description" defaultOpen>
+                    precision-constructed in our hong kong atelier from performance textiles selected for their behaviour
+                    as much as their look. cut for movement, finished for longevity.
+                  </Accordion>
+                  <Accordion title="care">
+                    cold machine wash inside out. do not bleach. line dry away from direct sunlight. cool iron if needed.
+                  </Accordion>
+                  <Accordion title="size guide">
+                    standard hong kong sizing. unisex sizing runs true to size. contact us for a personal fitting consultation.
+                  </Accordion>
+                </>
+              )}
+            </div>
+          </aside>
 
-          {!isPersonalCare && (
-            <div className="mt-8">
-              <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">colour — {color}</h3>
-              <div className="flex gap-2">
-                {product.colors.map((c) => {
-                  const sw = colorSwatch(c);
+          {/* CENTER — main image + thumbnail strip */}
+          <div className="order-1 lg:order-2">
+            <div
+              className="aspect-square flex items-center justify-center overflow-hidden bg-brand-light"
+              style={!activeImage ? { background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] } : undefined}
+            >
+              {activeImage ? (
+                <img
+                  key={activeImage}
+                  src={activeImage}
+                  alt={`${product.name} — ${color}`}
+                  className="h-full w-full object-cover transition-opacity duration-300"
+                />
+              ) : (
+                <span className={`text-sm tracking-wide px-6 text-center ${isPersonalCare ? "text-foreground/60" : "text-white/80 mix-blend-difference"}`}>
+                  {product.name}
+                </span>
+              )}
+            </div>
+
+            {gallery.length > 1 && (
+              <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+                {gallery.map((url, i) => {
+                  const active = url === activeImage;
                   return (
                     <button
-                      key={c}
-                      onClick={() => setColor(c)}
-                      className="h-7 w-7 rounded-full overflow-hidden border-2 flex items-center justify-center"
-                      style={{
-                        background: sw ? "transparent" : PRODUCT_COLORS[c],
-                        borderColor: color === c ? "var(--brand-red)" : "var(--border)",
-                      }}
-                      title={c}
+                      key={url + i}
+                      onClick={() => setActiveImage(url)}
+                      className={`h-20 w-20 shrink-0 overflow-hidden border-2 transition ${
+                        active ? "border-primary" : "border-border hover:border-foreground/60"
+                      }`}
+                      aria-label={`view ${i + 1}`}
                     >
-                      {sw && <img src={sw} alt={c} className="h-full w-full object-cover" />}
+                      <img src={url} alt="" className="h-full w-full object-cover" />
                     </button>
                   );
                 })}
               </div>
-            </div>
-          )}
-
-          <div className="mt-6">
-            <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">size</h3>
-            <div className="flex flex-wrap gap-2">
-              {product.sizes.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSize(s)}
-                  className={`px-4 py-2 text-xs border ${
-                    size === s ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">quantity</h3>
-            <div className="inline-flex items-center border border-border">
-              <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-2 hover:bg-muted"><Minus className="h-3 w-3" /></button>
-              <span className="num w-10 text-center">{qty}</span>
-              <button onClick={() => setQty(qty + 1)} className="p-2 hover:bg-muted"><Plus className="h-3 w-3" /></button>
-            </div>
-          </div>
-
-          <button onClick={onAdd} className="w-full mt-8 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition">
-            add to bag
-          </button>
-
-          <div className="mt-6 flex flex-wrap gap-2">
-            {product.features.map((fk) => {
-              const f = FEATURES.find((x) => x.key === fk);
-              if (!f) return null;
-              return (
-                <span key={fk} className="text-[10px] tracking-wide px-2 py-1 border border-border" title={f.desc}>
-                  {f.name}
-                </span>
-              );
-            })}
-          </div>
-
-          <div className="mt-10 divide-y divide-border border-y border-border">
-            {isPersonalCare ? (
-              <>
-                <Accordion title="description">
-                  formulated with plant-based actives and clean preservation. vegan, cruelty-free, made in small batches.
-                </Accordion>
-                <Accordion title="benefits">
-                  gentle daily care that respects skin barrier function — hydrating, balancing, and free from animal-derived ingredients.
-                </Accordion>
-                <Accordion title="how to use">
-                  apply to clean skin morning and evening. follow with serum and moisturiser. avoid direct contact with eyes.
-                </Accordion>
-              </>
-            ) : (
-              <>
-                <Accordion title="description">
-                  precision-constructed in our hong kong atelier from performance textiles selected for their behaviour
-                  as much as their look. cut for movement, finished for longevity.
-                </Accordion>
-                <Accordion title="care">
-                  cold machine wash inside out. do not bleach. line dry away from direct sunlight. cool iron if needed.
-                </Accordion>
-                <Accordion title="size guide">
-                  standard hong kong sizing. unisex sizing runs true to size. contact us for a personal fitting consultation.
-                </Accordion>
-              </>
             )}
+          </div>
+
+          {/* RIGHT — colour / size / qty / add to bag */}
+          <div className="order-2 lg:order-3">
+            {!isPersonalCare && (
+              <div>
+                <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">
+                  colour — <span className="text-foreground/90">{color}</span>
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.colors.map((c) => {
+                    const sw = colorSwatch(c);
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => setColor(c)}
+                        className="h-9 w-9 rounded-full overflow-hidden border-2 flex items-center justify-center transition"
+                        style={{
+                          background: sw ? "transparent" : PRODUCT_COLORS[c],
+                          borderColor: color === c ? "var(--brand-red)" : "var(--border)",
+                        }}
+                        title={c}
+                        aria-label={c}
+                      >
+                        {sw && <img src={sw} alt={c} className="h-full w-full object-cover" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-6">
+              <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">size</h3>
+              <div className="flex flex-wrap gap-2">
+                {product.sizes.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSize(s)}
+                    className={`px-4 py-2 text-xs border ${
+                      size === s ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">quantity</h3>
+              <div className="inline-flex items-center border border-border">
+                <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-2 hover:bg-muted"><Minus className="h-3 w-3" /></button>
+                <span className="num w-10 text-center">{qty}</span>
+                <button onClick={() => setQty(qty + 1)} className="p-2 hover:bg-muted"><Plus className="h-3 w-3" /></button>
+              </div>
+            </div>
+
+            <button
+              onClick={onAdd}
+              className="w-full mt-8 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition"
+            >
+              add to bag
+            </button>
           </div>
         </div>
       </div>
@@ -194,8 +230,8 @@ function ProductPage() {
   );
 }
 
-function Accordion({ title, children }: { title: string; children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
+function Accordion({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div>
       <button

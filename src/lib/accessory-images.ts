@@ -126,8 +126,29 @@ export const PRODUCT_SKU: Record<string, string> = {
 
 import { EXTRA_PRODUCT_IMAGES } from "@/lib/catalog-extra";
 
+/** Per-color image overrides. Key: productId, value: { colorName: imageUrl }. */
+export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string>> = {};
+
 export function productImage(productId: string): string | undefined {
   if (EXTRA_PRODUCT_IMAGES[productId]) return EXTRA_PRODUCT_IMAGES[productId];
   const sku = PRODUCT_SKU[productId];
   return sku ? SKU_IMAGES[sku] : undefined;
 }
+
+/** Returns image for a specific colour when available; falls back to the base product image. */
+export function productImageForColor(productId: string, color: string): string | undefined {
+  return PRODUCT_COLOR_IMAGES[productId]?.[color] ?? productImage(productId);
+}
+
+/** Returns the full image gallery for a product (color variants + base image), de-duplicated. */
+export function productGallery(productId: string, colors: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  const push = (url?: string) => {
+    if (url && !seen.has(url)) { seen.add(url); out.push(url); }
+  };
+  for (const c of colors) push(PRODUCT_COLOR_IMAGES[productId]?.[c]);
+  push(productImage(productId));
+  return out;
+}
+
