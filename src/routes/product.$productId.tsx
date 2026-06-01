@@ -8,6 +8,7 @@ import {
   productGallery,
 } from "@/lib/accessory-images";
 import { colorSwatch } from "@/lib/color-swatches";
+import { featureIcon } from "@/lib/feature-icons";
 import { useCart, buildCartItem } from "@/lib/cart";
 import { toast } from "sonner";
 
