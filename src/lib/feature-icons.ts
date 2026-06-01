@@ -10,6 +10,16 @@ import antiVirus from "@/assets/features/anti-virus.png";
 import antiOdor from "@/assets/features/anti-odor.png";
 import antiStatic from "@/assets/features/anti-static.png";
 import quickDry from "@/assets/features/quick-dry.png";
+import breathable from "@/assets/features/breathable.png";
+import adhesive from "@/assets/features/adhesive.png";
+import lightfresh from "@/assets/features/lightfresh.png";
+import silvalight from "@/assets/features/silvalight.png";
+import waterRepellent from "@/assets/features/water-repellent.png";
+import uvResistant from "@/assets/features/uv-resistant.png";
+import recycled from "@/assets/features/recycled.png";
+import bluesign from "@/assets/features/bluesign.png";
+import oekoTex from "@/assets/features/oeko-tex.png";
+import superSoft from "@/assets/features/super-soft.png";
 
 export const FEATURE_ICONS: Record<string, string> = {
   "multi-style": multiStyle,
@@ -21,8 +31,25 @@ export const FEATURE_ICONS: Record<string, string> = {
   "anti-odor": antiOdor,
   "anti-static": antiStatic,
   "quick-dry": quickDry,
+  "breathable": breathable,
+  "adhesive": adhesive,
+  "lightfresh": lightfresh,
+  "light-fresh": lightfresh,
+  "self-cleaning": lightfresh,
+  "silvalight": silvalight,
+  "silva-light": silvalight,
+  "water-repellent": waterRepellent,
+  "uv-resistant": uvResistant,
+  "uv-protection": uvResistant,
+  "recycled": recycled,
+  "recycled-material": recycled,
+  "bluesign": bluesign,
+  "bluesign-approved": bluesign,
+  "oeko-tex": oekoTex,
+  "oekotex": oekoTex,
+  "super-soft": superSoft,
 };
 
 export function featureIcon(key: string): string | undefined {
-  return FEATURE_ICONS[key];
+  return FEATURE_ICONS[key.toLowerCase().trim()];
 }
