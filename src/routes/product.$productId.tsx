@@ -10,6 +10,7 @@ import {
 import { colorSwatch } from "@/lib/color-swatches";
 import { featureIcon } from "@/lib/feature-icons";
 import { useCart, buildCartItem } from "@/lib/cart";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$productId")({
@@ -43,6 +44,7 @@ function ProductPage() {
   const [color, setColor] = useState(product.colors[0]);
   const [size, setSize] = useState(product.sizes[0]);
   const [qty, setQty] = useState(1);
+  const [openFeature, setOpenFeature] = useState<string | null>(null);
 
   const gallery = useMemo(
     () => productGallery(product.id, product.colors),
@@ -84,11 +86,27 @@ function ProductPage() {
                 const f = FEATURES.find((x) => x.key === fk);
                 if (!f) return null;
                 const icon = featureIcon(fk);
+                const isOpen = openFeature === fk;
                 return (
-                  <span key={fk} className="flex items-center gap-1.5 text-[10px] tracking-wide px-2 py-1 border border-border" title={f.desc}>
-                    {icon && <img src={icon} alt="" className="w-4 h-4 object-contain" />}
-                    {f.name}
-                  </span>
+                  <Popover key={fk} open={isOpen} onOpenChange={(o) => setOpenFeature(o ? fk : null)}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex items-center gap-1.5 text-[10px] tracking-wide px-2 py-1 border border-border hover:bg-muted transition-colors cursor-pointer"
+                        aria-label={`${f.name} — details`}
+                      >
+                        {icon && <img src={icon} alt="" className="w-4 h-4 object-contain" />}
+                        {f.name}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" className="w-72 text-xs leading-relaxed">
+                      <div className="flex items-center gap-2 mb-2">
+                        {icon && <img src={icon} alt="" className="w-5 h-5 object-contain" />}
+                        <span className="font-medium tracking-wide uppercase text-[11px]">{f.name}</span>
+                      </div>
+                      <p className="text-foreground/80">{f.desc}</p>
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>
