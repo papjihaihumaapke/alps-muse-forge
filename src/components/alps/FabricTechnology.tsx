@@ -78,20 +78,24 @@ export function FabricTechnology() {
             className="flex flex-col text-left group"
           >
             <p className="text-sm leading-snug mb-3 min-h-[2.5rem]">{f.name}</p>
-            <div className="border-t border-border pt-3 relative">
-              <img
-                src={IMAGES[f.key] ?? fallback}
-                alt={f.name}
-                loading="lazy"
-                width={768}
-                height={768}
-                className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-              />
-              {featureIcon(f.key) && (
-                <span className="absolute bottom-2 right-2 bg-background/90 backdrop-blur-sm p-2 rounded-sm border border-border">
-                  <img src={featureIcon(f.key)} alt="" className="w-6 h-6 object-contain" />
-                </span>
-              )}
+            <div className="border-t border-border pt-3">
+              <div className="w-full aspect-square bg-muted flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                {featureIcon(f.key) ? (
+                  <img
+                    src={featureIcon(f.key)}
+                    alt={f.name}
+                    loading="lazy"
+                    className="w-1/2 h-1/2 object-contain"
+                  />
+                ) : (
+                  <img
+                    src={IMAGES[f.key] ?? fallback}
+                    alt={f.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
             </div>
           </button>
         ))}
