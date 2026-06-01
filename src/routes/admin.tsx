@@ -12,6 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { listAdmins, grantAdminByEmail, revokeAdmin } from "@/lib/admin.functions";
+import { PRODUCTS } from "@/lib/alps-data";
+import { productImage } from "@/lib/accessory-images";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -193,11 +195,47 @@ function ProductsTab() {
     toast.success("Deleted"); load();
   };
 
+  const [syncing, setSyncing] = useState(false);
+  const syncCatalog = async () => {
+    if (!confirm(`Import all ${PRODUCTS.length} catalog products into the database? Existing rows (matched by slug) will be updated.`)) return;
+    setSyncing(true);
+    try {
+      const payload = PRODUCTS.map((p) => ({
+        slug: p.id,
+        name: p.name,
+        category: p.category,
+        description: null,
+        price_cad: p.priceCAD ?? 0,
+        price_hkd: p.priceHKD ?? 0,
+        colors: p.colors ?? [],
+        sizes: p.sizes ?? [],
+        features: p.features ?? [],
+        tags: (p.tags as string[] | undefined) ?? [],
+        stock: 0,
+        hidden: false,
+        image_url: productImage(p.id) ?? null,
+      }));
+      const { error } = await supabase.from("products").upsert(payload, { onConflict: "slug" });
+      if (error) throw error;
+      toast.success(`Synced ${payload.length} products`);
+      load();
+    } catch (e: any) {
+      toast.error(e.message ?? "Sync failed");
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   return (
     <div className="py-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg">{rows.length} products</h2>
-        <Button onClick={() => setEditing({ ...blankProduct })}>+ New Product</Button>
+        <h2 className="text-lg">{rows.length} products in database · {PRODUCTS.length} in catalog</h2>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={syncCatalog} disabled={syncing}>
+            {syncing ? "Syncing…" : "Sync catalog → DB"}
+          </Button>
+          <Button onClick={() => setEditing({ ...blankProduct })}>+ New Product</Button>
+        </div>
       </div>
 
       {editing && <ProductEditor product={editing} onChange={setEditing} onSave={save} onCancel={() => setEditing(null)} />}
