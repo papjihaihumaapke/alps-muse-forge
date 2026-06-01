@@ -63,18 +63,23 @@ function ProductPage() {
           </div>
           {!isPersonalCare && (
             <div className="grid grid-cols-4 gap-2">
-              {product.colors.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setColor(c)}
-                  className="aspect-square border"
-                  style={{
-                    background: PRODUCT_COLORS[c],
-                    borderColor: color === c ? "var(--brand-red)" : "var(--border)",
-                  }}
-                  aria-label={c}
-                />
-              ))}
+              {product.colors.map((c) => {
+                const sw = colorSwatch(c);
+                return (
+                  <button
+                    key={c}
+                    onClick={() => setColor(c)}
+                    className="aspect-square rounded-full overflow-hidden border-2 flex items-center justify-center"
+                    style={{
+                      background: sw ? "transparent" : PRODUCT_COLORS[c],
+                      borderColor: color === c ? "var(--brand-red)" : "var(--border)",
+                    }}
+                    aria-label={c}
+                  >
+                    {sw && <img src={sw} alt={c} className="h-full w-full object-cover" />}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -92,18 +97,23 @@ function ProductPage() {
             <div className="mt-8">
               <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">colour — {color}</h3>
               <div className="flex gap-2">
-                {product.colors.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setColor(c)}
-                    className="h-7 w-7 border-2"
-                    style={{
-                      background: PRODUCT_COLORS[c],
-                      borderColor: color === c ? "var(--brand-red)" : "var(--border)",
-                    }}
-                    title={c}
-                  />
-                ))}
+                {product.colors.map((c) => {
+                  const sw = colorSwatch(c);
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => setColor(c)}
+                      className="h-7 w-7 rounded-full overflow-hidden border-2 flex items-center justify-center"
+                      style={{
+                        background: sw ? "transparent" : PRODUCT_COLORS[c],
+                        borderColor: color === c ? "var(--brand-red)" : "var(--border)",
+                      }}
+                      title={c}
+                    >
+                      {sw && <img src={sw} alt={c} className="h-full w-full object-cover" />}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
