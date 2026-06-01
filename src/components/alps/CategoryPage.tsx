@@ -9,6 +9,7 @@ import {
   type AccessoryTag,
   type CategorySlug,
 } from "@/lib/alps-data";
+import { productImage } from "@/lib/accessory-images";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
@@ -91,40 +92,52 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
           <p className="text-foreground/60 text-sm">no items match this filter.</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-10">
-            {items.map((p) => (
-              <Link
-                key={p.id}
-                to="/product/$productId"
-                params={{ productId: p.id }}
-                className="group block text-center"
-              >
-                <div className="aspect-square bg-brand-light flex items-center justify-center overflow-hidden">
-                  <span className="text-foreground/30 text-[10px] tracking-wide px-4 text-center leading-snug">
-                    {p.name}
-                  </span>
-                </div>
-                <div className="mt-3 px-2">
-                  <h3 className="text-[12px] leading-snug text-foreground group-hover:text-primary transition-colors">
-                    {p.name}
-                  </h3>
-                  <p className="num text-[11px] text-foreground/50 mt-1.5">
-                    ${p.priceHKD.toFixed(2)}
-                  </p>
-                  {p.colors.length > 1 && (
-                    <div className="flex gap-1 justify-center mt-2">
-                      {p.colors.slice(0, 5).map((c) => (
-                        <span
-                          key={c}
-                          title={c}
-                          className="h-2 w-2 border border-border/60"
-                          style={{ background: PRODUCT_COLORS[c] }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            ))}
+            {items.map((p) => {
+              const img = productImage(p.id);
+              return (
+                <Link
+                  key={p.id}
+                  to="/product/$productId"
+                  params={{ productId: p.id }}
+                  className="group block text-center"
+                >
+                  <div className="aspect-square bg-brand-light flex items-center justify-center overflow-hidden">
+                    {img ? (
+                      <img
+                        src={img}
+                        alt={p.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <span className="text-foreground/30 text-[10px] tracking-wide px-4 text-center leading-snug">
+                        {p.name}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-3 px-2">
+                    <h3 className="text-[12px] leading-snug text-foreground group-hover:text-primary transition-colors">
+                      {p.name}
+                    </h3>
+                    <p className="num text-[11px] text-foreground/50 mt-1.5">
+                      ${p.priceHKD.toFixed(2)}
+                    </p>
+                    {p.colors.length > 1 && (
+                      <div className="flex gap-1 justify-center mt-2">
+                        {p.colors.slice(0, 5).map((c) => (
+                          <span
+                            key={c}
+                            title={c}
+                            className="h-2 w-2 border border-border/60"
+                            style={{ background: PRODUCT_COLORS[c] }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </section>
