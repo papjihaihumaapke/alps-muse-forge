@@ -3,10 +3,11 @@ import { Instagram, Facebook, Youtube, Twitter, MessageCircle } from "lucide-rea
 import { SOCIALS, FEATURES } from "@/lib/alps-data";
 
 const AWARDS = [
-  { year: "2024", outlet: "DFA Awards — fashion innovation finalist" },
-  { year: "2023", outlet: "Tatler Asia — hong kong designers to watch" },
-  { year: "2022", outlet: "HKTDC — made in hong kong showcase" },
-  { year: "2022", outlet: "Vogue HK — the science of timeless" },
+  { year: "2022", outlet: "NY Product Design — gold · ONE and ALL" },
+  { year: "2022", outlet: "HK Most Outstanding Business — fashion innovation" },
+  { year: "2021", outlet: "NY Product Design — gold · warrior" },
+  { year: "2021", outlet: "International Design Awards — silver · warrior" },
+  { year: "2018", outlet: "International Design Awards — silver · instant warming vest" },
 ];
 
 export function Footer() {
@@ -57,14 +58,15 @@ export function Footer() {
                 <a href={SOCIALS.x} target="_blank" rel="noreferrer" aria-label="ALPS x" className="hover:text-primary"><Twitter className="h-4 w-4" /></a>
                 <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="ALPS instagram" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
                 <a href={SOCIALS.youtube} target="_blank" rel="noreferrer" aria-label="ALPS youtube" className="hover:text-primary"><Youtube className="h-4 w-4" /></a>
-                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="ALPS thread" className="hover:text-primary"><MessageCircle className="h-4 w-4" /></a>
+                <a href={SOCIALS.threads} target="_blank" rel="noreferrer" aria-label="ALPS threads" className="hover:text-primary"><MessageCircle className="h-4 w-4" /></a>
               </div>
             </div>
             <div>
               <p className="text-[11px] text-foreground/60 mb-1.5">vegan skincare</p>
               <div className="flex gap-3 text-foreground/80">
-                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="skincare facebook" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
-                <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="skincare instagram" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
+                <a href={SOCIALS.skincareFacebook} target="_blank" rel="noreferrer" aria-label="skincare facebook" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
+                <a href={SOCIALS.skincareInstagram} target="_blank" rel="noreferrer" aria-label="skincare instagram (english)" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
+                <a href={SOCIALS.skincareInstagramBilingual} target="_blank" rel="noreferrer" aria-label="skincare instagram (en/zh)" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
               </div>
             </div>
             <div className="pt-2">

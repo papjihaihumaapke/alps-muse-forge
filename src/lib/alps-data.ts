@@ -30,7 +30,7 @@ export const PRODUCT_COLORS: Record<string, string> = {
   pink: "#e8bfbf",
   lime: "#c0d999",
   khaki: "#3c6029",
-  black: "#030303",
+  black: "#303030",
   yellow: "#ffd600",
 };
 
@@ -168,13 +168,41 @@ export const PRODUCTS: Product[] = [
 ];
 
 export const SOCIALS = {
+  website: "https://www.annieling.com",
   instagram: "https://www.instagram.com/alpsannieling/",
   instagram2: "https://www.instagram.com/alps.annieling/",
   instagram3: "https://www.instagram.com/alpsbyannieling/",
   facebook: "https://www.facebook.com/alps.annieling/",
-  x: "https://x.com/annie_ling",
+  facebookPersonal: "https://www.facebook.com/annieling.alps",
+  x: "https://x.com/annie_ling_",
   threads: "https://www.threads.com/@alpsannieling",
   youtube: "https://www.youtube.com/channel/UCQkObngC_R1tDpdfV5Ebcmg",
-  asiaMiles: "https://lifestyle.asiamiles.com/en/HK/p/IFC_0152_60001/ac0015-light-fresh-technology-cabas-220-shoulder-bag",
+  asiaMiles:
+    "https://lifestyle.asiamiles.com/en/HK/p/IFC_0152_60001/ac0015-light-fresh-technology-cabas-220-shoulder-bag",
+  skincareInstagram: "https://www.instagram.com/riman.yvr/",
+  skincareInstagramBilingual: "https://www.instagram.com/annieling.riman/",
+  skincareFacebook: "https://www.facebook.com/profile.php?id=61580586214011",
+  dipAlumni:
+    "https://www.hkdesignincubation.org/?route=incubation_inner&category=11&company=2",
+  fipAlumni: "https://hkfip.org/en/brand/alps-annie-ling/",
   email: "cs@ALPSannieling.com",
 };
+
+export const TAGLINES = [
+  "timeless with a twist",
+  "made to make a difference",
+  "when fashion meets innovation",
+  "everyday designs that endure",
+  "new age accessories for the organised mind and body",
+];
+
+export const BRAND_HASHTAGS = [
+  "#ALPScollection",
+  "#simplicitywithdetails",
+  "#timelessdesigns",
+  "#effortlesschic",
+  "#purposefuldesign",
+  "#practical",
+  "#pleasant",
+  "#seasonless",
+];
