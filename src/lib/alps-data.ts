@@ -95,11 +95,11 @@ export const ACCESSORY_TAGS: { key: "all" | AccessoryTag; label: string }[] = [
   { key: "wearable", label: "wearable" },
 ];
 
+import { EXTRA_PRODUCTS } from "@/lib/catalog-extra";
+
 export const PRODUCTS: Product[] = [
-  { id: "muted-coat", name: "winter II muted coat", category: "innovation", priceCAD: 480, priceHKD: 2800, colors: ["navy", "black"], sizes: ["XS","S","M","L"], features: ["instant-heat","water-repellent","stretch"] },
-  { id: "warrior-jacket", name: "summer V warrior jacket", category: "innovation", priceCAD: 420, priceHKD: 2450, colors: ["black","khaki"], sizes: ["S","M","L"], features: ["quick-dry","breathable","uv-resistant"] },
-  { id: "bind-dress", name: "winter V bind dress", category: "contemporary", priceCAD: 360, priceHKD: 2100, colors: ["red","wine","black"], sizes: ["XS","S","M","L"], features: ["multi-style","stretch"] },
-  { id: "sugar-skirt", name: "summer III sugar crush skirt", category: "contemporary", priceCAD: 220, priceHKD: 1280, colors: ["red","pink","ivory"], sizes: ["XS","S","M"], features: ["super-soft","natural"] },
+  ...EXTRA_PRODUCTS,
+
 
   // accessories — wearable / women / unisex
   { id: "little-prince-bucket-ivory", name: "the little prince® anti-bacterial silver ion COOLMAX® reversible bucket hat", category: "accessories", priceCAD: 150, priceHKD: 880, colors: ["ivory","navy"], sizes: ["one size"], features: ["silver-ion","anti-virus","uv-resistant"], tags: ["all-season","women","unisex","wearable"] },
