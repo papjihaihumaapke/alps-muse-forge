@@ -10,6 +10,7 @@ import {
 import { colorSwatch } from "@/lib/color-swatches";
 import { featureIcon } from "@/lib/feature-icons";
 import { useCart, buildCartItem } from "@/lib/cart";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$productId")({
@@ -43,6 +44,7 @@ function ProductPage() {
   const [color, setColor] = useState(product.colors[0]);
   const [size, setSize] = useState(product.sizes[0]);
   const [qty, setQty] = useState(1);
+  const [openFeature, setOpenFeature] = useState<string | null>(null);
 
   const gallery = useMemo(
     () => productGallery(product.id, product.colors),
