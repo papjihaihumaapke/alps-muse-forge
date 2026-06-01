@@ -79,7 +79,7 @@ export function FabricTechnology() {
             className="flex flex-col text-left group"
           >
             <p className="text-sm leading-snug mb-3 min-h-[2.5rem]">{f.name}</p>
-            <div className="border-t border-border pt-3">
+            <div className="border-t border-border pt-3 relative">
               <img
                 src={IMAGES[f.key] ?? fallback}
                 alt={f.name}
@@ -88,7 +88,13 @@ export function FabricTechnology() {
                 height={768}
                 className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-[1.02]"
               />
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="bg-black/25 backdrop-blur-[1px] rounded-full p-4 transition-transform duration-500 group-hover:scale-110">
+                  <TechIcon feature={f.key} className="block w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+                </div>
+              </div>
             </div>
+
           </button>
         ))}
       </div>
