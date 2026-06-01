@@ -6,7 +6,7 @@ import { Search, User, ShoppingBag, Globe, Menu, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
-import logoBlack from "@/assets/alps-logo-black.png";
+import logoBlack from "@/assets/brand/alps-logo-black.png";
 
 const NAV = [
   { to: "/innovation", label: "alps innovation" },
