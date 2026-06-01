@@ -1,3 +1,5 @@
+import { EXTRA_PRODUCTS } from "@/lib/catalog-extra";
+
 export type CategorySlug =
   | "innovation"
   | "contemporary"
@@ -95,11 +97,11 @@ export const ACCESSORY_TAGS: { key: "all" | AccessoryTag; label: string }[] = [
   { key: "wearable", label: "wearable" },
 ];
 
+
+
 export const PRODUCTS: Product[] = [
-  { id: "muted-coat", name: "winter II muted coat", category: "innovation", priceCAD: 480, priceHKD: 2800, colors: ["navy", "black"], sizes: ["XS","S","M","L"], features: ["instant-heat","water-repellent","stretch"] },
-  { id: "warrior-jacket", name: "summer V warrior jacket", category: "innovation", priceCAD: 420, priceHKD: 2450, colors: ["black","khaki"], sizes: ["S","M","L"], features: ["quick-dry","breathable","uv-resistant"] },
-  { id: "bind-dress", name: "winter V bind dress", category: "contemporary", priceCAD: 360, priceHKD: 2100, colors: ["red","wine","black"], sizes: ["XS","S","M","L"], features: ["multi-style","stretch"] },
-  { id: "sugar-skirt", name: "summer III sugar crush skirt", category: "contemporary", priceCAD: 220, priceHKD: 1280, colors: ["red","pink","ivory"], sizes: ["XS","S","M"], features: ["super-soft","natural"] },
+  ...EXTRA_PRODUCTS,
+
 
   // accessories — wearable / women / unisex
   { id: "little-prince-bucket-ivory", name: "the little prince® anti-bacterial silver ion COOLMAX® reversible bucket hat", category: "accessories", priceCAD: 150, priceHKD: 880, colors: ["ivory","navy"], sizes: ["one size"], features: ["silver-ion","anti-virus","uv-resistant"], tags: ["all-season","women","unisex","wearable"] },
@@ -160,11 +162,6 @@ export const PRODUCTS: Product[] = [
   { id: "bedsheet-double", name: "anti-bacterial silver ion COOLMAX® double size fitted bedsheet", category: "accessories", priceCAD: 119, priceHKD: 699, colors: ["navy"], sizes: ["double"], features: ["silver-ion"], tags: ["all-season","home"] },
   { id: "blanket-double", name: "anti-bacterial silver ion COOLMAX® small double size blanket", category: "accessories", priceCAD: 136, priceHKD: 799, colors: ["navy"], sizes: ["double"], features: ["silver-ion"], tags: ["all-season","home"] },
 
-  // collaborations / personal-care
-  { id: "one-and-all", name: "one and all parade coat", category: "collaborations", priceCAD: 540, priceHKD: 3200, colors: ["navy","red"], sizes: ["S","M","L"], features: ["multi-style","water-repellent"] },
-  { id: "travel-mask", name: "travel lite face mask", category: "collaborations", priceCAD: 24, priceHKD: 140, colors: ["black","white","red"], sizes: ["one size"], features: ["anti-virus","silver-ion","breathable"] },
-  { id: "vegan-cleanser", name: "riman vegan cleanser", category: "personal-care", priceCAD: 48, priceHKD: 280, colors: ["white"], sizes: ["150ml"], features: ["vegan","natural"] },
-  { id: "vegan-cream", name: "riman recovery cream", category: "personal-care", priceCAD: 72, priceHKD: 420, colors: ["ivory"], sizes: ["50ml"], features: ["vegan","super-soft"] },
 ];
 
 export const SOCIALS = {
