@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { FEATURES } from "@/lib/alps-data";
+import { TechIcon } from "./TechIcon";
+
 
 // Existing macro photos (icons baked in)
 import silverIon from "@/assets/fabric-tech/silver-ion.jpg";
