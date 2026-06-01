@@ -203,12 +203,14 @@ function BrandIntro() {
             timeless with a twist — <br />made to make a difference.
           </h2>
           <p className="mt-8 leading-relaxed opacity-90">
-            ALPS is a hong kong fashion house founded by designer annie ling. we work at the intersection of
-            performance textile science and editorial design — making garments that move with the body, protect
-            against the elements, and last beyond a season.
+            driven by the desire to unite fashion and craftsmanship, ALPS aims to bring work and life
+            balance into its design. inspired by a new age of active living and cutting-edge textile
+            innovations, the brand is committed to designing enduring clothing that supports wellbeing.
           </p>
           <p className="mt-4 leading-relaxed opacity-90">
-            every collection answers a single question: what should clothing be able to do?
+            ALPS integrates fun and unexpected details with sports and technology elements into its
+            designs. this unique combination differentiates ALPS from normal fashion brands —
+            effortlessly stylish, highly versatile and wearable every day.
           </p>
         </div>
       </div>
