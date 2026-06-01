@@ -82,8 +82,10 @@ function ProductPage() {
               {product.features.map((fk) => {
                 const f = FEATURES.find((x) => x.key === fk);
                 if (!f) return null;
+                const icon = featureIcon(fk);
                 return (
-                  <span key={fk} className="text-[10px] tracking-wide px-2 py-1 border border-border" title={f.desc}>
+                  <span key={fk} className="flex items-center gap-1.5 text-[10px] tracking-wide px-2 py-1 border border-border" title={f.desc}>
+                    {icon && <img src={icon} alt="" className="w-4 h-4 object-contain" />}
                     {f.name}
                   </span>
                 );
