@@ -1,15 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Play } from "lucide-react";
 import { Shell } from "@/components/alps/Shell";
-import hero from "@/assets/hero.jpg";
-import textile from "@/assets/innovation-textile.jpg";
-import designer from "@/assets/designer.jpg";
-import logoBlack from "@/assets/alps-logo-black.png";
-import catInnovation from "@/assets/cat-innovation.png";
-import catContemporary from "@/assets/cat-contemporary.png";
-import catAccessories from "@/assets/cat-accessories.png";
-import catCollab from "@/assets/cat-collaborations.jpg";
-import catPersonal from "@/assets/cat-personalcare.png";
+import hero from "@/assets/backgrounds/bg-01.jpg";
+import textile from "@/assets/backgrounds/hightech-01.jpg";
+import designer from "@/assets/brand/mannequin-01.png";
+import logoBlack from "@/assets/brand/alps-logo-white.png";
+import colorBanner from "@/assets/brand/color-banner.png";
+import catInnovation from "@/assets/categories/innovation.png";
+import catContemporary from "@/assets/categories/contemporary.png";
+import catAccessories from "@/assets/categories/accessories.png";
+import catCollab from "@/assets/categories/collaborations.png";
+import catPersonal from "@/assets/categories/personal-care.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
