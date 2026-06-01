@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Minus, Plus, ChevronDown } from "lucide-react";
 import { Shell } from "@/components/alps/Shell";
 import { PRODUCTS, PRODUCT_COLORS, FEATURES } from "@/lib/alps-data";
+import { productImage } from "@/lib/accessory-images";
 import { useCart, buildCartItem } from "@/lib/cart";
 import { toast } from "sonner";
 
@@ -48,12 +49,16 @@ function ProductPage() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div className="space-y-4">
           <div
-            className="aspect-square flex items-center justify-center"
-            style={{ background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] }}
+            className="aspect-square flex items-center justify-center overflow-hidden bg-brand-light"
+            style={!productImage(product.id) ? { background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] } : undefined}
           >
-            <span className={`text-sm tracking-wide px-6 text-center ${isPersonalCare ? "text-foreground/60" : "text-white/80 mix-blend-difference"}`}>
-              {product.name}
-            </span>
+            {productImage(product.id) ? (
+              <img src={productImage(product.id)} alt={product.name} className="h-full w-full object-cover" />
+            ) : (
+              <span className={`text-sm tracking-wide px-6 text-center ${isPersonalCare ? "text-foreground/60" : "text-white/80 mix-blend-difference"}`}>
+                {product.name}
+              </span>
+            )}
           </div>
           {!isPersonalCare && (
             <div className="grid grid-cols-4 gap-2">
