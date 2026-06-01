@@ -1,3 +1,5 @@
+import { EXTRA_PRODUCTS } from "@/lib/catalog-extra";
+
 export type CategorySlug =
   | "innovation"
   | "contemporary"
@@ -95,7 +97,7 @@ export const ACCESSORY_TAGS: { key: "all" | AccessoryTag; label: string }[] = [
   { key: "wearable", label: "wearable" },
 ];
 
-import { EXTRA_PRODUCTS } from "@/lib/catalog-extra";
+
 
 export const PRODUCTS: Product[] = [
   ...EXTRA_PRODUCTS,
