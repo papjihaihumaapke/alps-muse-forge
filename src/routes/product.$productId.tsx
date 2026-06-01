@@ -4,7 +4,6 @@ import { Minus, Plus, ChevronDown } from "lucide-react";
 import { Shell } from "@/components/alps/Shell";
 import { PRODUCTS, PRODUCT_COLORS, FEATURES } from "@/lib/alps-data";
 import {
-  productImage,
   productImageForColor,
   productGallery,
 } from "@/lib/accessory-images";
