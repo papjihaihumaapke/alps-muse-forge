@@ -1,0 +1,15 @@
+{
+  "error": {
+    "code": 404,
+    "message": "File not found: 1174krPluvXbKlUr89FrmYTA4CC9ycibaB.",
+    "errors": [
+      {
+        "message": "File not found: 1174krPluvXbKlUr89FrmYTA4CC9ycibaB.",
+        "domain": "global",
+        "reason": "notFound",
+        "location": "fileId",
+        "locationType": "parameter"
+      }
+    ]
+  }
+}
