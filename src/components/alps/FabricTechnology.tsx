@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { FEATURES } from "@/lib/alps-data";
+import { featureIcon } from "@/lib/feature-icons";
 
 // Existing macro photos (icons baked in)
 import silverIon from "@/assets/fabric-tech/silver-ion.jpg";
@@ -77,7 +78,7 @@ export function FabricTechnology() {
             className="flex flex-col text-left group"
           >
             <p className="text-sm leading-snug mb-3 min-h-[2.5rem]">{f.name}</p>
-            <div className="border-t border-border pt-3">
+            <div className="border-t border-border pt-3 relative">
               <img
                 src={IMAGES[f.key] ?? fallback}
                 alt={f.name}
@@ -86,6 +87,11 @@ export function FabricTechnology() {
                 height={768}
                 className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-[1.02]"
               />
+              {featureIcon(f.key) && (
+                <span className="absolute bottom-2 right-2 bg-background/90 backdrop-blur-sm p-2 rounded-sm border border-border">
+                  <img src={featureIcon(f.key)} alt="" className="w-6 h-6 object-contain" />
+                </span>
+              )}
             </div>
           </button>
         ))}
