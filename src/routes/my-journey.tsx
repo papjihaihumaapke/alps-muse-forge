@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
 import { SOCIALS } from "@/lib/alps-data";
-import designer from "@/assets/designer.jpg";
+import designer from "@/assets/brand/mannequin-01.png";
 
 export const Route = createFileRoute("/my-journey")({
   head: () => ({
