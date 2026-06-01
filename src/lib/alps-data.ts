@@ -160,11 +160,6 @@ export const PRODUCTS: Product[] = [
   { id: "bedsheet-double", name: "anti-bacterial silver ion COOLMAX® double size fitted bedsheet", category: "accessories", priceCAD: 119, priceHKD: 699, colors: ["navy"], sizes: ["double"], features: ["silver-ion"], tags: ["all-season","home"] },
   { id: "blanket-double", name: "anti-bacterial silver ion COOLMAX® small double size blanket", category: "accessories", priceCAD: 136, priceHKD: 799, colors: ["navy"], sizes: ["double"], features: ["silver-ion"], tags: ["all-season","home"] },
 
-  // collaborations / personal-care
-  { id: "one-and-all", name: "one and all parade coat", category: "collaborations", priceCAD: 540, priceHKD: 3200, colors: ["navy","red"], sizes: ["S","M","L"], features: ["multi-style","water-repellent"] },
-  { id: "travel-mask", name: "travel lite face mask", category: "collaborations", priceCAD: 24, priceHKD: 140, colors: ["black","white","red"], sizes: ["one size"], features: ["anti-virus","silver-ion","breathable"] },
-  { id: "vegan-cleanser", name: "riman vegan cleanser", category: "personal-care", priceCAD: 48, priceHKD: 280, colors: ["white"], sizes: ["150ml"], features: ["vegan","natural"] },
-  { id: "vegan-cream", name: "riman recovery cream", category: "personal-care", priceCAD: 72, priceHKD: 420, colors: ["ivory"], sizes: ["50ml"], features: ["vegan","super-soft"] },
 ];
 
 export const SOCIALS = {
