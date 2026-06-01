@@ -124,7 +124,10 @@ export const PRODUCT_SKU: Record<string, string> = {
   "little-prince-bucket-navy": "LP-AC0029V",
 };
 
+import { EXTRA_PRODUCT_IMAGES } from "@/lib/catalog-extra";
+
 export function productImage(productId: string): string | undefined {
+  if (EXTRA_PRODUCT_IMAGES[productId]) return EXTRA_PRODUCT_IMAGES[productId];
   const sku = PRODUCT_SKU[productId];
   return sku ? SKU_IMAGES[sku] : undefined;
 }
