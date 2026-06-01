@@ -10,6 +10,7 @@ import {
   type CategorySlug,
 } from "@/lib/alps-data";
 import { productImage } from "@/lib/accessory-images";
+import { colorSwatch } from "@/lib/color-swatches";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
@@ -124,14 +125,25 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
                     </p>
                     {p.colors.length > 1 && (
                       <div className="flex gap-1 justify-center mt-2">
-                        {p.colors.slice(0, 5).map((c) => (
-                          <span
-                            key={c}
-                            title={c}
-                            className="h-2 w-2 border border-border/60"
-                            style={{ background: PRODUCT_COLORS[c] }}
-                          />
-                        ))}
+                        {p.colors.slice(0, 5).map((c) => {
+                          const sw = colorSwatch(c);
+                          return sw ? (
+                            <img
+                              key={c}
+                              src={sw}
+                              alt={c}
+                              title={c}
+                              className="h-3 w-3 rounded-full object-cover"
+                            />
+                          ) : (
+                            <span
+                              key={c}
+                              title={c}
+                              className="h-2 w-2 rounded-full border border-border/60"
+                              style={{ background: PRODUCT_COLORS[c] }}
+                            />
+                          );
+                        })}
                       </div>
                     )}
                   </div>
