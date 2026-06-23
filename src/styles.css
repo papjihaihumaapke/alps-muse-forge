@@ -5,14 +5,44 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ALPS ANNIE LING — brand design system
- * Functional · Modern · Scientific · Aspirational
- * Klarheit Grotesk substitute → Inter (clean geometric sans)
- * Numbers → JetBrains Mono (PP Supply Mono substitute)
+ * Klarheit Grotesk (display, bold italic) + Space Grotesk (body)
+ * PP Supply Mono (numbers, mono)
  */
+
+@font-face {
+  font-family: "Klarheit Grotesk";
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  src: url("/__l5e/assets-v1/8e792772-ee45-40d8-aeec-cdb74f104a42/KlarheitGrotesk-BoldItalic.woff2") format("woff2"),
+       url("/__l5e/assets-v1/663d720d-2d01-48ab-a938-9b34afa432f1/KlarheitGrotesk-BoldItalic.woff") format("woff");
+}
+@font-face {
+  font-family: "Supply Mono";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/__l5e/assets-v1/4876d9d7-b4cf-4e9b-9fb4-31e535108fc9/SupplyMono-Regular.otf") format("opentype");
+}
+@font-face {
+  font-family: "Supply Mono";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("/__l5e/assets-v1/a2594bec-6587-4338-bf0e-5a281dddefc8/SupplyMono-Medium.otf") format("opentype");
+}
+@font-face {
+  font-family: "Supply Mono";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/__l5e/assets-v1/722cbaef-d9f8-484a-b607-b467b198a425/SupplyMono-Bold.otf") format("opentype");
+}
 
 @theme inline {
   --font-sans: "Space Grotesk", "Noto Sans TC", system-ui, sans-serif;
-  --font-mono: "Space Mono", ui-monospace, monospace;
+  --font-mono: "Supply Mono", ui-monospace, monospace;
+  --font-display: "Klarheit Grotesk", "Space Grotesk", system-ui, sans-serif;
 
   --radius-sm: 0px;
   --radius-md: 0px;
