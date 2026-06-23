@@ -56,6 +56,11 @@ export const FEATURE_ICONS: Record<string, string> = {
   "stretch": stretch,
   "natural": natural,
   "natural-fiber": natural,
+  "vegan": vegan,
+  "wind-resistant": windResistant,
+  "windproof": windResistant,
+  "wrinkle-resistant": wrinkleResistant,
+  "wrinkle-free": wrinkleResistant,
 };
 
 export function featureIcon(key: string): string | undefined {
