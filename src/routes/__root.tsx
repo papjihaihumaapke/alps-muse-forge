@@ -94,7 +94,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap",
+        // Brand fonts (per Style Guide p.7–9):
+        //  • Klarheit Grotesk → Space Grotesk (closest free Bauhaus-geometric sans)
+        //  • Noto Sans TC (verbatim — secondary, CJK)
+        //  • PP Supply Mono → Space Mono (industrial, precise)
+        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap",
       },
       { rel: "stylesheet", href: appCss },
     ],
