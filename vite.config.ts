@@ -11,14 +11,12 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
-    // Emit a static SPA shell at dist/client/_shell.html so Netlify / Vercel
-    // can rewrite every unknown path to it (see netlify.toml + vercel.json).
-    // Without this, Nitro tries to prerender "/" and crashes any route whose
-    // SSR pass touches browser-only state.
-    spa: {
-      enabled: true,
-      maskPath: "/",
-      prerender: { outputPath: "/_shell" },
-    },
+    // Disable prerender: the preview server it spins up expects a build
+    // artifact named after the entry (server.js), but the Cloudflare adapter
+    // emits index.mjs, causing every `bun run build:dev` to fail at the
+    // `[prerender] Crawling: /` step. The deployed Worker still SSRs every
+    // route at request time — prerender is a build-time optimization, not a
+    // requirement.
+    prerender: { enabled: false },
   },
 });
