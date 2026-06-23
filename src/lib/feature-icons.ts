@@ -22,6 +22,9 @@ import oekoTex from "@/assets/features/oeko-tex.png";
 import superSoft from "@/assets/features/super-soft.png";
 import stretch from "@/assets/features/stretch.png";
 import natural from "@/assets/features/natural.png";
+import vegan from "@/assets/features/vegan.png";
+import windResistant from "@/assets/features/wind-resistant.png";
+import wrinkleResistant from "@/assets/features/wrinkle-resistant.png";
 
 export const FEATURE_ICONS: Record<string, string> = {
   "multi-style": multiStyle,
@@ -53,6 +56,11 @@ export const FEATURE_ICONS: Record<string, string> = {
   "stretch": stretch,
   "natural": natural,
   "natural-fiber": natural,
+  "vegan": vegan,
+  "wind-resistant": windResistant,
+  "windproof": windResistant,
+  "wrinkle-resistant": wrinkleResistant,
+  "wrinkle-free": wrinkleResistant,
 };
 
 export function featureIcon(key: string): string | undefined {
