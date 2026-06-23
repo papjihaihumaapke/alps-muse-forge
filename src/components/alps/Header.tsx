@@ -9,11 +9,11 @@ import { useAuth } from "@/lib/auth";
 import logoBlack from "@/assets/brand/alps-logo-black.png";
 
 const NAV = [
-  { to: "/innovation", label: "alps innovation" },
-  { to: "/contemporary", label: "alps contemporary" },
-  { to: "/accessories", label: "alps accessories" },
-  { to: "/collaborations", label: "alps collaborations" },
-  { to: "/personal-care", label: "alps vegan skin & personal care" },
+  { to: "/innovation", label: "innovation" },
+  { to: "/contemporary", label: "contemporary" },
+  { to: "/accessories", label: "accessories" },
+  { to: "/collaborations", label: "collaborations" },
+  { to: "/personal-care", label: "personal care" },
   { to: "/my-journey", label: "my journey" },
   { to: "/press", label: "press" },
   { to: "/contact", label: "contact" },
