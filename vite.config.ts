@@ -11,5 +11,14 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
+    // Emit a static SPA shell at dist/client/_shell.html so Netlify / Vercel
+    // can rewrite every unknown path to it (see netlify.toml + vercel.json).
+    // Without this, Nitro tries to prerender "/" and crashes any route whose
+    // SSR pass touches browser-only state.
+    spa: {
+      enabled: true,
+      maskPath: "/",
+      prerender: { outputPath: "/_shell" },
+    },
   },
 });
