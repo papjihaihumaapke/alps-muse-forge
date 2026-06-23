@@ -11,8 +11,8 @@
  */
 
 @theme inline {
-  --font-sans: "Inter", "Noto Sans TC", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Space Grotesk", "Noto Sans TC", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
 
   --radius-sm: 0px;
   --radius-md: 0px;
