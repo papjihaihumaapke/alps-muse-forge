@@ -12,6 +12,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
+import { RouteLoader } from "@/components/alps/RouteLoader";
+import { PageSkeleton } from "@/components/alps/PageSkeleton";
 
 import appCss from "../styles.css?url";
 
@@ -139,6 +141,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <CartProvider>
+          <RouteLoader />
           <Outlet />
           <Toaster />
         </CartProvider>
@@ -146,3 +149,6 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
+// re-export so route files can use it as pendingComponent
+export { PageSkeleton };
