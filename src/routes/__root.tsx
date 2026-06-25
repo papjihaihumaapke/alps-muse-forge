@@ -14,6 +14,8 @@ import { CartProvider } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
 import { RouteLoader } from "@/components/alps/RouteLoader";
 import { PageSkeleton } from "@/components/alps/PageSkeleton";
+import { CenteredSpinner } from "@/components/alps/CenteredSpinner";
+
 
 import appCss from "../styles.css?url";
 
@@ -151,4 +153,5 @@ function RootComponent() {
 }
 
 // re-export so route files can use it as pendingComponent
-export { PageSkeleton };
+export { PageSkeleton, CenteredSpinner };
+
