@@ -47,6 +47,7 @@ export const FEATURE_ICONS: Record<string, string> = {
   "uv-resistant": uvResistant,
   "uv-protection": uvResistant,
   "recycled": recycled,
+  "recycle": recycled,
   "recycled-material": recycled,
   "bluesign": bluesign,
   "bluesign-approved": bluesign,
