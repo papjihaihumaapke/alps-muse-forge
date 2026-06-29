@@ -8,9 +8,11 @@ import {
   PRODUCT_COLORS,
   type AccessoryTag,
   type CategorySlug,
+  type Product,
 } from "@/lib/alps-data";
 import { productImage } from "@/lib/accessory-images";
 import { colorSwatch } from "@/lib/color-swatches";
+import { useDbProductsByCategory, dbProductToCatalog } from "@/lib/products-db";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
@@ -20,9 +22,15 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
 
   const [activeTag, setActiveTag] = useState<"all" | AccessoryTag>("all");
   const [sort, setSort] = useState<SortKey>("default");
+  const { data: dbRows = [] } = useDbProductsByCategory(slug);
 
   const items = useMemo(() => {
-    let list = PRODUCTS.filter((p) => p.category === slug);
+    const staticList: Product[] = PRODUCTS.filter((p) => p.category === slug);
+    const dbList: Product[] = dbRows.map((r) => dbProductToCatalog(r) as Product);
+    const map = new Map<string, Product>();
+    for (const p of staticList) map.set(p.id, p);
+    for (const p of dbList) map.set(p.id, p); // DB wins
+    let list = Array.from(map.values());
     if (slug === "accessories" && activeTag !== "all") {
       list = list.filter((p) => p.tags?.includes(activeTag));
     }
@@ -36,7 +44,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
       default:
         return list;
     }
-  }, [slug, activeTag, sort]);
+  }, [slug, activeTag, sort, dbRows]);
 
   const showTagBar = slug === "accessories";
 
