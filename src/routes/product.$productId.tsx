@@ -37,29 +37,57 @@ export const Route = createFileRoute("/product/$productId")({
 
 function ProductPage() {
   const { productId } = Route.useParams();
-  const product = PRODUCTS.find((p) => p.id === productId);
-  if (!product) throw notFound();
+  const staticProduct = PRODUCTS.find((p) => p.id === productId);
+  const { data: dbRow, isLoading: dbLoading } = useDbProductBySlug(productId);
 
-  const isPersonalCare = product.category === "personal-care";
+  const product = useMemo<Product | undefined>(() => {
+    if (dbRow) return dbProductToCatalog(dbRow) as Product;
+    return staticProduct;
+  }, [dbRow, staticProduct]);
 
-  const [color, setColor] = useState(product.colors[0]);
-  const [size, setSize] = useState(product.sizes[0]);
+  // Wait for DB lookup before throwing notFound (in case it's a DB-only product).
+  if (!product && !dbLoading) throw notFound();
+  if (!product) {
+    return <Shell><div className="p-10 text-center text-foreground/50">loading…</div></Shell>;
+  }
+
+  const dbExtras = product as Product & {
+    description?: string | null;
+    techInfo?: string | null;
+    galleryUrls?: string[];
+    swatches?: Array<{ name: string; hex?: string; swatch_url?: string }>;
+  };
+
+  const isPersonalCare =
+    product.category === "personal-care" || product.category.startsWith("vegan-");
+
+  const [color, setColor] = useState(product.colors[0] ?? "default");
+  const [size, setSize] = useState(product.sizes[0] ?? "one size");
   const [qty, setQty] = useState(1);
   const [openFeature, setOpenFeature] = useState<string | null>(null);
 
-  const gallery = useMemo(
-    () => productGallery(product.id, product.colors),
-    [product.id, product.colors],
-  );
+  const gallery = useMemo(() => {
+    if (dbExtras.galleryUrls && dbExtras.galleryUrls.length) return dbExtras.galleryUrls;
+    return productGallery(product.id, product.colors);
+  }, [product.id, product.colors, dbExtras.galleryUrls]);
+
   const [activeImage, setActiveImage] = useState<string | undefined>(
-    () => productImageForColor(product.id, product.colors[0]) ?? gallery[0],
+    () =>
+      (dbExtras.galleryUrls && dbExtras.galleryUrls[0]) ||
+      productImageForColor(product.id, product.colors[0]) ||
+      gallery[0],
   );
 
   // Sync main image when the selected colour changes.
   useEffect(() => {
+    const dbMatch = dbExtras.swatches?.find((s) => s.name === color);
+    if (dbMatch?.swatch_url) {
+      setActiveImage(dbMatch.swatch_url);
+      return;
+    }
     const next = productImageForColor(product.id, color);
     if (next) setActiveImage(next);
-  }, [color, product.id]);
+  }, [color, product.id, dbExtras.swatches]);
 
   const { add } = useCart();
   const onAdd = () => {
@@ -75,12 +103,23 @@ function ProductPage() {
           {/* LEFT — description */}
           <aside className="order-3 lg:order-1">
             <span className="num text-[11px] tracking-[0.3em] text-primary uppercase">
-              {product.category.replace("-", " ")}
+              {product.category.replace(/-/g, " ")}
             </span>
             <h1 className="text-2xl md:text-3xl font-light mt-2 leading-tight">{product.name}</h1>
-            <p className="num text-base mt-3 text-foreground/80">
+            <p className="num text-base mt-3 text-primary font-medium">
               CAD {product.priceCAD} <span className="text-foreground/40">·</span> HKD {product.priceHKD}
             </p>
+            {dbExtras.description && (
+              <p className="mt-4 text-sm text-foreground/75 leading-relaxed whitespace-pre-line">
+                {dbExtras.description}
+              </p>
+            )}
+            {dbExtras.techInfo && (
+              <div className="mt-4 p-3 border-l-2 border-primary/40 bg-muted/40">
+                <p className="text-[10px] tracking-[0.25em] uppercase text-primary mb-1">technology</p>
+                <p className="text-xs text-foreground/75 leading-relaxed whitespace-pre-line">{dbExtras.techInfo}</p>
+              </div>
+            )}
 
             <div className="mt-6 flex flex-wrap gap-2">
               {product.features.map((fk) => {
