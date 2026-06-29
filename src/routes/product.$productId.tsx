@@ -224,21 +224,23 @@ function ProductPage() {
 
           {/* RIGHT — colour / size / qty / add to bag */}
           <div className="order-2 lg:order-3">
-            {!isPersonalCare && (
+            {!isPersonalCare && product.colors.length > 0 && (
               <div>
                 <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">
                   colour — <span className="text-foreground/90">{color}</span>
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {product.colors.map((c) => {
-                    const sw = colorSwatch(c);
+                    const dbSw = dbExtras.swatches?.find((s) => s.name === c);
+                    const sw = dbSw?.swatch_url ?? colorSwatch(c);
+                    const bg = dbSw?.hex ?? PRODUCT_COLORS[c] ?? "#cccccc";
                     return (
                       <button
                         key={c}
                         onClick={() => setColor(c)}
                         className="h-9 w-9 rounded-full overflow-hidden border-2 flex items-center justify-center transition"
                         style={{
-                          background: sw ? "transparent" : PRODUCT_COLORS[c],
+                          background: sw ? "transparent" : bg,
                           borderColor: color === c ? "var(--brand-red)" : "var(--border)",
                         }}
                         title={c}
