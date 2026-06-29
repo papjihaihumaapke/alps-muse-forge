@@ -98,7 +98,14 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
 
       <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pb-20">
         {items.length === 0 ? (
-          <p className="text-foreground/60 text-sm">no items match this filter.</p>
+          <div className="py-20 text-center">
+            <p className="text-foreground/70 text-sm">
+              no products in <span className="text-primary">{cat.name}</span> yet.
+            </p>
+            <p className="text-foreground/50 text-xs mt-2">
+              products added via the admin panel will appear here.
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-10">
             {items.map((p) => {
