@@ -1,50 +1,59 @@
-# Homepage + branding fixes
+## Goals
 
-Addressing the unresolved items from earlier feedback plus today's notes.
+1. Pull all product info (images, prices, colors, descriptions, tech specs) from your Google Drive folder.
+2. Move products from the static file (`src/lib/alps-data.ts`) into the Lovable Cloud database so the admin panel can truly edit them.
+3. Replace the single "personal care" section with the 5 vegan sub-categories.
+4. Fix missing fabric icons (recycle / vegan / wind-resistant / wrinkle-resistant) and the skincare icon.
+5. Show every product image (7–9 per item) in the product gallery.
+6. Fix the price display — use the color icons from Drive and the prices from the master price sheet.
+7. Admin: list every product, add/edit/delete, and tag each with a season.
 
-## 1. Homepage hero proportions
-- Hero image: reduce to ~50% of current height (heading image was too tall).
-- The right red panel should be the reference height — match hero to that.
-- Below hero: 5 category tiles (innovation / contemporary / accessories / collaborations / personal care) shown **full width** on desktop and mobile, larger thumbnails, equal sizing. Each tile = image + "ALPS / category name" label + "view all" link.
+## Phase 1 — Database schema (this turn)
 
-## 2. Remove "brand film / ALPS fashion shows" video section
-Per the red X in the reference — drop it entirely from the homepage.
+Create tables in Lovable Cloud:
+- `products` (expand the existing one): add `subcategory`, `season` (`spring|summer|fall|winter|all-season`), `tech_info`, `description`, `gallery_urls[]`, `color_swatches` (jsonb: `[{name, hex, swatch_url}]`), `price_cad`, `price_hkd`, `display_order`, `active`.
+- `product_categories` lookup: `slug`, `name`, `parent_slug`, `display_order`. Seeded with existing top-level categories plus the 5 new vegan sub-categories under `personal-care`:
+  - `vegan-skincare`, `vegan-personal-care`, `vegan-makeup`, `vegan-supplement`, `vegan-tech`
+- Storage bucket `product-media` (public) for images uploaded from Drive / admin.
+- RLS: public read for `active=true`; admin-only write (uses existing `has_role(_, 'admin')`).
 
-## 3. Top navigation labels
-Remove the "alps " prefix on every nav item since the ALPS logo is already top-left. Labels become: `innovation`, `contemporary`, `accessories`, `collaborations`, `personal care`, `my journey`, `press`, `contact`.
+## Phase 2 — Drive sync (next turn, after schema approved)
 
-## 4. Personal care icon
-Replace the dull dark-grey bottle icon with the new lighter-grey version (uploaded `image-13.png` / `fd28a122…`). Used in:
-- homepage category tile for "vegan skin & personal care"
-- anywhere else this icon appears
+A one-time admin-triggered server function `syncProductsFromDrive` that:
+- Walks the 5 vegan sub-folders + 4 ALPS apparel/accessories folders.
+- For each product folder: uploads all images to the `product-media` bucket, parses the price `.xls` + `Inventory` PDF, extracts color/swatch references, and upserts a `products` row.
+- Parses the `Properties-features icons 2026` PDFs to confirm feature-key coverage.
+- Idempotent: re-runs update rows in place.
 
-## 5. Page-loading dots
-The route-transition / suspense loading dots should animate in the brand palette: **black, red, grey** (cycling), instead of the default neutral.
+## Phase 3 — Frontend
 
-## 6. Fabric technology icon grid
-Per the Drive folder + reference image:
-- Add the 3 new icons: **wind resistant**, **wrinkle resistant**, plus the updated **vegan** icon (already shown). Total = 24 features.
-- Re-upload / replace all 24 icons from the new Drive set so they are **uniformly sized** (current bluesign + OEKO-TEX render larger than the line-art ones).
-- Tighten label-to-icon spacing so each title clearly belongs to the icon **below** it (not floating between rows).
-- Keep section title red (`TEXTILE SCIENCE` / `Engineered fabric technology` heading style), body copy black. Ignore any blue in the source doc.
+- Replace `PRODUCTS` static reads with `useQuery` against the DB via a public `listProducts` server fn (publishable client, anon SELECT on `active`).
+- `Header` nav: keep apparel categories; under "personal care" add a dropdown for the 5 vegan sub-categories.
+- New routes: `/personal-care/vegan-skincare`, `/vegan-personal-care`, `/vegan-makeup`, `/vegan-supplement`, `/vegan-tech` (reuse `CategoryView`).
+- Product detail: render full `gallery_urls` instead of one image; render `color_swatches` from DB so each product shows its correct swatch.
+- Add the 4 missing fabric icons (recycle, vegan, wind-resistant, wrinkle-resistant) as PNG assets; update skincare icon.
+- Price color: render in `--brand-red` (`text-primary`) on cards + detail page, instead of the current muted grey.
 
-## 7. Typography
-Switch site fonts back to the pair you specified on May 18 (the one I currently have is wrong). **I don't have that font name in context right now — please confirm the exact heading + body font names so I can wire them via `<link>` in the root head and `@theme` in `src/styles.css`.**
+## Phase 4 — Admin
 
-## 8. Features chip area on homepage
-Remove the old inline "features" grid block on the homepage (red X in reference). The full interactive icon grid lives on the Innovation page; on the homepage, just keep the list of feature names in the footer column, and a place on each **product** page showing which features that product has (already wired via the chip popovers on product detail — no change needed there).
+Expand `/admin`:
+- Table of every product (paginated, searchable by name/category/season).
+- Row actions: edit, deactivate, delete.
+- Create modal: name, category + subcategory, season, prices, colors (multi), sizes, features (multi), description, tech_info, gallery uploads (uses storage bucket).
+- Bulk action: re-run Drive sync.
+- Season filter chips so you can quickly see e.g. all "winter" items.
 
----
+## Technical notes
 
-## Files I'll touch
-- `src/components/alps/Header.tsx` — strip "alps " prefix from nav labels
-- `src/routes/index.tsx` + homepage section components — hero sizing, 5-tile category row full-width, remove brand-film + features blocks
-- `src/components/alps/FabricTechnology.tsx` + `src/lib/feature-icons.ts` + `src/lib/alps-data.ts` — add wind/wrinkle resistant, swap icon set, normalise sizing, tighten labels
-- `src/assets/features/*` — replace 24 icon assets from your Drive folder
-- New personal-care bottle icon asset → swap in homepage tile
-- `src/routes/__root.tsx` — add font `<link>` tags (after you confirm font names)
-- `src/styles.css` — register fonts in `@theme`, add brand-coloured loading-dot animation
-- Loading indicator component (router pending UI) — black/red/grey dots
+- Admin writes go through `createServerFn` + `requireSupabaseAuth` + `has_role(_, 'admin')` check.
+- Public reads use a server publishable client to avoid the `JWT got 1 part` admin-client issue on Data API reads.
+- The Drive sync runs as an admin-only `createServerFn`; images are uploaded to Supabase Storage and the public URLs are persisted (so we are not dependent on Drive at runtime).
 
-## One blocker
-**Font names** — please drop the exact font family names (heading + body) from your May 18 message so I can load them correctly. I'll execute everything else as soon as you confirm, or I can proceed with the rest first and patch fonts in a follow-up if you prefer.
+## Open questions before I start coding
+
+I have enough to begin Phase 1 (schema). Two things I'll need from you between phases:
+
+1. **Drive folder access for sync** — the connector is now linked, so this is good.
+2. **Seasons** — confirm the set `spring | summer | fall | winter | all-season` (or you can specify e.g. `SS26 / FW26` instead).
+
+If this matches what you want, approve and I'll start with the schema migration, then move category-by-category through the Drive sync.
