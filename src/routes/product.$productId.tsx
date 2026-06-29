@@ -2,7 +2,7 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Minus, Plus, ChevronDown } from "lucide-react";
 import { Shell } from "@/components/alps/Shell";
-import { PRODUCTS, PRODUCT_COLORS, FEATURES } from "@/lib/alps-data";
+import { PRODUCTS, PRODUCT_COLORS, FEATURES, type Product } from "@/lib/alps-data";
 import {
   productImageForColor,
   productGallery,
@@ -12,6 +12,7 @@ import { featureIcon } from "@/lib/feature-icons";
 import { useCart, buildCartItem } from "@/lib/cart";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
+import { useDbProductBySlug, dbProductToCatalog } from "@/lib/products-db";
 
 export const Route = createFileRoute("/product/$productId")({
   head: ({ params }) => {
