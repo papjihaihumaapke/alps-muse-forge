@@ -9,6 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VeganTechRouteImport } from './routes/vegan-tech'
+import { Route as VeganSupplementRouteImport } from './routes/vegan-supplement'
+import { Route as VeganSkincareRouteImport } from './routes/vegan-skincare'
+import { Route as VeganPersonalCareRouteImport } from './routes/vegan-personal-care'
+import { Route as VeganMakeupRouteImport } from './routes/vegan-makeup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PressRouteImport } from './routes/press'
 import { Route as PersonalCareRouteImport } from './routes/personal-care'
@@ -25,6 +30,31 @@ import { Route as AccessoriesRouteImport } from './routes/accessories'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductProductIdRouteImport } from './routes/product.$productId'
 
+const VeganTechRoute = VeganTechRouteImport.update({
+  id: '/vegan-tech',
+  path: '/vegan-tech',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeganSupplementRoute = VeganSupplementRouteImport.update({
+  id: '/vegan-supplement',
+  path: '/vegan-supplement',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeganSkincareRoute = VeganSkincareRouteImport.update({
+  id: '/vegan-skincare',
+  path: '/vegan-skincare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeganPersonalCareRoute = VeganPersonalCareRouteImport.update({
+  id: '/vegan-personal-care',
+  path: '/vegan-personal-care',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeganMakeupRoute = VeganMakeupRouteImport.update({
+  id: '/vegan-makeup',
+  path: '/vegan-makeup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -116,6 +146,11 @@ export interface FileRoutesByFullPath {
   '/personal-care': typeof PersonalCareRoute
   '/press': typeof PressRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/vegan-makeup': typeof VeganMakeupRoute
+  '/vegan-personal-care': typeof VeganPersonalCareRoute
+  '/vegan-skincare': typeof VeganSkincareRoute
+  '/vegan-supplement': typeof VeganSupplementRoute
+  '/vegan-tech': typeof VeganTechRoute
   '/product/$productId': typeof ProductProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -133,6 +168,11 @@ export interface FileRoutesByTo {
   '/personal-care': typeof PersonalCareRoute
   '/press': typeof PressRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/vegan-makeup': typeof VeganMakeupRoute
+  '/vegan-personal-care': typeof VeganPersonalCareRoute
+  '/vegan-skincare': typeof VeganSkincareRoute
+  '/vegan-supplement': typeof VeganSupplementRoute
+  '/vegan-tech': typeof VeganTechRoute
   '/product/$productId': typeof ProductProductIdRoute
 }
 export interface FileRoutesById {
@@ -151,6 +191,11 @@ export interface FileRoutesById {
   '/personal-care': typeof PersonalCareRoute
   '/press': typeof PressRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/vegan-makeup': typeof VeganMakeupRoute
+  '/vegan-personal-care': typeof VeganPersonalCareRoute
+  '/vegan-skincare': typeof VeganSkincareRoute
+  '/vegan-supplement': typeof VeganSupplementRoute
+  '/vegan-tech': typeof VeganTechRoute
   '/product/$productId': typeof ProductProductIdRoute
 }
 export interface FileRouteTypes {
@@ -170,6 +215,11 @@ export interface FileRouteTypes {
     | '/personal-care'
     | '/press'
     | '/sitemap.xml'
+    | '/vegan-makeup'
+    | '/vegan-personal-care'
+    | '/vegan-skincare'
+    | '/vegan-supplement'
+    | '/vegan-tech'
     | '/product/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -187,6 +237,11 @@ export interface FileRouteTypes {
     | '/personal-care'
     | '/press'
     | '/sitemap.xml'
+    | '/vegan-makeup'
+    | '/vegan-personal-care'
+    | '/vegan-skincare'
+    | '/vegan-supplement'
+    | '/vegan-tech'
     | '/product/$productId'
   id:
     | '__root__'
@@ -204,6 +259,11 @@ export interface FileRouteTypes {
     | '/personal-care'
     | '/press'
     | '/sitemap.xml'
+    | '/vegan-makeup'
+    | '/vegan-personal-care'
+    | '/vegan-skincare'
+    | '/vegan-supplement'
+    | '/vegan-tech'
     | '/product/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -222,11 +282,51 @@ export interface RootRouteChildren {
   PersonalCareRoute: typeof PersonalCareRoute
   PressRoute: typeof PressRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  VeganMakeupRoute: typeof VeganMakeupRoute
+  VeganPersonalCareRoute: typeof VeganPersonalCareRoute
+  VeganSkincareRoute: typeof VeganSkincareRoute
+  VeganSupplementRoute: typeof VeganSupplementRoute
+  VeganTechRoute: typeof VeganTechRoute
   ProductProductIdRoute: typeof ProductProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vegan-tech': {
+      id: '/vegan-tech'
+      path: '/vegan-tech'
+      fullPath: '/vegan-tech'
+      preLoaderRoute: typeof VeganTechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vegan-supplement': {
+      id: '/vegan-supplement'
+      path: '/vegan-supplement'
+      fullPath: '/vegan-supplement'
+      preLoaderRoute: typeof VeganSupplementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vegan-skincare': {
+      id: '/vegan-skincare'
+      path: '/vegan-skincare'
+      fullPath: '/vegan-skincare'
+      preLoaderRoute: typeof VeganSkincareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vegan-personal-care': {
+      id: '/vegan-personal-care'
+      path: '/vegan-personal-care'
+      fullPath: '/vegan-personal-care'
+      preLoaderRoute: typeof VeganPersonalCareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vegan-makeup': {
+      id: '/vegan-makeup'
+      path: '/vegan-makeup'
+      fullPath: '/vegan-makeup'
+      preLoaderRoute: typeof VeganMakeupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -350,6 +450,11 @@ const rootRouteChildren: RootRouteChildren = {
   PersonalCareRoute: PersonalCareRoute,
   PressRoute: PressRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  VeganMakeupRoute: VeganMakeupRoute,
+  VeganPersonalCareRoute: VeganPersonalCareRoute,
+  VeganSkincareRoute: VeganSkincareRoute,
+  VeganSupplementRoute: VeganSupplementRoute,
+  VeganTechRoute: VeganTechRoute,
   ProductProductIdRoute: ProductProductIdRoute,
 }
 export const routeTree = rootRouteImport

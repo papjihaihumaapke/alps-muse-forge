@@ -19,6 +19,14 @@ const NAV = [
   { to: "/contact", label: "contact" },
 ] as const;
 
+const VEGAN_SUBNAV = [
+  { to: "/vegan-skincare", label: "vegan skincare" },
+  { to: "/vegan-personal-care", label: "vegan personal care" },
+  { to: "/vegan-makeup", label: "vegan makeup" },
+  { to: "/vegan-supplement", label: "vegan supplement" },
+  { to: "/vegan-tech", label: "vegan skin & personal care technology" },
+] as const;
+
 export function Header() {
   const [open, setOpen] = useState(false);
   const { count, currency, setCurrency } = useCart();
