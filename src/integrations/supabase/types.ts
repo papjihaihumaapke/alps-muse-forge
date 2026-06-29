@@ -195,18 +195,24 @@ export type Database = {
       }
       products: {
         Row: {
+          care_instructions: string | null
           category: string
           color_swatches: Json
           colors: string[]
+          composition: string | null
           created_at: string
           description: string | null
+          design_features: string | null
           display_order: number
           features: string[]
           gallery_urls: string[]
+          hashtags: string[]
           hidden: boolean
           id: string
           image_url: string | null
           name: string
+          package_size: string | null
+          package_weight: string | null
           price_cad: number
           price_hkd: number
           season: Database["public"]["Enums"]["product_season"]
@@ -219,18 +225,24 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          care_instructions?: string | null
           category: string
           color_swatches?: Json
           colors?: string[]
+          composition?: string | null
           created_at?: string
           description?: string | null
+          design_features?: string | null
           display_order?: number
           features?: string[]
           gallery_urls?: string[]
+          hashtags?: string[]
           hidden?: boolean
           id?: string
           image_url?: string | null
           name: string
+          package_size?: string | null
+          package_weight?: string | null
           price_cad?: number
           price_hkd?: number
           season?: Database["public"]["Enums"]["product_season"]
@@ -243,18 +255,24 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          care_instructions?: string | null
           category?: string
           color_swatches?: Json
           colors?: string[]
+          composition?: string | null
           created_at?: string
           description?: string | null
+          design_features?: string | null
           display_order?: number
           features?: string[]
           gallery_urls?: string[]
+          hashtags?: string[]
           hidden?: boolean
           id?: string
           image_url?: string | null
           name?: string
+          package_size?: string | null
+          package_weight?: string | null
           price_cad?: number
           price_hkd?: number
           season?: Database["public"]["Enums"]["product_season"]
