@@ -155,32 +155,69 @@ function AdminsTab() {
 }
 
 /* ----------------- PRODUCTS ----------------- */
+type Swatch = { name: string; hex?: string; swatch_url?: string };
 type Product = {
   id?: string; slug: string; name: string; category: string;
-  description: string | null; price_cad: number; price_hkd: number;
+  subcategory: string | null;
+  description: string | null;
+  tech_info: string | null;
+  price_cad: number; price_hkd: number;
   colors: string[]; sizes: string[]; features: string[]; tags: string[];
   stock: number; hidden: boolean; image_url: string | null;
+  gallery_urls: string[];
+  color_swatches: Swatch[];
+  season: "spring" | "summer" | "fall" | "winter" | "all-season";
+  display_order: number;
 };
 
+const SEASONS: Product["season"][] = ["spring", "summer", "fall", "winter", "all-season"];
+
+const CATEGORY_OPTIONS = [
+  "innovation",
+  "contemporary",
+  "accessories",
+  "collaborations",
+  "personal-care",
+  "vegan-skincare",
+  "vegan-personal-care",
+  "vegan-makeup",
+  "vegan-supplement",
+  "vegan-tech",
+];
+
 const blankProduct: Product = {
-  slug: "", name: "", category: "innovation", description: "",
+  slug: "", name: "", category: "vegan-skincare",
+  subcategory: "", description: "", tech_info: "",
   price_cad: 0, price_hkd: 0, colors: [], sizes: [], features: [], tags: [],
   stock: 0, hidden: false, image_url: "",
+  gallery_urls: [], color_swatches: [], season: "all-season", display_order: 0,
 };
 
 function ProductsTab() {
   const [rows, setRows] = useState<Product[]>([]);
   const [editing, setEditing] = useState<Product | null>(null);
+  const [filterCat, setFilterCat] = useState("");
+  const [filterSeason, setFilterSeason] = useState("");
+  const [search, setSearch] = useState("");
 
   const load = async () => {
-    const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
-    setRows((data ?? []) as Product[]);
+    const { data } = await supabase.from("products").select("*").order("category").order("display_order");
+    setRows((data ?? []) as unknown as Product[]);
   };
   useEffect(() => { load(); }, []);
 
+  const filtered = rows.filter((p) => {
+    if (filterCat && p.category !== filterCat) return false;
+    if (filterSeason && p.season !== filterSeason) return false;
+    if (search && !`${p.name} ${p.slug}`.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
   const save = async () => {
     if (!editing) return;
-    const payload = { ...editing };
+    const payload: any = { ...editing };
+    payload.color_swatches = payload.color_swatches ?? [];
+    payload.gallery_urls = payload.gallery_urls ?? [];
     const { error } = payload.id
       ? await supabase.from("products").update(payload).eq("id", payload.id)
       : await supabase.from("products").insert(payload);
@@ -228,28 +265,53 @@ function ProductsTab() {
 
   return (
     <div className="py-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg">{rows.length} products in database · {PRODUCTS.length} in catalog</h2>
+      <div className="flex justify-between items-center flex-wrap gap-3">
+        <h2 className="text-lg">{rows.length} products in database · {PRODUCTS.length} in static catalog</h2>
         <div className="flex gap-2">
           <Button variant="outline" onClick={syncCatalog} disabled={syncing}>
-            {syncing ? "Syncing…" : "Sync catalog → DB"}
+            {syncing ? "Syncing…" : "Sync static catalog → DB"}
           </Button>
           <Button onClick={() => setEditing({ ...blankProduct })}>+ New Product</Button>
         </div>
+      </div>
+
+      <div className="flex flex-wrap gap-3 items-end">
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">Search</Label>
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="name or slug" className="w-64" />
+        </div>
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">Category</Label>
+          <select className="h-9 border border-input bg-background px-3 text-sm" value={filterCat} onChange={(e) => setFilterCat(e.target.value)}>
+            <option value="">all</option>
+            {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">Season</Label>
+          <select className="h-9 border border-input bg-background px-3 text-sm" value={filterSeason} onChange={(e) => setFilterSeason(e.target.value)}>
+            <option value="">all</option>
+            {SEASONS.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div className="text-xs text-muted-foreground ml-auto">{filtered.length} shown</div>
       </div>
 
       {editing && <ProductEditor product={editing} onChange={setEditing} onSave={save} onCancel={() => setEditing(null)} />}
 
       <table className="w-full text-sm border-t border-border">
         <thead><tr className="text-left text-muted-foreground">
-          <th className="py-2">Slug</th><th>Name</th><th>Category</th><th>Stock</th><th>CAD</th><th>HKD</th><th>Hidden</th><th></th>
+          <th className="py-2">Slug</th><th>Name</th><th>Category</th><th>Season</th><th>HKD</th><th>Imgs</th><th>Hidden</th><th></th>
         </tr></thead>
         <tbody>
-          {rows.map((p) => (
+          {filtered.map((p) => (
             <tr key={p.id} className="border-t border-border">
               <td className="py-2 font-mono text-xs">{p.slug}</td>
-              <td>{p.name}</td><td>{p.category}</td><td className="num">{p.stock}</td>
-              <td className="num">{p.price_cad}</td><td className="num">{p.price_hkd}</td>
+              <td>{p.name}</td>
+              <td className="text-xs">{p.category}{p.subcategory ? ` / ${p.subcategory}` : ""}</td>
+              <td className="text-xs">{p.season}</td>
+              <td className="num">{p.price_hkd}</td>
+              <td className="num text-xs">{(p.gallery_urls ?? []).length || (p.image_url ? 1 : 0)}</td>
               <td>{p.hidden ? "yes" : ""}</td>
               <td className="text-right">
                 <button onClick={() => setEditing(p)} className="link-red mr-3">edit</button>
@@ -263,11 +325,58 @@ function ProductsTab() {
   );
 }
 
+async function uploadProductImage(file: File, slug: string): Promise<string | null> {
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const path = `${slug || "untitled"}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await supabase.storage.from("product-media").upload(path, file, { upsert: false });
+  if (error) { toast.error(error.message); return null; }
+  const { data } = supabase.storage.from("product-media").getPublicUrl(path);
+  return data.publicUrl;
+}
+
 function ProductEditor({ product, onChange, onSave, onCancel }:{
   product: Product; onChange: (p: Product) => void; onSave: () => void; onCancel: () => void;
 }) {
   const set = (k: keyof Product, v: any) => onChange({ ...product, [k]: v });
   const arr = (s: string) => s.split(",").map(x => x.trim()).filter(Boolean);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    const urls: string[] = [];
+    for (const f of Array.from(files)) {
+      const u = await uploadProductImage(f, product.slug);
+      if (u) urls.push(u);
+    }
+    setUploading(false);
+    if (urls.length) {
+      const next = [...(product.gallery_urls ?? []), ...urls];
+      onChange({ ...product, gallery_urls: next, image_url: product.image_url || urls[0] });
+      toast.success(`Uploaded ${urls.length} image${urls.length > 1 ? "s" : ""}`);
+    }
+  };
+
+  const removeGalleryUrl = (url: string) => {
+    set("gallery_urls", (product.gallery_urls ?? []).filter((u) => u !== url));
+  };
+
+  const swatchUpload = async (idx: number, file: File) => {
+    const u = await uploadProductImage(file, `${product.slug}-swatches`);
+    if (!u) return;
+    const next = [...product.color_swatches];
+    next[idx] = { ...next[idx], swatch_url: u };
+    set("color_swatches", next);
+  };
+
+  const ensureSwatchRows = () => {
+    const names = product.colors;
+    const next: Swatch[] = names.map((n) => {
+      const existing = product.color_swatches?.find((s) => s.name === n);
+      return existing ?? { name: n };
+    });
+    set("color_swatches", next);
+  };
 
   return (
     <div className="border border-border p-6 bg-card space-y-4">
@@ -277,14 +386,20 @@ function ProductEditor({ product, onChange, onSave, onCancel }:{
         <Field label="Name"><Input value={product.name} onChange={e => set("name", e.target.value)} /></Field>
         <Field label="Category">
           <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={product.category} onChange={e => set("category", e.target.value)}>
-            <option value="innovation">innovation</option>
-            <option value="contemporary">contemporary</option>
-            <option value="accessories">accessories</option>
-            <option value="collaborations">collaborations</option>
-            <option value="personal-care">personal-care</option>
+            {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </Field>
-        <Field label="Image URL"><Input value={product.image_url ?? ""} onChange={e => set("image_url", e.target.value)} /></Field>
+        <Field label="Subcategory (free text)">
+          <Input value={product.subcategory ?? ""} onChange={e => set("subcategory", e.target.value)} placeholder="e.g. botalab" />
+        </Field>
+        <Field label="Season">
+          <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={product.season} onChange={e => set("season", e.target.value as Product["season"])}>
+            {SEASONS.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </Field>
+        <Field label="Display order">
+          <Input type="number" value={product.display_order} onChange={e => set("display_order", Number(e.target.value))} />
+        </Field>
         <Field label="Price CAD"><Input type="number" value={product.price_cad} onChange={e => set("price_cad", Number(e.target.value))} /></Field>
         <Field label="Price HKD"><Input type="number" value={product.price_hkd} onChange={e => set("price_hkd", Number(e.target.value))} /></Field>
         <Field label="Stock"><Input type="number" value={product.stock} onChange={e => set("stock", Number(e.target.value))} /></Field>
@@ -297,6 +412,83 @@ function ProductEditor({ product, onChange, onSave, onCancel }:{
         <Field label="Tags (comma-sep)"><Input value={product.tags.join(", ")} onChange={e => set("tags", arr(e.target.value))} /></Field>
       </div>
       <Field label="Description"><Textarea rows={4} value={product.description ?? ""} onChange={e => set("description", e.target.value)} /></Field>
+      <Field label="Technology / tech info (shown highlighted under product)">
+        <Textarea rows={3} value={product.tech_info ?? ""} onChange={e => set("tech_info", e.target.value)} />
+      </Field>
+
+      {/* GALLERY */}
+      <div className="border-t border-border pt-4">
+        <Label className="text-xs text-muted-foreground mb-2 block">Product images (gallery — recommend 7–9)</Label>
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={(e) => handleUpload(e.target.files)}
+          className="text-xs"
+        />
+        {uploading && <p className="text-xs text-muted-foreground mt-2">Uploading…</p>}
+        {(product.gallery_urls ?? []).length > 0 && (
+          <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-3">
+            {product.gallery_urls.map((url) => (
+              <div key={url} className="relative group aspect-square border border-border">
+                <img src={url} alt="" className="h-full w-full object-cover" />
+                <button
+                  onClick={() => removeGalleryUrl(url)}
+                  className="absolute top-1 right-1 bg-background/90 text-[10px] px-1.5 py-0.5 opacity-0 group-hover:opacity-100"
+                >
+                  remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* COLOR SWATCHES */}
+      <div className="border-t border-border pt-4">
+        <div className="flex items-center justify-between mb-2">
+          <Label className="text-xs text-muted-foreground">Color swatches</Label>
+          <Button variant="outline" size="sm" onClick={ensureSwatchRows}>sync from colours</Button>
+        </div>
+        <div className="space-y-2">
+          {(product.color_swatches ?? []).map((s, i) => (
+            <div key={i} className="flex items-center gap-2 text-xs">
+              <Input
+                className="w-32"
+                value={s.name}
+                onChange={(e) => {
+                  const next = [...product.color_swatches];
+                  next[i] = { ...next[i], name: e.target.value };
+                  set("color_swatches", next);
+                }}
+                placeholder="name"
+              />
+              <Input
+                className="w-28"
+                value={s.hex ?? ""}
+                onChange={(e) => {
+                  const next = [...product.color_swatches];
+                  next[i] = { ...next[i], hex: e.target.value };
+                  set("color_swatches", next);
+                }}
+                placeholder="#hex"
+              />
+              {s.swatch_url && <img src={s.swatch_url} alt="" className="h-8 w-8 rounded-full object-cover border border-border" />}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => e.target.files && e.target.files[0] && swatchUpload(i, e.target.files[0])}
+                className="text-xs"
+              />
+              <button
+                onClick={() => set("color_swatches", product.color_swatches.filter((_, j) => j !== i))}
+                className="link-red"
+              >remove</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="flex gap-3">
         <Button onClick={onSave}>Save</Button>
         <Button variant="outline" onClick={onCancel}>Cancel</Button>
