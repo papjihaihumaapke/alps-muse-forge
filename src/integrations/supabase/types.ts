@@ -163,59 +163,107 @@ export type Database = {
         }
         Relationships: []
       }
+      product_categories: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          name: string
+          parent_slug: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name: string
+          parent_slug?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name?: string
+          parent_slug?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
+          color_swatches: Json
           colors: string[]
           created_at: string
           description: string | null
+          display_order: number
           features: string[]
+          gallery_urls: string[]
           hidden: boolean
           id: string
           image_url: string | null
           name: string
           price_cad: number
           price_hkd: number
+          season: Database["public"]["Enums"]["product_season"]
           sizes: string[]
           slug: string
           stock: number
+          subcategory: string | null
           tags: string[]
+          tech_info: string | null
           updated_at: string
         }
         Insert: {
           category: string
+          color_swatches?: Json
           colors?: string[]
           created_at?: string
           description?: string | null
+          display_order?: number
           features?: string[]
+          gallery_urls?: string[]
           hidden?: boolean
           id?: string
           image_url?: string | null
           name: string
           price_cad?: number
           price_hkd?: number
+          season?: Database["public"]["Enums"]["product_season"]
           sizes?: string[]
           slug: string
           stock?: number
+          subcategory?: string | null
           tags?: string[]
+          tech_info?: string | null
           updated_at?: string
         }
         Update: {
           category?: string
+          color_swatches?: Json
           colors?: string[]
           created_at?: string
           description?: string | null
+          display_order?: number
           features?: string[]
+          gallery_urls?: string[]
           hidden?: boolean
           id?: string
           image_url?: string | null
           name?: string
           price_cad?: number
           price_hkd?: number
+          season?: Database["public"]["Enums"]["product_season"]
           sizes?: string[]
           slug?: string
           stock?: number
+          subcategory?: string | null
           tags?: string[]
+          tech_info?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -325,6 +373,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      product_season: "spring" | "summer" | "fall" | "winter" | "all-season"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -453,6 +502,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      product_season: ["spring", "summer", "fall", "winter", "all-season"],
     },
   },
 } as const

@@ -5,7 +5,12 @@ export type CategorySlug =
   | "contemporary"
   | "accessories"
   | "collaborations"
-  | "personal-care";
+  | "personal-care"
+  | "vegan-skincare"
+  | "vegan-personal-care"
+  | "vegan-makeup"
+  | "vegan-supplement"
+  | "vegan-tech";
 
 export const CATEGORIES: {
   slug: CategorySlug;
@@ -17,6 +22,11 @@ export const CATEGORIES: {
   { slug: "accessories", name: "alps accessories", blurb: "the finishing detail" },
   { slug: "collaborations", name: "alps collaborations", blurb: "designers in dialogue" },
   { slug: "personal-care", name: "alps vegan skin & personal care", blurb: "made to make a difference" },
+  { slug: "vegan-skincare", name: "vegan skincare", blurb: "plant-based daily care" },
+  { slug: "vegan-personal-care", name: "vegan personal care — botalab", blurb: "clean, conscious essentials" },
+  { slug: "vegan-makeup", name: "vegan makeup", blurb: "colour without compromise" },
+  { slug: "vegan-supplement", name: "vegan supplement", blurb: "nourish from within" },
+  { slug: "vegan-tech", name: "vegan skin & personal care technology", blurb: "next-gen beauty tech" },
 ];
 
 export const PRODUCT_COLORS: Record<string, string> = {
