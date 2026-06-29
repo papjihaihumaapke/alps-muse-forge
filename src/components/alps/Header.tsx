@@ -42,16 +42,41 @@ export function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden xl:flex items-center gap-6 text-[12px] tracking-wide">
-          {NAV.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              className="link-red text-foreground/80 hover:text-foreground"
-              activeProps={{ className: "link-red text-foreground" }}
-            >
-              {n.label}
-            </Link>
-          ))}
+          {NAV.map((n) =>
+            n.to === "/personal-care" ? (
+              <div key={n.to} className="relative group">
+                <Link
+                  to={n.to}
+                  className="link-red text-foreground/80 hover:text-foreground"
+                  activeProps={{ className: "link-red text-foreground" }}
+                >
+                  {n.label}
+                </Link>
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity z-50">
+                  <div className="bg-background border border-border shadow-lg min-w-[260px] py-2">
+                    {VEGAN_SUBNAV.map((s) => (
+                      <Link
+                        key={s.to}
+                        to={s.to}
+                        className="block px-4 py-2 text-[12px] text-foreground/80 hover:text-primary hover:bg-muted whitespace-nowrap"
+                      >
+                        {s.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Link
+                key={n.to}
+                to={n.to}
+                className="link-red text-foreground/80 hover:text-foreground"
+                activeProps={{ className: "link-red text-foreground" }}
+              >
+                {n.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         {/* Right icons + mobile menu */}
