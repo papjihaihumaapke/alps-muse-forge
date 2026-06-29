@@ -102,7 +102,9 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-10">
             {items.map((p) => {
-              const img = productImage(p.id);
+              const dbGallery = (p as Product & { galleryUrls?: string[] }).galleryUrls;
+              const swatches = (p as Product & { swatches?: Array<{ name: string; hex?: string; swatch_url?: string }> }).swatches;
+              const img = (dbGallery && dbGallery[0]) || productImage(p.id);
               return (
                 <Link
                   key={p.id}
@@ -128,13 +130,14 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
                     <h3 className="text-[12px] leading-snug text-foreground group-hover:text-primary transition-colors">
                       {p.name}
                     </h3>
-                    <p className="num text-[11px] text-foreground/50 mt-1.5">
+                    <p className="num text-[12px] text-primary mt-1.5 font-medium">
                       ${p.priceHKD.toFixed(2)}
                     </p>
                     {p.colors.length > 1 && (
                       <div className="flex gap-1 justify-center mt-2">
                         {p.colors.slice(0, 5).map((c) => {
-                          const sw = colorSwatch(c);
+                          const dbSw = swatches?.find((s) => s.name === c);
+                          const sw = dbSw?.swatch_url ?? colorSwatch(c);
                           return sw ? (
                             <img
                               key={c}
@@ -148,7 +151,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
                               key={c}
                               title={c}
                               className="h-2 w-2 rounded-full border border-border/60"
-                              style={{ background: PRODUCT_COLORS[c] }}
+                              style={{ background: dbSw?.hex ?? PRODUCT_COLORS[c] }}
                             />
                           );
                         })}
