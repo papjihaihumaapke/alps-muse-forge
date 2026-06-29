@@ -135,15 +135,30 @@ export function Header() {
                 {/* Mobile nav links */}
                 <nav className="flex flex-col px-6 py-8 gap-1">
                   {NAV.map((n) => (
-                    <Link
-                      key={n.to}
-                      to={n.to}
-                      onClick={() => setOpen(false)}
-                      className="text-[14px] tracking-wide py-3 border-b border-border text-foreground/80 hover:text-foreground hover:pl-2 transition-all"
-                      activeProps={{ className: "text-[14px] tracking-wide py-3 border-b border-border text-foreground pl-2" }}
-                    >
-                      {n.label}
-                    </Link>
+                    <div key={n.to}>
+                      <Link
+                        to={n.to}
+                        onClick={() => setOpen(false)}
+                        className="block text-[14px] tracking-wide py-3 border-b border-border text-foreground/80 hover:text-foreground hover:pl-2 transition-all"
+                        activeProps={{ className: "block text-[14px] tracking-wide py-3 border-b border-border text-foreground pl-2" }}
+                      >
+                        {n.label}
+                      </Link>
+                      {n.to === "/personal-care" && (
+                        <div className="pl-4 border-b border-border">
+                          {VEGAN_SUBNAV.map((s) => (
+                            <Link
+                              key={s.to}
+                              to={s.to}
+                              onClick={() => setOpen(false)}
+                              className="block text-[12px] py-2 text-foreground/60 hover:text-primary"
+                            >
+                              {s.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </nav>
 
