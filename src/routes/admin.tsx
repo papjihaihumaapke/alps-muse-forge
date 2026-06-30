@@ -15,7 +15,9 @@ import { listAdmins, grantAdminByEmail, revokeAdmin } from "@/lib/admin.function
 import { PRODUCTS, FEATURES, PRODUCT_COLORS } from "@/lib/alps-data";
 import { productImage } from "@/lib/accessory-images";
 import { featureIcon } from "@/lib/feature-icons";
-import { ChevronDown, ChevronRight, X, Plus, Image as ImageIcon } from "lucide-react";
+import { ChevronDown, ChevronRight, X, Plus, Image as ImageIcon, Palette } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { SWATCH_LIBRARY, type SwatchGroup } from "@/lib/color-swatches";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -526,6 +528,13 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                     {s.swatch_url
                       ? <img src={s.swatch_url} alt="" className="h-10 w-10 rounded-full object-cover border border-border" />
                       : <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
+                    <SwatchLibraryPicker
+                      onPick={(item) => {
+                        const next = [...product.color_swatches];
+                        next[i] = { ...next[i], name: next[i].name || item.label, swatch_url: item.url };
+                        set("color_swatches", next);
+                      }}
+                    />
                     <input
                       type="file" accept="image/*" className="text-xs"
                       onChange={(e) => e.target.files?.[0] && swatchUpload(i, e.target.files[0])}
@@ -876,3 +885,52 @@ function NewsletterTab() {
     </div>
   );
 }
+
+/* ============================================================
+   SWATCH LIBRARY PICKER
+   ============================================================ */
+function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: string; url: string }) => void }) {
+  const [open, setOpen] = useState(false);
+  const [group, setGroup] = useState<SwatchGroup>("solid");
+  const groups: SwatchGroup[] = ["solid", "bi-color", "little-prince", "prints"];
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button type="button" variant="outline" size="sm" className="h-8 px-2 text-xs gap-1">
+          <Palette className="h-3 w-3" /> library
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[420px] p-3" align="start">
+        <div className="flex gap-1 mb-3 flex-wrap">
+          {groups.map((g) => (
+            <button
+              key={g}
+              type="button"
+              onClick={() => setGroup(g)}
+              className={`text-[10px] uppercase tracking-wider px-2 py-1 border ${
+                group === g ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
+              }`}
+            >
+              {g.replace("-", " ")}
+            </button>
+          ))}
+        </div>
+        <div className="grid grid-cols-6 gap-2 max-h-72 overflow-y-auto">
+          {SWATCH_LIBRARY[group].map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              title={item.label}
+              onClick={() => { onPick(item); setOpen(false); }}
+              className="flex flex-col items-center gap-1 p-1 rounded hover:bg-muted transition"
+            >
+              <img src={item.url} alt={item.label} className="h-12 w-12 rounded-full object-cover border border-border" />
+              <span className="text-[9px] text-center leading-tight text-muted-foreground line-clamp-2">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
