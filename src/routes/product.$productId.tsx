@@ -55,7 +55,7 @@ function ProductPage() {
     description?: string | null;
     techInfo?: string | null;
     galleryUrls?: string[];
-    swatches?: Array<{ name: string; hex?: string; swatch_url?: string }>;
+    swatches?: Array<{ name: string; hex?: string; swatch_url?: string; image_url?: string }>;
   };
 
   const isPersonalCare =
@@ -67,12 +67,19 @@ function ProductPage() {
   const [openFeature, setOpenFeature] = useState<string | null>(null);
 
   const gallery = useMemo(() => {
-    if (dbExtras.galleryUrls && dbExtras.galleryUrls.length) return dbExtras.galleryUrls;
-    return productGallery(product.id, product.colors);
-  }, [product.id, product.colors, dbExtras.galleryUrls]);
+    const seen = new Set<string>();
+    const out: string[] = [];
+    const push = (u?: string) => { if (u && !seen.has(u)) { seen.add(u); out.push(u); } };
+    // per-color product photos first (so each colorway has its own image in the strip)
+    (dbExtras.swatches ?? []).forEach((s) => push(s.image_url));
+    (dbExtras.galleryUrls ?? []).forEach(push);
+    productGallery(product.id, product.colors).forEach(push);
+    return out;
+  }, [product.id, product.colors, dbExtras.galleryUrls, dbExtras.swatches]);
 
   const [activeImage, setActiveImage] = useState<string | undefined>(
     () =>
+      dbExtras.swatches?.find((s) => s.name === (product.colors[0] ?? ""))?.image_url ||
       (dbExtras.galleryUrls && dbExtras.galleryUrls[0]) ||
       productImageForColor(product.id, product.colors[0]) ||
       gallery[0],
@@ -81,10 +88,8 @@ function ProductPage() {
   // Sync main image when the selected colour changes.
   useEffect(() => {
     const dbMatch = dbExtras.swatches?.find((s) => s.name === color);
-    if (dbMatch?.swatch_url) {
-      setActiveImage(dbMatch.swatch_url);
-      return;
-    }
+    if (dbMatch?.image_url) { setActiveImage(dbMatch.image_url); return; }
+    if (dbMatch?.swatch_url) { setActiveImage(dbMatch.swatch_url); return; }
     const next = productImageForColor(product.id, color);
     if (next) setActiveImage(next);
   }, [color, product.id, dbExtras.swatches]);
@@ -229,24 +234,30 @@ function ProductPage() {
                 <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">
                   colour — <span className="text-foreground/90">{color}</span>
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {product.colors.map((c) => {
                     const dbSw = dbExtras.swatches?.find((s) => s.name === c);
                     const sw = dbSw?.swatch_url ?? colorSwatch(c);
                     const bg = dbSw?.hex ?? PRODUCT_COLORS[c] ?? "#cccccc";
+                    const selected = color === c;
                     return (
                       <button
                         key={c}
                         onClick={() => setColor(c)}
-                        className="h-9 w-9 rounded-full overflow-hidden border-2 flex items-center justify-center transition"
-                        style={{
-                          background: sw ? "transparent" : bg,
-                          borderColor: color === c ? "var(--brand-red)" : "var(--border)",
-                        }}
+                        className={`group flex flex-col items-center gap-1.5 transition ${selected ? "" : "opacity-80 hover:opacity-100"}`}
                         title={c}
                         aria-label={c}
+                        aria-pressed={selected}
                       >
-                        {sw && <img src={sw} alt={c} className="h-full w-full object-cover" />}
+                        <span
+                          className={`h-12 w-12 rounded-full overflow-hidden flex items-center justify-center ring-offset-2 ring-offset-background transition ${
+                            selected ? "ring-2 ring-[var(--brand-red)]" : "ring-1 ring-border group-hover:ring-foreground/60"
+                          }`}
+                          style={{ background: bg }}
+                        >
+                          {sw && <img src={sw} alt="" className="h-full w-full object-cover" />}
+                        </span>
+                        <span className={`text-[10px] tracking-wide ${selected ? "text-foreground" : "text-foreground/55"}`}>{c}</span>
                       </button>
                     );
                   })}
