@@ -885,3 +885,52 @@ function NewsletterTab() {
     </div>
   );
 }
+
+/* ============================================================
+   SWATCH LIBRARY PICKER
+   ============================================================ */
+function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: string; url: string }) => void }) {
+  const [open, setOpen] = useState(false);
+  const [group, setGroup] = useState<SwatchGroup>("solid");
+  const groups: SwatchGroup[] = ["solid", "bi-color", "little-prince", "prints"];
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button type="button" variant="outline" size="sm" className="h-8 px-2 text-xs gap-1">
+          <Palette className="h-3 w-3" /> library
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[420px] p-3" align="start">
+        <div className="flex gap-1 mb-3 flex-wrap">
+          {groups.map((g) => (
+            <button
+              key={g}
+              type="button"
+              onClick={() => setGroup(g)}
+              className={`text-[10px] uppercase tracking-wider px-2 py-1 border ${
+                group === g ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
+              }`}
+            >
+              {g.replace("-", " ")}
+            </button>
+          ))}
+        </div>
+        <div className="grid grid-cols-6 gap-2 max-h-72 overflow-y-auto">
+          {SWATCH_LIBRARY[group].map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              title={item.label}
+              onClick={() => { onPick(item); setOpen(false); }}
+              className="flex flex-col items-center gap-1 p-1 rounded hover:bg-muted transition"
+            >
+              <img src={item.url} alt={item.label} className="h-12 w-12 rounded-full object-cover border border-border" />
+              <span className="text-[9px] text-center leading-tight text-muted-foreground line-clamp-2">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
