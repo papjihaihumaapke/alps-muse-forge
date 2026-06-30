@@ -531,7 +531,7 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                     <SwatchLibraryPicker
                       onPick={(item) => {
                         const next = [...product.color_swatches];
-                        next[i] = { ...next[i], name: next[i].name || item.label, swatch_url: item.url };
+                        next[i] = { ...next[i], name: next[i].name || item.key, swatch_url: item.url };
                         set("color_swatches", next);
                       }}
                     />
