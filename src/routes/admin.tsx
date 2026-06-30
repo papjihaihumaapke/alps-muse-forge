@@ -391,6 +391,14 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
     set("color_swatches", next);
   };
 
+  const swatchImageUpload = async (idx: number, file: File) => {
+    const u = await uploadProductImage(file, `${product.slug}-color-${product.color_swatches[idx]?.name || idx}`);
+    if (!u) return;
+    const next = [...product.color_swatches];
+    next[idx] = { ...next[idx], image_url: u };
+    set("color_swatches", next);
+  };
+
   const addColorRow = () => {
     set("color_swatches", [...(product.color_swatches ?? []), { name: "" }]);
   };
