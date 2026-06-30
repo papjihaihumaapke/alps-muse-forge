@@ -234,24 +234,30 @@ function ProductPage() {
                 <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">
                   colour — <span className="text-foreground/90">{color}</span>
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {product.colors.map((c) => {
                     const dbSw = dbExtras.swatches?.find((s) => s.name === c);
                     const sw = dbSw?.swatch_url ?? colorSwatch(c);
                     const bg = dbSw?.hex ?? PRODUCT_COLORS[c] ?? "#cccccc";
+                    const selected = color === c;
                     return (
                       <button
                         key={c}
                         onClick={() => setColor(c)}
-                        className="h-9 w-9 rounded-full overflow-hidden border-2 flex items-center justify-center transition"
-                        style={{
-                          background: sw ? "transparent" : bg,
-                          borderColor: color === c ? "var(--brand-red)" : "var(--border)",
-                        }}
+                        className={`group flex flex-col items-center gap-1.5 transition ${selected ? "" : "opacity-80 hover:opacity-100"}`}
                         title={c}
                         aria-label={c}
+                        aria-pressed={selected}
                       >
-                        {sw && <img src={sw} alt={c} className="h-full w-full object-cover" />}
+                        <span
+                          className={`h-12 w-12 rounded-full overflow-hidden flex items-center justify-center ring-offset-2 ring-offset-background transition ${
+                            selected ? "ring-2 ring-[var(--brand-red)]" : "ring-1 ring-border group-hover:ring-foreground/60"
+                          }`}
+                          style={{ background: bg }}
+                        >
+                          {sw && <img src={sw} alt="" className="h-full w-full object-cover" />}
+                        </span>
+                        <span className={`text-[10px] tracking-wide ${selected ? "text-foreground" : "text-foreground/55"}`}>{c}</span>
                       </button>
                     );
                   })}
