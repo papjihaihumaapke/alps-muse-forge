@@ -528,6 +528,13 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                     {s.swatch_url
                       ? <img src={s.swatch_url} alt="" className="h-10 w-10 rounded-full object-cover border border-border" />
                       : <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
+                    <SwatchLibraryPicker
+                      onPick={(item) => {
+                        const next = [...product.color_swatches];
+                        next[i] = { ...next[i], name: next[i].name || item.label, swatch_url: item.url };
+                        set("color_swatches", next);
+                      }}
+                    />
                     <input
                       type="file" accept="image/*" className="text-xs"
                       onChange={(e) => e.target.files?.[0] && swatchUpload(i, e.target.files[0])}
