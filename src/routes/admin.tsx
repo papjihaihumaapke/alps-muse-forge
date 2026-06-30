@@ -15,7 +15,9 @@ import { listAdmins, grantAdminByEmail, revokeAdmin } from "@/lib/admin.function
 import { PRODUCTS, FEATURES, PRODUCT_COLORS } from "@/lib/alps-data";
 import { productImage } from "@/lib/accessory-images";
 import { featureIcon } from "@/lib/feature-icons";
-import { ChevronDown, ChevronRight, X, Plus, Image as ImageIcon } from "lucide-react";
+import { ChevronDown, ChevronRight, X, Plus, Image as ImageIcon, Palette } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { SWATCH_LIBRARY, type SwatchGroup } from "@/lib/color-swatches";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
