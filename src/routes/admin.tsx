@@ -117,7 +117,7 @@ function AdminPage() {
 /* ============================================================
    PRODUCTS
    ============================================================ */
-type Swatch = { name: string; hex?: string; swatch_url?: string };
+type Swatch = { name: string; hex?: string; swatch_url?: string; image_url?: string };
 type ProductRow = {
   id?: string;
   slug: string;
