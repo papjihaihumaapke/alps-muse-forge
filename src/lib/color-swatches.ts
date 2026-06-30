@@ -96,3 +96,62 @@ export const COLOR_SWATCHES: Record<string, string> = {
 export function colorSwatch(color: string): string | undefined {
   return COLOR_SWATCHES[color.toLowerCase().trim()];
 }
+
+/** Grouped swatch library for the admin picker. */
+export type SwatchGroup = "solid" | "bi-color" | "little-prince" | "prints";
+export const SWATCH_LIBRARY: Record<SwatchGroup, { key: string; label: string; url: string }[]> = {
+  solid: [
+    { key: "black", label: "black", url: black },
+    { key: "navy", label: "navy", url: navy },
+    { key: "red", label: "red", url: red },
+    { key: "white", label: "ivory / white", url: white },
+    { key: "fuchsia", label: "fuchsia", url: fuchsia },
+    { key: "pink", label: "pink", url: pink },
+    { key: "yellow", label: "yellow", url: yellow },
+    { key: "copper", label: "copper / camel", url: copper },
+    { key: "titanium", label: "titanium / grey", url: titanium },
+    { key: "wine", label: "wine", url: wine },
+    { key: "khaki", label: "khaki / olive", url: khaki },
+    { key: "lime", label: "lime / light green", url: lime },
+    { key: "almond", label: "almond / beige", url: almond },
+  ],
+  "bi-color": [
+    { key: "black-red", label: "black / red", url: blackRed },
+    { key: "black-titanium", label: "black / titanium", url: blackTitanium },
+    { key: "navy-titanium", label: "navy / titanium", url: navyTitanium },
+    { key: "black-copper", label: "black / copper", url: blackCopper },
+    { key: "black-fuchsia", label: "black / fuchsia", url: blackFuchsia },
+    { key: "ivory-black", label: "ivory / black", url: ivoryBlack },
+    { key: "ivory-fuchsia", label: "ivory / fuchsia", url: ivoryFuchsia },
+    { key: "ivory-navy", label: "ivory / navy", url: ivoryNavy },
+    { key: "navy-fuchsia", label: "navy / fuchsia", url: navyFuchsia },
+    { key: "check-red-black", label: "check red / black", url: checkRedBlack },
+  ],
+  "little-prince": [
+    { key: "lp-star-night", label: "star midnight", url: lpStarNight },
+    { key: "lp-star-day", label: "star daylight", url: lpStarDay },
+    { key: "lp-star-badge", label: "star badge", url: lpStarBadge },
+    { key: "lp-red-badge", label: "red badge", url: lpRedBadge },
+    { key: "lp-red-navy", label: "red / navy badge", url: lpRedNavy },
+    { key: "lp-rose-day", label: "good day rose", url: lpRoseDay },
+    { key: "lp-rose-night", label: "goodnight rose", url: lpRoseNight },
+  ],
+  prints: [
+    { key: "check-navy", label: "check navy", url: printCheckNavy },
+    { key: "check-black", label: "check black", url: printCheckBlack },
+    { key: "check-red", label: "check red", url: printCheckRed },
+    { key: "bauhinia-khaki", label: "bauhinia khaki", url: printBauhiniaKhaki },
+    { key: "tiger-print", label: "tiger", url: printTiger },
+    { key: "houndstooth-black", label: "houndstooth black", url: printHoundstoothBlack },
+    { key: "houndstooth-camel", label: "houndstooth camel", url: printHoundstoothCamel },
+    { key: "leave-print", label: "leaves", url: printLeave },
+    { key: "flower-grey", label: "flower grey", url: printFlowerGrey },
+    { key: "flower-black", label: "flower black", url: printFlowerBlack },
+    { key: "wave-navy", label: "wave navy", url: printWaveNavy },
+    { key: "wave-red", label: "wave red", url: printWaveRed },
+    { key: "leopard-red", label: "leopard red", url: printLeopardRed },
+    { key: "leopard-navy", label: "leopard navy", url: printLeopardNavy },
+    { key: "leopard-black", label: "leopard black", url: printLeopardBlack },
+  ],
+};
+
