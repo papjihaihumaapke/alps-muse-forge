@@ -548,10 +548,20 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                       onChange={(e) => e.target.files?.[0] && swatchUpload(i, e.target.files[0])}
                     />
                   </div>
-                  <button
-                    onClick={() => set("color_swatches", product.color_swatches.filter((_, j) => j !== i))}
-                    className="link-red text-xs ml-auto"
-                  >remove</button>
+                  <div className="flex items-center gap-2 ml-auto">
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">photo for this color</span>
+                    {s.image_url
+                      ? <img src={s.image_url} alt="" className="h-10 w-10 object-cover border border-border" />
+                      : <div className="h-10 w-10 bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
+                    <input
+                      type="file" accept="image/*" className="text-xs w-44"
+                      onChange={(e) => e.target.files?.[0] && swatchImageUpload(i, e.target.files[0])}
+                    />
+                    <button
+                      onClick={() => set("color_swatches", product.color_swatches.filter((_, j) => j !== i))}
+                      className="link-red text-xs"
+                    >remove</button>
+                  </div>
                 </div>
               ))}
               <Button variant="outline" size="sm" onClick={addColorRow}><Plus className="h-3 w-3 mr-1" />add color</Button>
