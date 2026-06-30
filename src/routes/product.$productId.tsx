@@ -55,7 +55,7 @@ function ProductPage() {
     description?: string | null;
     techInfo?: string | null;
     galleryUrls?: string[];
-    swatches?: Array<{ name: string; hex?: string; swatch_url?: string }>;
+    swatches?: Array<{ name: string; hex?: string; swatch_url?: string; image_url?: string }>;
   };
 
   const isPersonalCare =
@@ -67,12 +67,19 @@ function ProductPage() {
   const [openFeature, setOpenFeature] = useState<string | null>(null);
 
   const gallery = useMemo(() => {
-    if (dbExtras.galleryUrls && dbExtras.galleryUrls.length) return dbExtras.galleryUrls;
-    return productGallery(product.id, product.colors);
-  }, [product.id, product.colors, dbExtras.galleryUrls]);
+    const seen = new Set<string>();
+    const out: string[] = [];
+    const push = (u?: string) => { if (u && !seen.has(u)) { seen.add(u); out.push(u); } };
+    // per-color product photos first (so each colorway has its own image in the strip)
+    (dbExtras.swatches ?? []).forEach((s) => push(s.image_url));
+    (dbExtras.galleryUrls ?? []).forEach(push);
+    productGallery(product.id, product.colors).forEach(push);
+    return out;
+  }, [product.id, product.colors, dbExtras.galleryUrls, dbExtras.swatches]);
 
   const [activeImage, setActiveImage] = useState<string | undefined>(
     () =>
+      dbExtras.swatches?.find((s) => s.name === (product.colors[0] ?? ""))?.image_url ||
       (dbExtras.galleryUrls && dbExtras.galleryUrls[0]) ||
       productImageForColor(product.id, product.colors[0]) ||
       gallery[0],
@@ -81,10 +88,8 @@ function ProductPage() {
   // Sync main image when the selected colour changes.
   useEffect(() => {
     const dbMatch = dbExtras.swatches?.find((s) => s.name === color);
-    if (dbMatch?.swatch_url) {
-      setActiveImage(dbMatch.swatch_url);
-      return;
-    }
+    if (dbMatch?.image_url) { setActiveImage(dbMatch.image_url); return; }
+    if (dbMatch?.swatch_url) { setActiveImage(dbMatch.swatch_url); return; }
     const next = productImageForColor(product.id, color);
     if (next) setActiveImage(next);
   }, [color, product.id, dbExtras.swatches]);
