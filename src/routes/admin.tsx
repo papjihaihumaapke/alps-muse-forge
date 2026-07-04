@@ -96,6 +96,7 @@ function AdminPage() {
         <Tabs defaultValue="products">
           <TabsList>
             <TabsTrigger value="products">products</TabsTrigger>
+            <TabsTrigger value="banners">homepage banners</TabsTrigger>
             <TabsTrigger value="orders">orders</TabsTrigger>
             <TabsTrigger value="customers">customers</TabsTrigger>
             <TabsTrigger value="promos">promo codes</TabsTrigger>
@@ -103,6 +104,7 @@ function AdminPage() {
             <TabsTrigger value="admins">admins</TabsTrigger>
           </TabsList>
           <TabsContent value="products"><ProductsTab /></TabsContent>
+          <TabsContent value="banners"><BannersTab /></TabsContent>
           <TabsContent value="orders"><OrdersTab /></TabsContent>
           <TabsContent value="customers"><CustomersTab /></TabsContent>
           <TabsContent value="promos"><PromosTab /></TabsContent>
