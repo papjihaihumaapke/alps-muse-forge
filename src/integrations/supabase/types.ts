@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      homepage_banners: {
+        Row: {
+          image_url: string | null
+          link_url: string | null
+          slot: string
+          updated_at: string
+        }
+        Insert: {
+          image_url?: string | null
+          link_url?: string | null
+          slot: string
+          updated_at?: string
+        }
+        Update: {
+          image_url?: string | null
+          link_url?: string | null
+          slot?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string
