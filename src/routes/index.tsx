@@ -66,7 +66,47 @@ function Home() {
   );
 }
 
+type Banner = { slot: string; image_url: string | null; link_url: string | null };
+
+function BannerBlock({
+  banner,
+  fallbackClass,
+  fallbackImg,
+  alt,
+  className,
+}: {
+  banner?: Banner;
+  fallbackClass?: string;
+  fallbackImg?: string;
+  alt: string;
+  className: string;
+}) {
+  const inner = banner?.image_url ? (
+    <img src={banner.image_url} alt={alt} className="h-full w-full object-cover" />
+  ) : fallbackImg ? (
+    <img src={fallbackImg} alt={alt} className="h-full w-full object-cover" />
+  ) : null;
+  const wrapper = <div className={`${className} ${fallbackClass ?? ""} overflow-hidden`}>{inner}</div>;
+  if (banner?.link_url) {
+    return banner.link_url.startsWith("http") ? (
+      <a href={banner.link_url} target="_blank" rel="noreferrer" className="block h-full w-full">{wrapper}</a>
+    ) : (
+      <Link to={banner.link_url as any} className="block h-full w-full">{wrapper}</Link>
+    );
+  }
+  return wrapper;
+}
+
 function EditorialHero() {
+  const [banners, setBanners] = useState<Record<string, Banner>>({});
+  useEffect(() => {
+    supabase.from("homepage_banners").select("slot, image_url, link_url").then(({ data }) => {
+      const map: Record<string, Banner> = {};
+      (data ?? []).forEach((r: any) => { map[r.slot] = r as Banner; });
+      setBanners(map);
+    });
+  }, []);
+
   const cards = [
     { slug: "innovation", label: "innovation", img: catInnovation },
     { slug: "contemporary", label: "contemporary", img: catContemporary },
@@ -79,27 +119,50 @@ function EditorialHero() {
     <section className="relative bg-background px-6 lg:px-10 pt-6 pb-32 md:pb-40">
       <div className="mx-auto max-w-[1400px]">
         <div className="grid grid-cols-12 gap-3">
-          {/* Top-left: hero image, half height */}
+          {/* Top-left: hero image (thin) */}
           <div className="col-span-12 lg:col-span-9">
-            <div className="aspect-[16/4] w-full border border-border bg-card overflow-hidden">
-              <img src={hero} alt="ALPS editorial" className="h-full w-full object-cover" />
-            </div>
+            <BannerBlock
+              banner={banners.hero}
+              fallbackImg={hero}
+              alt="ALPS editorial"
+              className="aspect-[32/5] w-full border border-border bg-card"
+            />
           </div>
 
-          {/* Top-right: solid red */}
+          {/* Top-right: red block (thin) */}
           <div className="col-span-6 lg:col-span-3">
-            <div className="aspect-[16/4] lg:aspect-auto lg:h-full w-full bg-primary" />
+            <BannerBlock
+              banner={banners.red}
+              fallbackClass="bg-primary"
+              alt="promo"
+              className="aspect-[16/5] lg:aspect-auto lg:h-full w-full"
+            />
           </div>
 
-          {/* Bottom-left: black band */}
+          {/* Bottom-left: black band (thin) */}
           <div className="col-span-12 lg:col-span-9">
-            <div className="aspect-[16/6] w-full bg-brand-black" />
+            <BannerBlock
+              banner={banners.black}
+              fallbackClass="bg-brand-black"
+              alt="promo"
+              className="aspect-[32/5] w-full"
+            />
           </div>
 
           {/* Bottom-right: two grey blocks stacked */}
           <div className="col-span-12 lg:col-span-3 flex flex-col gap-3">
-            <div className="flex-[3] min-h-[140px] bg-muted" />
-            <div className="flex-[1] min-h-[40px] bg-muted-foreground/40" />
+            <BannerBlock
+              banner={banners.grey_large}
+              fallbackClass="bg-muted"
+              alt="promo"
+              className="flex-[3] min-h-[90px] w-full"
+            />
+            <BannerBlock
+              banner={banners.grey_small}
+              fallbackClass="bg-muted-foreground/40"
+              alt="promo"
+              className="flex-[1] min-h-[30px] w-full"
+            />
           </div>
         </div>
 
@@ -110,13 +173,12 @@ function EditorialHero() {
               {cards.map((c) => (
                 <Link key={c.slug} to={`/${c.slug}`} className="group flex flex-col items-center text-center">
                   <div className="text-[11px] tracking-[0.15em] leading-tight">
-                    <div className="font-medium">ALPS</div>
                     <div className="text-foreground/80">{c.label}</div>
                   </div>
                   <div className="mt-3 w-full aspect-square overflow-hidden bg-muted">
                     <img
                       src={c.img}
-                      alt={`ALPS ${c.label}`}
+                      alt={c.label}
                       loading="lazy"
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
