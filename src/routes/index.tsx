@@ -1,11 +1,12 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Play } from "lucide-react";
 import { Shell } from "@/components/alps/Shell";
+import { supabase } from "@/integrations/supabase/client";
 import hero from "@/assets/backgrounds/bg-01.jpg";
 import textile from "@/assets/backgrounds/hightech-01.jpg";
 import designer from "@/assets/brand/mannequin-01.png";
 import logoBlack from "@/assets/brand/alps-logo-white.png";
-import colorBanner from "@/assets/brand/color-banner.png";
 import catInnovation from "@/assets/categories/innovation.png";
 import catContemporary from "@/assets/categories/contemporary.png";
 import catAccessories from "@/assets/categories/accessories.png";
