@@ -139,13 +139,13 @@ function EditorialHero() {
             />
           </div>
 
-          {/* Bottom-left: black band (thin) */}
+          {/* Bottom-left: black band */}
           <div className="col-span-12 lg:col-span-9">
             <BannerBlock
               banner={banners.black}
               fallbackClass="bg-brand-black"
               alt="promo"
-              className="aspect-[32/5] w-full"
+              className="aspect-[32/8] w-full"
             />
           </div>
 
@@ -155,13 +155,13 @@ function EditorialHero() {
               banner={banners.grey_large}
               fallbackClass="bg-muted"
               alt="promo"
-              className="flex-[3] min-h-[90px] w-full"
+              className="flex-[4] min-h-[130px] w-full"
             />
             <BannerBlock
               banner={banners.grey_small}
               fallbackClass="bg-muted-foreground/40"
               alt="promo"
-              className="flex-[1] min-h-[30px] w-full"
+              className="flex-[2] min-h-[80px] w-full"
             />
           </div>
         </div>
