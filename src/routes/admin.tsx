@@ -96,6 +96,7 @@ function AdminPage() {
         <Tabs defaultValue="products">
           <TabsList>
             <TabsTrigger value="products">products</TabsTrigger>
+            <TabsTrigger value="banners">homepage banners</TabsTrigger>
             <TabsTrigger value="orders">orders</TabsTrigger>
             <TabsTrigger value="customers">customers</TabsTrigger>
             <TabsTrigger value="promos">promo codes</TabsTrigger>
@@ -103,6 +104,7 @@ function AdminPage() {
             <TabsTrigger value="admins">admins</TabsTrigger>
           </TabsList>
           <TabsContent value="products"><ProductsTab /></TabsContent>
+          <TabsContent value="banners"><BannersTab /></TabsContent>
           <TabsContent value="orders"><OrdersTab /></TabsContent>
           <TabsContent value="customers"><CustomersTab /></TabsContent>
           <TabsContent value="promos"><PromosTab /></TabsContent>
@@ -952,3 +954,110 @@ function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: 
   );
 }
 
+
+/* ============================================================
+   HOMEPAGE BANNERS
+   ============================================================ */
+type BannerSlot = "hero" | "red" | "black" | "grey_large" | "grey_small";
+type BannerRow = { slot: BannerSlot; image_url: string | null; link_url: string | null };
+const SLOT_META: { slot: BannerSlot; label: string; hint: string }[] = [
+  { slot: "hero", label: "hero (top-left wide)", hint: "recommended ~1600×300" },
+  { slot: "red", label: "top-right (red block)", hint: "recommended ~400×300" },
+  { slot: "black", label: "bottom-left (black band)", hint: "recommended ~1600×400" },
+  { slot: "grey_large", label: "bottom-right large grey", hint: "recommended ~400×300" },
+  { slot: "grey_small", label: "bottom-right small grey", hint: "recommended ~400×100" },
+];
+
+async function uploadBannerImage(file: File, slot: string): Promise<string | null> {
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const path = `banners/${slot}-${Date.now()}.${ext}`;
+  const { error } = await supabase.storage.from("product-media").upload(path, file, { upsert: true });
+  if (error) { toast.error(error.message); return null; }
+  const { data } = supabase.storage.from("product-media").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+function BannersTab() {
+  const [rows, setRows] = useState<BannerRow[]>([]);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const load = async () => {
+    const { data } = await supabase.from("homepage_banners").select("slot, image_url, link_url");
+    const map = new Map<string, BannerRow>((data ?? []).map((r: any) => [r.slot, r as BannerRow]));
+    setRows(SLOT_META.map((m) => map.get(m.slot) ?? { slot: m.slot, image_url: null, link_url: null }));
+  };
+  useEffect(() => { load(); }, []);
+
+  const save = async (slot: BannerSlot, patch: Partial<BannerRow>) => {
+    const current = rows.find((r) => r.slot === slot) ?? { slot, image_url: null, link_url: null };
+    const next = { ...current, ...patch, slot };
+    const { error } = await supabase.from("homepage_banners")
+      .upsert(next, { onConflict: "slot" });
+    if (error) return toast.error(error.message);
+    toast.success("saved");
+    load();
+  };
+
+  const onUpload = async (slot: BannerSlot, file: File) => {
+    setBusy(slot);
+    const url = await uploadBannerImage(file, slot);
+    setBusy(null);
+    if (url) await save(slot, { image_url: url });
+  };
+
+  return (
+    <div className="py-6 space-y-4">
+      <p className="text-sm text-muted-foreground">
+        upload promotional images for each hero slot on the homepage. leave blank to fall back to the default color block.
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {SLOT_META.map((m) => {
+          const row = rows.find((r) => r.slot === m.slot);
+          return (
+            <div key={m.slot} className="border border-border p-4 bg-card space-y-3">
+              <div>
+                <div className="text-sm font-medium">{m.label}</div>
+                <div className="text-xs text-muted-foreground">{m.hint}</div>
+              </div>
+              <div className="aspect-[4/1] bg-muted border border-border overflow-hidden">
+                {row?.image_url ? (
+                  <img src={row.image_url} alt={m.label} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">no image</div>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <label className="inline-flex items-center gap-2 text-xs border border-input px-3 py-2 cursor-pointer hover:bg-muted">
+                  <ImageIcon className="h-3 w-3" />
+                  {busy === m.slot ? "uploading…" : "upload image"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(m.slot, f); e.currentTarget.value = ""; }}
+                  />
+                </label>
+                {row?.image_url && (
+                  <Button variant="outline" size="sm" onClick={() => save(m.slot, { image_url: null })}>
+                    <X className="h-3 w-3 mr-1" /> remove
+                  </Button>
+                )}
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">link url (optional)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={row?.link_url ?? ""}
+                    placeholder="/innovation or https://…"
+                    onChange={(e) => setRows((prev) => prev.map((r) => r.slot === m.slot ? { ...r, link_url: e.target.value } : r))}
+                  />
+                  <Button size="sm" onClick={() => save(m.slot, { link_url: row?.link_url || null })}>save</Button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
