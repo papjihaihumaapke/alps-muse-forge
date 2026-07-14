@@ -786,27 +786,110 @@ function OrdersTab() {
    ============================================================ */
 function CustomersTab() {
   const [rows, setRows] = useState<any[]>([]);
-  useEffect(() => {
+  const [imported, setImported] = useState<any[]>([]);
+  const [importing, setImporting] = useState(false);
+  const [source, setSource] = useState("");
+  const load = () => {
     supabase.from("profiles").select("*").order("created_at", { ascending: false })
       .then(({ data }) => setRows(data ?? []));
-  }, []);
+    supabase.from("imported_customers").select("*").order("imported_at", { ascending: false })
+      .then(({ data }) => setImported(data ?? []));
+  };
+  useEffect(() => { load(); }, []);
+
+  const importCsv = async (file: File) => {
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      if (lines.length < 1) throw new Error("empty file");
+      const header = lines[0].split(",").map((h) => h.trim().toLowerCase());
+      const idx = (name: string) => header.indexOf(name);
+      const iName = idx("name") >= 0 ? idx("name") : idx("full_name");
+      const iEmail = idx("email");
+      const iPhone = idx("phone") >= 0 ? idx("phone") : idx("mobile");
+      const iNotes = idx("notes");
+      const rows = lines.slice(1).map((line) => {
+        const cells = line.split(",").map((c) => c.trim().replace(/^"|"$/g, ""));
+        return {
+          full_name: iName >= 0 ? cells[iName] : null,
+          email: iEmail >= 0 ? cells[iEmail] : null,
+          phone: iPhone >= 0 ? cells[iPhone] : null,
+          notes: iNotes >= 0 ? cells[iNotes] : null,
+          source: source || file.name,
+        };
+      }).filter((r) => r.full_name || r.email || r.phone);
+      if (rows.length === 0) throw new Error("no valid rows found");
+      const { error } = await supabase.from("imported_customers").insert(rows);
+      if (error) throw error;
+      toast.success(`imported ${rows.length} customers`);
+      load();
+    } catch (e: any) {
+      toast.error(e.message ?? "import failed");
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
-    <div className="py-6">
-      <table className="w-full text-sm">
-        <thead><tr className="text-left text-muted-foreground border-b border-border">
-          <th className="py-2">name</th><th>mobile</th><th>newsletter</th><th>joined</th>
-        </tr></thead>
-        <tbody>
-          {rows.map((p) => (
-            <tr key={p.id} className="border-b border-border">
-              <td className="py-2">{p.full_name || "—"}</td>
-              <td>{p.mobile || "—"}</td>
-              <td>{p.newsletter_opt_in ? "yes" : "no"}</td>
-              <td className="text-xs">{new Date(p.created_at).toLocaleDateString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="py-6 space-y-8">
+      <div className="border border-border bg-card p-4 space-y-3">
+        <h3 className="text-sm font-medium">import previous customers (CSV)</h3>
+        <p className="text-xs text-muted-foreground">
+          headers accepted: <code>name</code> (or <code>full_name</code>), <code>email</code>, <code>phone</code> (or <code>mobile</code>), <code>notes</code>.
+        </p>
+        <div className="flex flex-wrap gap-3 items-end">
+          <div className="flex-1 min-w-[180px]">
+            <Label className="text-xs text-muted-foreground mb-1 block">source label (optional)</Label>
+            <Input value={source} onChange={(e) => setSource(e.target.value)} placeholder="e.g. shopify-2023, mailchimp" />
+          </div>
+          <label className="inline-flex items-center gap-2 text-xs border border-input px-3 py-2 cursor-pointer hover:bg-muted">
+            <Plus className="h-3 w-3" />
+            {importing ? "importing…" : "upload CSV"}
+            <input type="file" accept=".csv,text/csv" className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) importCsv(f); e.currentTarget.value = ""; }} />
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium mb-3">registered accounts ({rows.length})</h3>
+        <table className="w-full text-sm">
+          <thead><tr className="text-left text-muted-foreground border-b border-border">
+            <th className="py-2">name</th><th>mobile</th><th>newsletter</th><th>joined</th>
+          </tr></thead>
+          <tbody>
+            {rows.map((p) => (
+              <tr key={p.id} className="border-b border-border">
+                <td className="py-2">{p.full_name || "—"}</td>
+                <td>{p.mobile || "—"}</td>
+                <td>{p.newsletter_opt_in ? "yes" : "no"}</td>
+                <td className="text-xs">{new Date(p.created_at).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium mb-3">imported customers ({imported.length})</h3>
+        <table className="w-full text-sm">
+          <thead><tr className="text-left text-muted-foreground border-b border-border">
+            <th className="py-2">name</th><th>email</th><th>phone</th><th>source</th><th>imported</th>
+          </tr></thead>
+          <tbody>
+            {imported.map((p) => (
+              <tr key={p.id} className="border-b border-border">
+                <td className="py-2">{p.full_name || "—"}</td>
+                <td>{p.email || "—"}</td>
+                <td>{p.phone || "—"}</td>
+                <td className="text-xs">{p.source || "—"}</td>
+                <td className="text-xs">{new Date(p.imported_at).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
