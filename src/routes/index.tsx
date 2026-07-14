@@ -221,6 +221,31 @@ function EditorialHero() {
 }
 
 
+function BrandVideo() {
+  return (
+    <section className="bg-brand-black text-white py-20 md:py-28">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+        <div className="mb-10 flex items-end justify-between">
+          <h2 className="text-3xl md:text-4xl font-light">ALPS fashion shows</h2>
+        </div>
+        <div className="relative aspect-video bg-zinc-900 overflow-hidden group cursor-pointer">
+          <iframe
+            className="absolute inset-0 h-full w-full"
+            src="https://www.youtube.com/embed/videoseries?list=UUQkObngC_R1tDpdfV5Ebcmg&autoplay=1&mute=1&loop=1"
+            title="ALPS Annie Ling — fashion shows"
+            allow="autoplay; encrypted-media"
+          />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+              <Play className="h-6 w-6 text-white fill-white" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Innovation() {
   return (
     <section className="bg-brand-light py-20 md:py-28">
