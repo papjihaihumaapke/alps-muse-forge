@@ -99,6 +99,7 @@ function AdminPage() {
             <TabsTrigger value="banners">homepage banners</TabsTrigger>
             <TabsTrigger value="orders">orders</TabsTrigger>
             <TabsTrigger value="customers">customers</TabsTrigger>
+            <TabsTrigger value="journey">my journey</TabsTrigger>
             <TabsTrigger value="promos">promo codes</TabsTrigger>
             <TabsTrigger value="newsletter">newsletter</TabsTrigger>
             <TabsTrigger value="admins">admins</TabsTrigger>
@@ -107,6 +108,7 @@ function AdminPage() {
           <TabsContent value="banners"><BannersTab /></TabsContent>
           <TabsContent value="orders"><OrdersTab /></TabsContent>
           <TabsContent value="customers"><CustomersTab /></TabsContent>
+          <TabsContent value="journey"><JourneyTab /></TabsContent>
           <TabsContent value="promos"><PromosTab /></TabsContent>
           <TabsContent value="newsletter"><NewsletterTab /></TabsContent>
           <TabsContent value="admins"><AdminsTab /></TabsContent>
@@ -141,7 +143,10 @@ type ProductRow = {
   tags: string[];
   hashtags: string[];
   stock: number;
+  stock_ca: number;
   hidden: boolean;
+  is_external: boolean;
+  external_url: string | null;
   image_url: string | null;
   gallery_urls: string[];
   color_swatches: Swatch[];
@@ -170,7 +175,9 @@ const blankProduct = (): ProductRow => ({
   composition: "", care_instructions: "", package_size: "", package_weight: "",
   price_cad: 0, price_hkd: 0,
   colors: [], sizes: [], features: [], tags: [], hashtags: [],
-  stock: 0, hidden: false, image_url: "",
+  stock: 0, stock_ca: 0, hidden: false,
+  is_external: false, external_url: "",
+  image_url: "",
   gallery_urls: [], color_swatches: [], season: "all-season", display_order: 0,
 });
 
