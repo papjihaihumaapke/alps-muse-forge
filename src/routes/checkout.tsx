@@ -6,6 +6,9 @@ import { COUNTRIES, CA_PROVINCES, taxRate } from "@/lib/tax";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { createStripeCheckoutSession } from "@/lib/stripe-checkout.functions";
+
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "checkout — ALPS Annie Ling" }, { name: "description", content: "Secure checkout." }] }),
