@@ -25,6 +25,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
   const [activeTag, setActiveTag] = useState<"all" | AccessoryTag>("all");
   const [sort, setSort] = useState<SortKey>("default");
   const { data: dbRows = [] } = useDbProductsByCategory(slug);
+  const { currency } = useCart();
 
   const items = useMemo(() => {
     const staticList: Product[] = PRODUCTS.filter((p) => p.category === slug);
