@@ -30,7 +30,7 @@ export function Footer() {
           <span className="text-foreground/80">unisex</span>
         </Col>
 
-        <Col title="features" span="wide">
+        <Col title="features" className="col-span-2 lg:col-span-2">
           <div className="flex flex-wrap gap-x-3 gap-y-1.5">
             {FEATURES.slice(0, 10).map((f) => (
               <Link
