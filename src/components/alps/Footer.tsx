@@ -115,9 +115,9 @@ export function Footer() {
   );
 }
 
-function Col({ title, children }: { title: string; children: React.ReactNode }) {
+function Col({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={`flex flex-col gap-1.5 ${className}`}>
       <h4 className="text-[12px] tracking-wide text-foreground font-medium mb-2">{title}</h4>
       {children}
     </div>
