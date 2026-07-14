@@ -90,11 +90,12 @@ export function Header() {
           </Link>
 
           <button
-            aria-label="currency"
+            aria-label="region"
+            title="switch region — filters inventory to items stocked in the selected country"
             onClick={() => setCurrency(currency === "HKD" ? "CAD" : "HKD")}
             className="hidden md:flex items-center gap-1 text-[11px] hover:text-primary transition-colors num"
           >
-            <Globe className="h-4 w-4" /> {currency}
+            <Globe className="h-4 w-4" /> {currency === "CAD" ? "CA · CAD" : "HK · HKD"}
           </button>
 
           {isAdmin && (
