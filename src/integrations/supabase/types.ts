@@ -187,9 +187,11 @@ export type Database = {
           id: string
           mobile: string | null
           order_number: string
+          payment_status: string | null
           promo_code: string | null
           shipping: number
           status: string
+          stripe_session_id: string | null
           subtotal: number
           tax: number
           total: number
@@ -206,9 +208,11 @@ export type Database = {
           id?: string
           mobile?: string | null
           order_number?: string
+          payment_status?: string | null
           promo_code?: string | null
           shipping?: number
           status?: string
+          stripe_session_id?: string | null
           subtotal?: number
           tax?: number
           total?: number
@@ -225,9 +229,11 @@ export type Database = {
           id?: string
           mobile?: string | null
           order_number?: string
+          payment_status?: string | null
           promo_code?: string | null
           shipping?: number
           status?: string
+          stripe_session_id?: string | null
           subtotal?: number
           tax?: number
           total?: number
