@@ -155,6 +155,8 @@ function EditorialHero() {
               fallbackImg={hero}
               alt="ALPS editorial"
               className="aspect-[32/5] w-full border border-border bg-card"
+              overlayAlign="left"
+              overlayTheme="light"
             />
           </div>
 
@@ -165,6 +167,8 @@ function EditorialHero() {
               fallbackClass="bg-primary"
               alt="promo"
               className="aspect-[16/5] lg:aspect-auto lg:h-full w-full"
+              overlayAlign="center"
+              overlayTheme="light"
             />
           </div>
 
@@ -175,6 +179,8 @@ function EditorialHero() {
               fallbackClass="bg-brand-black"
               alt="promo"
               className="aspect-[32/8] w-full"
+              overlayAlign="left"
+              overlayTheme="light"
             />
           </div>
 
@@ -185,12 +191,16 @@ function EditorialHero() {
               fallbackClass="bg-muted"
               alt="promo"
               className="flex-[4] min-h-[130px] w-full"
+              overlayAlign="center"
+              overlayTheme="dark"
             />
             <BannerBlock
               banner={banners.grey_small}
               fallbackClass="bg-muted-foreground/40"
               alt="promo"
               className="flex-[2] min-h-[80px] w-full"
+              overlayAlign="center"
+              overlayTheme="dark"
             />
           </div>
         </div>
