@@ -13,6 +13,8 @@ import {
 import { productImage } from "@/lib/accessory-images";
 import { colorSwatch } from "@/lib/color-swatches";
 import { useDbProductsByCategory, dbProductToCatalog } from "@/lib/products-db";
+import { useCart } from "@/lib/cart";
+import { productAvailableInRegion } from "@/lib/region";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
