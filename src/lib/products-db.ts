@@ -21,6 +21,9 @@ export type DbProduct = {
   color_swatches: Array<{ name: string; hex?: string; swatch_url?: string }>;
   image_url: string | null;
   hidden: boolean;
+  is_external?: boolean;
+  external_url?: string | null;
+  stock_ca?: number;
 };
 
 /** Convert a DB product row to the shared Product shape used by CategoryView/ProductPage. */
@@ -30,6 +33,8 @@ export function dbProductToCatalog(d: DbProduct): Product & {
   galleryUrls?: string[];
   swatches?: DbProduct["color_swatches"];
   season?: string;
+  isExternal?: boolean;
+  externalUrl?: string | null;
 } {
   return {
     id: d.slug,
@@ -46,6 +51,8 @@ export function dbProductToCatalog(d: DbProduct): Product & {
     galleryUrls: (d.gallery_urls ?? []).length ? d.gallery_urls : (d.image_url ? [d.image_url] : []),
     swatches: d.color_swatches ?? [],
     season: d.season,
+    isExternal: d.is_external ?? false,
+    externalUrl: d.external_url ?? null,
   };
 }
 

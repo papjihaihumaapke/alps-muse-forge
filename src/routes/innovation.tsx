@@ -13,8 +13,10 @@ export const Route = createFileRoute("/innovation")({
   }),
   component: () => (
     <>
-      <FabricTechnology />
       <CategoryView slug="innovation" />
+      <div className="border-t border-border bg-brand-light">
+        <FabricTechnology />
+      </div>
     </>
   ),
 });

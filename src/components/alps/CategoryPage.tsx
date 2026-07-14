@@ -111,14 +111,10 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
             {items.map((p) => {
               const dbGallery = (p as Product & { galleryUrls?: string[] }).galleryUrls;
               const swatches = (p as Product & { swatches?: Array<{ name: string; hex?: string; swatch_url?: string }> }).swatches;
+              const external = p as Product & { isExternal?: boolean; externalUrl?: string | null };
               const img = (dbGallery && dbGallery[0]) || productImage(p.id);
-              return (
-                <Link
-                  key={p.id}
-                  to="/product/$productId"
-                  params={{ productId: p.id }}
-                  className="group block text-center"
-                >
+              const inner = (
+                <>
                   <div className="aspect-square bg-brand-light flex items-center justify-center overflow-hidden">
                     {img ? (
                       <img
@@ -137,9 +133,13 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
                     <h3 className="text-[12px] leading-snug text-foreground group-hover:text-primary transition-colors">
                       {p.name}
                     </h3>
-                    <p className="num text-[12px] text-primary mt-1.5 font-medium">
-                      ${p.priceHKD.toFixed(2)}
-                    </p>
+                    {external.isExternal && external.externalUrl ? (
+                      <p className="text-[11px] text-primary mt-1.5 uppercase tracking-wider">visit site →</p>
+                    ) : (
+                      <p className="num text-[12px] text-primary mt-1.5 font-medium">
+                        ${p.priceHKD.toFixed(2)}
+                      </p>
+                    )}
                     {p.colors.length > 1 && (
                       <div className="flex gap-1 justify-center mt-2">
                         {p.colors.slice(0, 5).map((c) => {
@@ -165,6 +165,26 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
                       </div>
                     )}
                   </div>
+                </>
+              );
+              return external.isExternal && external.externalUrl ? (
+                <a
+                  key={p.id}
+                  href={external.externalUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group block text-center"
+                >
+                  {inner}
+                </a>
+              ) : (
+                <Link
+                  key={p.id}
+                  to="/product/$productId"
+                  params={{ productId: p.id }}
+                  className="group block text-center"
+                >
+                  {inner}
                 </Link>
               );
             })}

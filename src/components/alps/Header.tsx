@@ -37,11 +37,11 @@ export function Header() {
       <div className="mx-auto flex h-16 items-center justify-between px-6 lg:px-10">
         {/* Logo */}
         <Link to="/" aria-label="ALPS home" className="flex items-center gap-3 shrink-0">
-          <img src={logoBlack} alt="ALPS Annie Ling" className="h-12 md:h-14 w-auto" />
+          <img src={logoBlack} alt="ALPS Annie Ling" className="h-16 md:h-20 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden xl:flex items-center gap-6 text-[12px] tracking-wide">
+        <nav className="hidden xl:flex items-center gap-7 text-[14px] font-semibold tracking-wide">
           {NAV.map((n) =>
             n.to === "/personal-care" ? (
               <div key={n.to} className="relative group">
