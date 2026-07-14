@@ -36,19 +36,6 @@ const CAT_IMAGES: Record<string, string> = {
   "personal-care": catPersonal,
 };
 
-const VIDEOS = [
-  "light fresh self-cleaning short",
-  "winter II muted",
-  "summer II tropical in iceland",
-  "summer III sugar crush",
-  "summer IV mutant",
-  "summer V warrior",
-  "winter V bind",
-  "summer VI one and all",
-  "CABAS 220",
-  "one and all highlight",
-  "one and all parade series",
-];
 
 function Home() {
   return (
