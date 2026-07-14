@@ -16,22 +16,100 @@ export type Database = {
     Tables: {
       homepage_banners: {
         Row: {
+          cta_label: string | null
           image_url: string | null
           link_url: string | null
           slot: string
+          subtitle: string | null
+          title: string | null
           updated_at: string
         }
         Insert: {
+          cta_label?: string | null
           image_url?: string | null
           link_url?: string | null
           slot: string
+          subtitle?: string | null
+          title?: string | null
           updated_at?: string
         }
         Update: {
+          cta_label?: string | null
           image_url?: string | null
           link_url?: string | null
           slot?: string
+          subtitle?: string | null
+          title?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      imported_customers: {
+        Row: {
+          email: string | null
+          full_name: string | null
+          id: string
+          imported_at: string
+          notes: string | null
+          phone: string | null
+          source: string | null
+        }
+        Insert: {
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          imported_at?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+        }
+        Update: {
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          imported_at?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
+      journey_items: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          image_url: string | null
+          kind: string
+          sort_order: number
+          subtitle: string | null
+          title: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          kind: string
+          sort_order?: number
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          kind?: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+          url?: string | null
         }
         Relationships: []
       }
@@ -225,12 +303,14 @@ export type Database = {
           description: string | null
           design_features: string | null
           display_order: number
+          external_url: string | null
           features: string[]
           gallery_urls: string[]
           hashtags: string[]
           hidden: boolean
           id: string
           image_url: string | null
+          is_external: boolean
           name: string
           package_size: string | null
           package_weight: string | null
@@ -240,6 +320,7 @@ export type Database = {
           sizes: string[]
           slug: string
           stock: number
+          stock_ca: number
           subcategory: string | null
           tags: string[]
           tech_info: string | null
@@ -255,12 +336,14 @@ export type Database = {
           description?: string | null
           design_features?: string | null
           display_order?: number
+          external_url?: string | null
           features?: string[]
           gallery_urls?: string[]
           hashtags?: string[]
           hidden?: boolean
           id?: string
           image_url?: string | null
+          is_external?: boolean
           name: string
           package_size?: string | null
           package_weight?: string | null
@@ -270,6 +353,7 @@ export type Database = {
           sizes?: string[]
           slug: string
           stock?: number
+          stock_ca?: number
           subcategory?: string | null
           tags?: string[]
           tech_info?: string | null
@@ -285,12 +369,14 @@ export type Database = {
           description?: string | null
           design_features?: string | null
           display_order?: number
+          external_url?: string | null
           features?: string[]
           gallery_urls?: string[]
           hashtags?: string[]
           hidden?: boolean
           id?: string
           image_url?: string | null
+          is_external?: boolean
           name?: string
           package_size?: string | null
           package_weight?: string | null
@@ -300,6 +386,7 @@ export type Database = {
           sizes?: string[]
           slug?: string
           stock?: number
+          stock_ca?: number
           subcategory?: string | null
           tags?: string[]
           tech_info?: string | null
