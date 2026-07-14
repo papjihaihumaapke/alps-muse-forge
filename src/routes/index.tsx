@@ -63,7 +63,7 @@ function Home() {
   );
 }
 
-type Banner = { slot: string; image_url: string | null; link_url: string | null };
+type Banner = { slot: string; image_url: string | null; link_url: string | null; title?: string | null; subtitle?: string | null; cta_label?: string | null };
 
 function BannerBlock({
   banner,
