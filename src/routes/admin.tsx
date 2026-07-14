@@ -457,9 +457,16 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
               </Field>
               <Field label="price CAD"><Input type="number" value={product.price_cad} onChange={(e) => set("price_cad", Number(e.target.value))} /></Field>
               <Field label="price HKD"><Input type="number" value={product.price_hkd} onChange={(e) => set("price_hkd", Number(e.target.value))} /></Field>
-              <Field label="stock"><Input type="number" value={product.stock} onChange={(e) => set("stock", Number(e.target.value))} /></Field>
+              <Field label="stock (HK)"><Input type="number" value={product.stock} onChange={(e) => set("stock", Number(e.target.value))} /></Field>
+              <Field label="stock (Canada)"><Input type="number" value={product.stock_ca} onChange={(e) => set("stock_ca", Number(e.target.value))} /></Field>
               <Field label="hidden from site">
                 <div className="flex items-center h-9"><Switch checked={product.hidden} onCheckedChange={(v) => set("hidden", v)} /></div>
+              </Field>
+              <Field label="external referral (no cart)">
+                <div className="flex items-center h-9"><Switch checked={product.is_external} onCheckedChange={(v) => set("is_external", v)} /></div>
+              </Field>
+              <Field label="external product url">
+                <Input value={product.external_url ?? ""} onChange={(e) => set("external_url", e.target.value)} placeholder="https://vendor-site.com/product" />
               </Field>
             </div>
           </Section>
