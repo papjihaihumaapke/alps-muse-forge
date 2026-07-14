@@ -150,8 +150,9 @@ function Checkout() {
 
           <Step n="02" title="payment">
             <p className="text-xs text-foreground/60">
-              card processing will be enabled once stripe is connected. for now, your order is recorded as <em>pending</em> and our team will follow up to arrange payment.
+              you'll be redirected to stripe's secure checkout to complete payment. we accept all major cards.
             </p>
+
             <div className="flex gap-2 mt-2">
               <input value={promo} onChange={(e) => setPromo(e.target.value)} placeholder="promo code"
                 className="flex-1 bg-card border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
