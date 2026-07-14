@@ -27,6 +27,12 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
   const { data: dbRows = [] } = useDbProductsByCategory(slug);
   const { currency } = useCart();
 
+  const stockBySlug = useMemo(() => {
+    const m = new Map<string, { stock?: number; stock_ca?: number; is_external?: boolean }>();
+    for (const r of dbRows) m.set(r.slug, { stock: (r as any).stock, stock_ca: r.stock_ca, is_external: r.is_external });
+    return m;
+  }, [dbRows]);
+
   const items = useMemo(() => {
     const staticList: Product[] = PRODUCTS.filter((p) => p.category === slug);
     const dbList: Product[] = dbRows.map((r) => dbProductToCatalog(r) as Product);
@@ -34,6 +40,8 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
     for (const p of staticList) map.set(p.id, p);
     for (const p of dbList) map.set(p.id, p); // DB wins
     let list = Array.from(map.values());
+    // Region gating — hide items only stocked in the other region.
+    list = list.filter((p) => productAvailableInRegion(stockBySlug.get(p.id) ?? {}, currency));
     if (slug === "accessories" && activeTag !== "all") {
       list = list.filter((p) => p.tags?.includes(activeTag));
     }
@@ -47,7 +55,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
       default:
         return list;
     }
-  }, [slug, activeTag, sort, dbRows]);
+  }, [slug, activeTag, sort, dbRows, stockBySlug, currency]);
 
   const showTagBar = slug === "accessories";
 
