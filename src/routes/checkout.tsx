@@ -174,7 +174,7 @@ function Checkout() {
             </div>
           </div>
           <button onClick={placeOrder} disabled={busy} className="w-full mt-6 bg-primary text-primary-foreground py-3 text-xs tracking-[0.2em] uppercase disabled:opacity-50">
-            {busy ? "placing…" : "place order"}
+            {busy ? "redirecting…" : country === "OTHER" ? "request quote" : "pay with stripe"}
           </button>
         </aside>
       </div>
