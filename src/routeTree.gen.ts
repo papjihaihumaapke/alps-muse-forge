@@ -29,6 +29,8 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AccessoriesRouteImport } from './routes/accessories'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductProductIdRouteImport } from './routes/product.$productId'
+import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
+import { Route as CheckoutCancelRouteImport } from './routes/checkout.cancel'
 
 const VeganTechRoute = VeganTechRouteImport.update({
   id: '/vegan-tech',
@@ -130,6 +132,16 @@ const ProductProductIdRoute = ProductProductIdRouteImport.update({
   path: '/product/$productId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => CheckoutRoute,
+} as any)
+const CheckoutCancelRoute = CheckoutCancelRouteImport.update({
+  id: '/cancel',
+  path: '/cancel',
+  getParentRoute: () => CheckoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -137,7 +149,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/cart': typeof CartRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/collaborations': typeof CollaborationsRoute
   '/contact': typeof ContactRoute
   '/contemporary': typeof ContemporaryRoute
@@ -151,6 +163,8 @@ export interface FileRoutesByFullPath {
   '/vegan-skincare': typeof VeganSkincareRoute
   '/vegan-supplement': typeof VeganSupplementRoute
   '/vegan-tech': typeof VeganTechRoute
+  '/checkout/cancel': typeof CheckoutCancelRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/product/$productId': typeof ProductProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -159,7 +173,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/cart': typeof CartRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/collaborations': typeof CollaborationsRoute
   '/contact': typeof ContactRoute
   '/contemporary': typeof ContemporaryRoute
@@ -173,6 +187,8 @@ export interface FileRoutesByTo {
   '/vegan-skincare': typeof VeganSkincareRoute
   '/vegan-supplement': typeof VeganSupplementRoute
   '/vegan-tech': typeof VeganTechRoute
+  '/checkout/cancel': typeof CheckoutCancelRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/product/$productId': typeof ProductProductIdRoute
 }
 export interface FileRoutesById {
@@ -182,7 +198,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/cart': typeof CartRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/collaborations': typeof CollaborationsRoute
   '/contact': typeof ContactRoute
   '/contemporary': typeof ContemporaryRoute
@@ -196,6 +212,8 @@ export interface FileRoutesById {
   '/vegan-skincare': typeof VeganSkincareRoute
   '/vegan-supplement': typeof VeganSupplementRoute
   '/vegan-tech': typeof VeganTechRoute
+  '/checkout/cancel': typeof CheckoutCancelRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/product/$productId': typeof ProductProductIdRoute
 }
 export interface FileRouteTypes {
@@ -220,6 +238,8 @@ export interface FileRouteTypes {
     | '/vegan-skincare'
     | '/vegan-supplement'
     | '/vegan-tech'
+    | '/checkout/cancel'
+    | '/checkout/success'
     | '/product/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -242,6 +262,8 @@ export interface FileRouteTypes {
     | '/vegan-skincare'
     | '/vegan-supplement'
     | '/vegan-tech'
+    | '/checkout/cancel'
+    | '/checkout/success'
     | '/product/$productId'
   id:
     | '__root__'
@@ -264,6 +286,8 @@ export interface FileRouteTypes {
     | '/vegan-skincare'
     | '/vegan-supplement'
     | '/vegan-tech'
+    | '/checkout/cancel'
+    | '/checkout/success'
     | '/product/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -273,7 +297,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
   CartRoute: typeof CartRoute
-  CheckoutRoute: typeof CheckoutRoute
+  CheckoutRoute: typeof CheckoutRouteWithChildren
   CollaborationsRoute: typeof CollaborationsRoute
   ContactRoute: typeof ContactRoute
   ContemporaryRoute: typeof ContemporaryRoute
@@ -432,8 +456,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/success': {
+      id: '/checkout/success'
+      path: '/success'
+      fullPath: '/checkout/success'
+      preLoaderRoute: typeof CheckoutSuccessRouteImport
+      parentRoute: typeof CheckoutRoute
+    }
+    '/checkout/cancel': {
+      id: '/checkout/cancel'
+      path: '/cancel'
+      fullPath: '/checkout/cancel'
+      preLoaderRoute: typeof CheckoutCancelRouteImport
+      parentRoute: typeof CheckoutRoute
+    }
   }
 }
+
+interface CheckoutRouteChildren {
+  CheckoutCancelRoute: typeof CheckoutCancelRoute
+  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
+}
+
+const CheckoutRouteChildren: CheckoutRouteChildren = {
+  CheckoutCancelRoute: CheckoutCancelRoute,
+  CheckoutSuccessRoute: CheckoutSuccessRoute,
+}
+
+const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
+  CheckoutRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -441,7 +493,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
   CartRoute: CartRoute,
-  CheckoutRoute: CheckoutRoute,
+  CheckoutRoute: CheckoutRouteWithChildren,
   CollaborationsRoute: CollaborationsRoute,
   ContactRoute: ContactRoute,
   ContemporaryRoute: ContemporaryRoute,

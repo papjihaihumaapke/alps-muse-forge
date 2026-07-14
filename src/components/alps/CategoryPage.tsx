@@ -13,6 +13,8 @@ import {
 import { productImage } from "@/lib/accessory-images";
 import { colorSwatch } from "@/lib/color-swatches";
 import { useDbProductsByCategory, dbProductToCatalog } from "@/lib/products-db";
+import { useCart } from "@/lib/cart";
+import { productAvailableInRegion } from "@/lib/region";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
@@ -23,6 +25,13 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
   const [activeTag, setActiveTag] = useState<"all" | AccessoryTag>("all");
   const [sort, setSort] = useState<SortKey>("default");
   const { data: dbRows = [] } = useDbProductsByCategory(slug);
+  const { currency } = useCart();
+
+  const stockBySlug = useMemo(() => {
+    const m = new Map<string, { stock?: number; stock_ca?: number; is_external?: boolean }>();
+    for (const r of dbRows) m.set(r.slug, { stock: (r as any).stock, stock_ca: r.stock_ca, is_external: r.is_external });
+    return m;
+  }, [dbRows]);
 
   const items = useMemo(() => {
     const staticList: Product[] = PRODUCTS.filter((p) => p.category === slug);
@@ -31,6 +40,8 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
     for (const p of staticList) map.set(p.id, p);
     for (const p of dbList) map.set(p.id, p); // DB wins
     let list = Array.from(map.values());
+    // Region gating — hide items only stocked in the other region.
+    list = list.filter((p) => productAvailableInRegion(stockBySlug.get(p.id) ?? {}, currency));
     if (slug === "accessories" && activeTag !== "all") {
       list = list.filter((p) => p.tags?.includes(activeTag));
     }
@@ -44,7 +55,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
       default:
         return list;
     }
-  }, [slug, activeTag, sort, dbRows]);
+  }, [slug, activeTag, sort, dbRows, stockBySlug, currency]);
 
   const showTagBar = slug === "accessories";
 
@@ -137,7 +148,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
                       <p className="text-[11px] text-primary mt-1.5 uppercase tracking-wider">visit site →</p>
                     ) : (
                       <p className="num text-[12px] text-primary mt-1.5 font-medium">
-                        ${p.priceHKD.toFixed(2)}
+                        {currency} {(currency === "CAD" ? p.priceCAD : p.priceHKD).toFixed(2)}
                       </p>
                     )}
                     {p.colors.length > 1 && (

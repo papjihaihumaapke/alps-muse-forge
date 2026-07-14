@@ -6,6 +6,9 @@ import { COUNTRIES, CA_PROVINCES, taxRate } from "@/lib/tax";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { createStripeCheckoutSession } from "@/lib/stripe-checkout.functions";
+
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "checkout — ALPS Annie Ling" }, { name: "description", content: "Secure checkout." }] }),
@@ -50,6 +53,8 @@ function Checkout() {
     toast.success(`promo applied: -${formatMoney(d, currency)}`);
   };
 
+  const startCheckout = useServerFn(createStripeCheckoutSession);
+
   const placeOrder = async () => {
     if (items.length === 0) { toast.error("your bag is empty"); return; }
     if (!name || !email || !address) { toast.error("please fill in your details"); return; }
@@ -78,11 +83,42 @@ function Checkout() {
     const { error: e2 } = await supabase.from("order_items").insert(rows);
     if (e2) { setBusy(false); toast.error(e2.message); return; }
 
-    clear();
-    setBusy(false);
-    toast.success("order placed — thank you");
-    navigate({ to: "/account" });
+    if (country === "OTHER") {
+      // international — no card processing, queue for manual quote
+      clear();
+      setBusy(false);
+      toast.success("order recorded — we'll email a shipping quote within 24h");
+      navigate({ to: "/account" });
+      return;
+    }
+
+    try {
+      const origin = window.location.origin;
+      const { url } = await startCheckout({
+        data: {
+          orderId: order.id,
+          currency,
+          items: items.map((it) => ({
+            name: `${it.name}${it.color ? ` — ${it.color}` : ""}${it.size && it.size !== "one size" ? ` (${it.size})` : ""}`,
+            unit_amount: currency === "CAD" ? it.priceCAD : it.priceHKD,
+            qty: it.qty,
+          })),
+          shipping,
+          tax,
+          discount,
+          email,
+          successUrl: `${origin}/checkout/success`,
+          cancelUrl: `${origin}/checkout/cancel`,
+        },
+      });
+      if (!url) throw new Error("no checkout url");
+      window.location.href = url;
+    } catch (e: any) {
+      setBusy(false);
+      toast.error(e?.message ?? "could not start payment");
+    }
   };
+
 
   return (
     <Shell>
@@ -114,8 +150,9 @@ function Checkout() {
 
           <Step n="02" title="payment">
             <p className="text-xs text-foreground/60">
-              card processing will be enabled once stripe is connected. for now, your order is recorded as <em>pending</em> and our team will follow up to arrange payment.
+              you'll be redirected to stripe's secure checkout to complete payment. we accept all major cards.
             </p>
+
             <div className="flex gap-2 mt-2">
               <input value={promo} onChange={(e) => setPromo(e.target.value)} placeholder="promo code"
                 className="flex-1 bg-card border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
@@ -137,7 +174,7 @@ function Checkout() {
             </div>
           </div>
           <button onClick={placeOrder} disabled={busy} className="w-full mt-6 bg-primary text-primary-foreground py-3 text-xs tracking-[0.2em] uppercase disabled:opacity-50">
-            {busy ? "placing…" : "place order"}
+            {busy ? "redirecting…" : country === "OTHER" ? "request quote" : "pay with stripe"}
           </button>
         </aside>
       </div>

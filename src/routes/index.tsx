@@ -63,7 +63,30 @@ function Home() {
   );
 }
 
-type Banner = { slot: string; image_url: string | null; link_url: string | null };
+type Banner = { slot: string; image_url: string | null; link_url: string | null; title?: string | null; subtitle?: string | null; cta_label?: string | null };
+
+function BannerOverlay({ banner, align = "left", theme = "light" }: { banner?: Banner; align?: "left" | "center"; theme?: "light" | "dark" }) {
+  if (!banner || (!banner.title && !banner.subtitle && !banner.cta_label)) return null;
+  const alignCls = align === "center" ? "items-center text-center" : "items-start text-left";
+  const textCls = theme === "dark" ? "text-white" : "text-white";
+  return (
+    <div className={`absolute inset-0 flex flex-col justify-center ${alignCls} p-6 md:p-10 ${textCls} pointer-events-none`}>
+      <div className="max-w-md" style={{ textShadow: "0 1px 20px rgba(0,0,0,0.35)" }}>
+        {banner.title && (
+          <h3 className="text-xl md:text-3xl font-light leading-tight">{banner.title}</h3>
+        )}
+        {banner.subtitle && (
+          <p className="mt-2 text-xs md:text-sm opacity-90">{banner.subtitle}</p>
+        )}
+        {banner.cta_label && (
+          <span className="mt-3 inline-block text-[11px] tracking-[0.25em] uppercase border-b border-white/80 pb-0.5">
+            {banner.cta_label}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function BannerBlock({
   banner,
@@ -71,19 +94,28 @@ function BannerBlock({
   fallbackImg,
   alt,
   className,
+  overlayAlign = "left",
+  overlayTheme = "light",
 }: {
   banner?: Banner;
   fallbackClass?: string;
   fallbackImg?: string;
   alt: string;
   className: string;
+  overlayAlign?: "left" | "center";
+  overlayTheme?: "light" | "dark";
 }) {
-  const inner = banner?.image_url ? (
-    <img src={banner.image_url} alt={alt} className="h-full w-full object-cover" />
-  ) : fallbackImg ? (
-    <img src={fallbackImg} alt={alt} className="h-full w-full object-cover" />
-  ) : null;
-  const wrapper = <div className={`${className} ${fallbackClass ?? ""} overflow-hidden`}>{inner}</div>;
+  const inner = (
+    <>
+      {banner?.image_url ? (
+        <img src={banner.image_url} alt={alt} className="h-full w-full object-cover" />
+      ) : fallbackImg ? (
+        <img src={fallbackImg} alt={alt} className="h-full w-full object-cover" />
+      ) : null}
+      <BannerOverlay banner={banner} align={overlayAlign} theme={overlayTheme} />
+    </>
+  );
+  const wrapper = <div className={`${className} ${fallbackClass ?? ""} overflow-hidden relative`}>{inner}</div>;
   if (banner?.link_url) {
     return banner.link_url.startsWith("http") ? (
       <a href={banner.link_url} target="_blank" rel="noreferrer" className="block h-full w-full">{wrapper}</a>
@@ -97,7 +129,7 @@ function BannerBlock({
 function EditorialHero() {
   const [banners, setBanners] = useState<Record<string, Banner>>({});
   useEffect(() => {
-    supabase.from("homepage_banners").select("slot, image_url, link_url").then(({ data }) => {
+    supabase.from("homepage_banners").select("slot, image_url, link_url, title, subtitle, cta_label").then(({ data }) => {
       const map: Record<string, Banner> = {};
       (data ?? []).forEach((r: any) => { map[r.slot] = r as Banner; });
       setBanners(map);
@@ -123,6 +155,8 @@ function EditorialHero() {
               fallbackImg={hero}
               alt="ALPS editorial"
               className="aspect-[32/5] w-full border border-border bg-card"
+              overlayAlign="left"
+              overlayTheme="light"
             />
           </div>
 
@@ -133,6 +167,8 @@ function EditorialHero() {
               fallbackClass="bg-primary"
               alt="promo"
               className="aspect-[16/5] lg:aspect-auto lg:h-full w-full"
+              overlayAlign="center"
+              overlayTheme="light"
             />
           </div>
 
@@ -143,6 +179,8 @@ function EditorialHero() {
               fallbackClass="bg-brand-black"
               alt="promo"
               className="aspect-[32/8] w-full"
+              overlayAlign="left"
+              overlayTheme="light"
             />
           </div>
 
@@ -153,12 +191,16 @@ function EditorialHero() {
               fallbackClass="bg-muted"
               alt="promo"
               className="flex-[4] min-h-[130px] w-full"
+              overlayAlign="center"
+              overlayTheme="dark"
             />
             <BannerBlock
               banner={banners.grey_small}
               fallbackClass="bg-muted-foreground/40"
               alt="promo"
               className="flex-[2] min-h-[80px] w-full"
+              overlayAlign="center"
+              overlayTheme="dark"
             />
           </div>
         </div>
