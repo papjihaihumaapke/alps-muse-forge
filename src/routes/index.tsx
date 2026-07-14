@@ -41,7 +41,6 @@ function Home() {
   return (
     <Shell>
       <EditorialHero />
-      <BrandVideo />
       <Innovation />
       <BrandIntro />
       <Designer />
