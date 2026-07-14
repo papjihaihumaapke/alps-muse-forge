@@ -1056,7 +1056,7 @@ function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: 
    HOMEPAGE BANNERS
    ============================================================ */
 type BannerSlot = "hero" | "red" | "black" | "grey_large" | "grey_small";
-type BannerRow = { slot: BannerSlot; image_url: string | null; link_url: string | null };
+type BannerRow = { slot: BannerSlot; image_url: string | null; link_url: string | null; title: string | null; subtitle: string | null; cta_label: string | null };
 const SLOT_META: { slot: BannerSlot; label: string; hint: string }[] = [
   { slot: "hero", label: "hero (top-left wide)", hint: "recommended ~1600×300" },
   { slot: "red", label: "top-right (red block)", hint: "recommended ~400×300" },
