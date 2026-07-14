@@ -30,20 +30,32 @@ export function Footer() {
           <span className="text-foreground/80">unisex</span>
         </Col>
 
-        <Col title="features">
-          <div className="grid gap-1.5">
-            {FEATURES.slice(0, 22).map((f) => (
-              <span key={f.key} className="text-foreground/80 truncate">{f.name}</span>
+        <Col title="features" className="col-span-2 lg:col-span-2">
+          <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+            {FEATURES.slice(0, 10).map((f) => (
+              <Link
+                key={f.key}
+                to="/innovation"
+                hash={`feature-${f.key}`}
+                className="text-foreground/80 hover:text-primary leading-snug"
+              >
+                {f.name}
+              </Link>
             ))}
           </div>
+          <Link to="/innovation" className="link-red mt-3 inline-block">view all features →</Link>
         </Col>
 
         <Col title="awards & accolades">
           <div className="grid gap-1.5">
-            {AWARDS.map((a, i) => (
-              <span key={i} className="text-foreground/80 leading-snug">
+            {AWARDS.slice(0, 3).map((a, i) => (
+              <Link
+                key={i}
+                to="/press"
+                className="text-foreground/80 hover:text-primary leading-snug"
+              >
                 <span className="num text-primary mr-2">{a.year}</span>{a.outlet}
-              </span>
+              </Link>
             ))}
             <Link to="/press" className="link-red mt-2 inline-block">view all press →</Link>
           </div>
@@ -103,9 +115,9 @@ export function Footer() {
   );
 }
 
-function Col({ title, children }: { title: string; children: React.ReactNode }) {
+function Col({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={`flex flex-col gap-1.5 ${className}`}>
       <h4 className="text-[12px] tracking-wide text-foreground font-medium mb-2">{title}</h4>
       {children}
     </div>
