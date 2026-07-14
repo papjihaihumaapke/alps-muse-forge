@@ -301,7 +301,7 @@ function Designer() {
             </Link>
           </div>
         </div>
-        <img src={designer} alt="atelier — mannequins" loading="lazy" className="aspect-[5/6] object-cover" />
+        <img src={designer} alt="annie ling — atelier portrait" loading="lazy" className="aspect-[4/5] object-cover" />
       </div>
     </section>
   );
