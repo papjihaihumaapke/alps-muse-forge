@@ -1079,21 +1079,23 @@ function BannersTab() {
   const [busy, setBusy] = useState<string | null>(null);
 
   const load = async () => {
-    const { data } = await supabase.from("homepage_banners").select("slot, image_url, link_url");
+    const { data } = await supabase.from("homepage_banners").select("slot, image_url, link_url, title, subtitle, cta_label");
     const map = new Map<string, BannerRow>((data ?? []).map((r: any) => [r.slot, r as BannerRow]));
-    setRows(SLOT_META.map((m) => map.get(m.slot) ?? { slot: m.slot, image_url: null, link_url: null }));
+    setRows(SLOT_META.map((m) => map.get(m.slot) ?? { slot: m.slot, image_url: null, link_url: null, title: null, subtitle: null, cta_label: null }));
   };
   useEffect(() => { load(); }, []);
 
   const save = async (slot: BannerSlot, patch: Partial<BannerRow>) => {
-    const current = rows.find((r) => r.slot === slot) ?? { slot, image_url: null, link_url: null };
+    const current = rows.find((r) => r.slot === slot) ?? { slot, image_url: null, link_url: null, title: null, subtitle: null, cta_label: null };
     const next = { ...current, ...patch, slot };
-    const { error } = await supabase.from("homepage_banners")
-      .upsert(next, { onConflict: "slot" });
+    const { error } = await supabase.from("homepage_banners").upsert(next as any, { onConflict: "slot" });
     if (error) return toast.error(error.message);
     toast.success("saved");
     load();
   };
+
+  const patchRow = (slot: BannerSlot, patch: Partial<BannerRow>) =>
+    setRows((prev) => prev.map((r) => r.slot === slot ? { ...r, ...patch } : r));
 
   const onUpload = async (slot: BannerSlot, file: File) => {
     setBusy(slot);
@@ -1105,7 +1107,7 @@ function BannersTab() {
   return (
     <div className="py-6 space-y-4">
       <p className="text-sm text-muted-foreground">
-        upload promotional images for each hero slot on the homepage. leave blank to fall back to the default color block.
+        upload promotional images and copy for each hero slot on the homepage. leave any field blank to fall back to the default.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {SLOT_META.map((m) => {
@@ -1117,22 +1119,16 @@ function BannersTab() {
                 <div className="text-xs text-muted-foreground">{m.hint}</div>
               </div>
               <div className="aspect-[4/1] bg-muted border border-border overflow-hidden">
-                {row?.image_url ? (
-                  <img src={row.image_url} alt={m.label} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">no image</div>
-                )}
+                {row?.image_url
+                  ? <img src={row.image_url} alt={m.label} className="h-full w-full object-cover" />
+                  : <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">no image</div>}
               </div>
               <div className="flex gap-2">
                 <label className="inline-flex items-center gap-2 text-xs border border-input px-3 py-2 cursor-pointer hover:bg-muted">
                   <ImageIcon className="h-3 w-3" />
                   {busy === m.slot ? "uploading…" : "upload image"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(m.slot, f); e.currentTarget.value = ""; }}
-                  />
+                  <input type="file" accept="image/*" className="hidden"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(m.slot, f); e.currentTarget.value = ""; }} />
                 </label>
                 {row?.image_url && (
                   <Button variant="outline" size="sm" onClick={() => save(m.slot, { image_url: null })}>
@@ -1140,16 +1136,33 @@ function BannersTab() {
                   </Button>
                 )}
               </div>
-              <div>
-                <Label className="text-xs text-muted-foreground mb-1 block">link url (optional)</Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={row?.link_url ?? ""}
-                    placeholder="/innovation or https://…"
-                    onChange={(e) => setRows((prev) => prev.map((r) => r.slot === m.slot ? { ...r, link_url: e.target.value } : r))}
-                  />
-                  <Button size="sm" onClick={() => save(m.slot, { link_url: row?.link_url || null })}>save</Button>
+              <div className="grid grid-cols-1 gap-2">
+                <div>
+                  <Label className="text-xs text-muted-foreground mb-1 block">title (optional)</Label>
+                  <Input value={row?.title ?? ""} placeholder="e.g. new arrivals"
+                    onChange={(e) => patchRow(m.slot, { title: e.target.value })} />
                 </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground mb-1 block">subtitle (optional)</Label>
+                  <Input value={row?.subtitle ?? ""} placeholder="short line beneath the title"
+                    onChange={(e) => patchRow(m.slot, { subtitle: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground mb-1 block">cta label (optional)</Label>
+                  <Input value={row?.cta_label ?? ""} placeholder="e.g. shop now"
+                    onChange={(e) => patchRow(m.slot, { cta_label: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground mb-1 block">link url (optional)</Label>
+                  <Input value={row?.link_url ?? ""} placeholder="/innovation or https://…"
+                    onChange={(e) => patchRow(m.slot, { link_url: e.target.value })} />
+                </div>
+                <Button size="sm" onClick={() => save(m.slot, {
+                  title: row?.title || null,
+                  subtitle: row?.subtitle || null,
+                  cta_label: row?.cta_label || null,
+                  link_url: row?.link_url || null,
+                })}>save text</Button>
               </div>
             </div>
           );
@@ -1158,3 +1171,124 @@ function BannersTab() {
     </div>
   );
 }
+
+/* ============================================================
+   MY JOURNEY (videos, awards, shops, home videos)
+   ============================================================ */
+type JourneyKind = "video" | "award" | "shop" | "home_video";
+type JourneyRow = {
+  id?: string;
+  kind: JourneyKind;
+  title: string;
+  subtitle: string | null;
+  url: string | null;
+  image_url: string | null;
+  sort_order: number;
+  active: boolean;
+};
+
+const JOURNEY_KINDS: { key: JourneyKind; label: string }[] = [
+  { key: "video", label: "videos (my journey page)" },
+  { key: "award", label: "awards & recognition" },
+  { key: "shop", label: "stockists & shops" },
+  { key: "home_video", label: "homepage fashion show videos" },
+];
+
+async function uploadJourneyImage(file: File, kind: string): Promise<string | null> {
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const path = `journey/${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+  const { error } = await supabase.storage.from("product-media").upload(path, file, { upsert: false });
+  if (error) { toast.error(error.message); return null; }
+  const { data } = supabase.storage.from("product-media").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+function JourneyTab() {
+  const [rows, setRows] = useState<JourneyRow[]>([]);
+  const [kind, setKind] = useState<JourneyKind>("video");
+
+  const load = async () => {
+    const { data } = await supabase.from("journey_items").select("*").order("sort_order");
+    setRows((data ?? []) as JourneyRow[]);
+  };
+  useEffect(() => { load(); }, []);
+
+  const add = async () => {
+    const { error } = await supabase.from("journey_items").insert({
+      kind, title: "new item", subtitle: null, url: null, image_url: null, sort_order: rows.length, active: true,
+    });
+    if (error) return toast.error(error.message);
+    load();
+  };
+
+  const update = async (id: string, patch: Partial<JourneyRow>) => {
+    const { error } = await supabase.from("journey_items").update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("delete this item?")) return;
+    const { error } = await supabase.from("journey_items").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    load();
+  };
+
+  const filtered = rows.filter((r) => r.kind === kind);
+
+  return (
+    <div className="py-6 space-y-6">
+      <div className="flex flex-wrap gap-2 items-center">
+        {JOURNEY_KINDS.map((k) => (
+          <button key={k.key} onClick={() => setKind(k.key)}
+            className={`text-xs px-3 py-1.5 border ${kind === k.key ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"}`}>
+            {k.label}
+          </button>
+        ))}
+        <div className="ml-auto"><Button size="sm" onClick={add}><Plus className="h-3 w-3 mr-1" />add {kind}</Button></div>
+      </div>
+
+      <div className="space-y-3">
+        {filtered.length === 0 && <p className="text-xs text-muted-foreground">no items yet. click "add {kind}".</p>}
+        {filtered.map((r) => (
+          <div key={r.id} className="border border-border bg-card p-4 grid grid-cols-1 md:grid-cols-[120px_1fr_auto] gap-4 items-start">
+            <div className="space-y-2">
+              <div className="aspect-video bg-muted overflow-hidden">
+                {r.image_url ? <img src={r.image_url} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
+              </div>
+              <label className="text-[10px] block cursor-pointer hover:text-primary">
+                upload image
+                <input type="file" accept="image/*" className="hidden"
+                  onChange={async (e) => { const f = e.target.files?.[0]; if (!f) return; const u = await uploadJourneyImage(f, r.kind); if (u) update(r.id!, { image_url: u }); }} />
+              </label>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">title</Label>
+                <Input defaultValue={r.title} onBlur={(e) => e.target.value !== r.title && update(r.id!, { title: e.target.value })} />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">subtitle</Label>
+                <Input defaultValue={r.subtitle ?? ""} onBlur={(e) => update(r.id!, { subtitle: e.target.value || null })} />
+              </div>
+              <div className="md:col-span-2">
+                <Label className="text-xs text-muted-foreground mb-1 block">url (youtube / external / product page)</Label>
+                <Input defaultValue={r.url ?? ""} placeholder="https://…" onBlur={(e) => update(r.id!, { url: e.target.value || null })} />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">sort order</Label>
+                <Input type="number" defaultValue={r.sort_order} onBlur={(e) => update(r.id!, { sort_order: Number(e.target.value) })} />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">active</Label>
+                <div className="flex items-center h-9"><Switch checked={r.active} onCheckedChange={(v) => update(r.id!, { active: v })} /></div>
+              </div>
+            </div>
+            <button onClick={() => remove(r.id!)} className="link-red text-xs">delete</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
