@@ -148,7 +148,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
                       <p className="text-[11px] text-primary mt-1.5 uppercase tracking-wider">visit site →</p>
                     ) : (
                       <p className="num text-[12px] text-primary mt-1.5 font-medium">
-                        ${p.priceHKD.toFixed(2)}
+                        {currency} {(currency === "CAD" ? p.priceCAD : p.priceHKD).toFixed(2)}
                       </p>
                     )}
                     {p.colors.length > 1 && (
