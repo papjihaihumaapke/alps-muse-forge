@@ -129,7 +129,7 @@ function BannerBlock({
 function EditorialHero() {
   const [banners, setBanners] = useState<Record<string, Banner>>({});
   useEffect(() => {
-    supabase.from("homepage_banners").select("slot, image_url, link_url").then(({ data }) => {
+    supabase.from("homepage_banners").select("slot, image_url, link_url, title, subtitle, cta_label").then(({ data }) => {
       const map: Record<string, Banner> = {};
       (data ?? []).forEach((r: any) => { map[r.slot] = r as Banner; });
       setBanners(map);
