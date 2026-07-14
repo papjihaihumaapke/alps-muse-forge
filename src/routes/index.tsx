@@ -4,8 +4,8 @@ import { Play } from "lucide-react";
 import { Shell } from "@/components/alps/Shell";
 import { supabase } from "@/integrations/supabase/client";
 import hero from "@/assets/backgrounds/bg-01.jpg";
-import textile from "@/assets/backgrounds/hightech-01.jpg";
-import designer from "@/assets/brand/mannequin-01.png";
+import textile from "@/assets/backgrounds/hightech-red.jpg";
+import designer from "@/assets/brand/designer-atelier.jpg";
 import logoBlack from "@/assets/brand/alps-logo-white.png";
 import catInnovation from "@/assets/categories/innovation.png";
 import catContemporary from "@/assets/categories/contemporary.png";
@@ -38,9 +38,6 @@ const CAT_IMAGES: Record<string, string> = {
 };
 
 const VIDEOS = [
-  "ALPS anti-bacteria travel lite face mask",
-  "ALPS anti-bacteria travel collection",
-  "ALPS anti-bacteria instant warm vest",
   "light fresh self-cleaning short",
   "winter II muted",
   "summer II tropical in iceland",
