@@ -1,6 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, Youtube, Twitter, MessageCircle } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, MessageCircle, Phone } from "lucide-react";
+import { useState } from "react";
 import { SOCIALS, FEATURES } from "@/lib/alps-data";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const AWARDS = [
   { year: "2022", outlet: "NY Product Design — gold · ONE and ALL" },
@@ -81,11 +84,22 @@ export function Footer() {
                 <a href={SOCIALS.skincareInstagramBilingual} target="_blank" rel="noreferrer" aria-label="skincare instagram (en/zh)" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
               </div>
             </div>
-            <div className="pt-2">
-              <p className="text-[11px] text-foreground/60 mb-1">contact</p>
-              <a href={`mailto:${SOCIALS.email}`} className="text-foreground/80 hover:text-primary">{SOCIALS.email}</a>
+            <div className="pt-2 space-y-1.5">
+              <p className="text-[11px] text-foreground/60">contact</p>
+              <a href={`mailto:${SOCIALS.email}`} className="block text-foreground/80 hover:text-primary">{SOCIALS.email}</a>
+              <a href={SOCIALS.phoneHref} className="flex items-center gap-1.5 text-foreground/80 hover:text-primary">
+                <Phone className="h-3 w-3" />{SOCIALS.phone}
+              </a>
             </div>
           </div>
+        </Col>
+
+        <Col title="help">
+          <Link to="/shipping" className="text-foreground/80 hover:text-primary">shipping</Link>
+          <Link to="/returns" className="text-foreground/80 hover:text-primary">returns & exchanges</Link>
+          <Link to="/terms" className="text-foreground/80 hover:text-primary">terms of service</Link>
+          <Link to="/privacy" className="text-foreground/80 hover:text-primary">privacy</Link>
+          <Link to="/contact" className="text-foreground/80 hover:text-primary">contact us</Link>
         </Col>
 
         <Col title="pre-order">
