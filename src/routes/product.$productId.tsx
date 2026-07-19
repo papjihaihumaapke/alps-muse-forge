@@ -1,6 +1,7 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Minus, Plus, ChevronDown } from "lucide-react";
+import { Minus, Plus, ChevronDown, Heart } from "lucide-react";
+import { useWishlist, useToggleWishlist } from "@/lib/wishlist";
 import { Shell } from "@/components/alps/Shell";
 import { PRODUCTS, PRODUCT_COLORS, FEATURES, type Product } from "@/lib/alps-data";
 import {
@@ -291,12 +292,15 @@ function ProductPage() {
               </div>
             </div>
 
-            <button
-              onClick={onAdd}
-              className="w-full mt-8 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition"
-            >
-              add to bag
-            </button>
+            <div className="mt-8 flex gap-2">
+              <button
+                onClick={onAdd}
+                className="flex-1 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition"
+              >
+                add to bag
+              </button>
+              <WishlistButton slug={product.id} />
+            </div>
           </div>
         </div>
       </div>
@@ -317,5 +321,21 @@ function Accordion({ title, children, defaultOpen = false }: { title: string; ch
       </button>
       {open && <div className="pb-4 text-sm text-foreground/70 leading-relaxed">{children}</div>}
     </div>
+  );
+}
+
+function WishlistButton({ slug }: { slug: string }) {
+  const { data: slugs = [] } = useWishlist();
+  const toggle = useToggleWishlist();
+  const on = slugs.includes(slug);
+  return (
+    <button
+      onClick={() => toggle.mutate({ slug, on: !on })}
+      aria-label={on ? "remove from wishlist" : "save to wishlist"}
+      title={on ? "remove from wishlist" : "save to wishlist"}
+      className={`px-4 border transition ${on ? "border-primary text-primary" : "border-border hover:border-foreground"}`}
+    >
+      <Heart className={`h-4 w-4 ${on ? "fill-current" : ""}`} />
+    </button>
   );
 }
