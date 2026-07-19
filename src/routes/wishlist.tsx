@@ -54,7 +54,7 @@ function WishlistPage() {
                   <X className="h-3 w-3" />
                 </button>
                 <Link to="/product/$productId" params={{ productId: p.id }}>
-                  <img src={productImageForColor(p, p.colors?.[0])} alt={p.name} className="w-full aspect-square object-cover bg-card" />
+                  <img src={productImageForColor(p.id, p.colors?.[0] ?? "")} alt={p.name} className="w-full aspect-square object-cover bg-card" />
                   <p className="mt-3 text-sm">{p.name}</p>
                   <p className="num text-xs text-primary mt-1">CA${p.priceCAD}</p>
                 </Link>
