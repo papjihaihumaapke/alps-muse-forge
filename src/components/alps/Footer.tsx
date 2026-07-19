@@ -107,25 +107,46 @@ export function Footer() {
         </Col>
       </div>
 
-      <div className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px]">
-          <div className="flex items-center gap-4">
-            <span className="tracking-[0.2em] uppercase">stay connected</span>
-            <form className="flex items-center" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                placeholder="hello@youremail.com"
-                className="bg-white/15 placeholder:text-white/70 text-white px-3 py-1.5 text-[11px] w-64 focus:outline-none"
-              />
-              <button className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 text-[11px] tracking-wide border-l border-white/20">
-                subscribe
-              </button>
-            </form>
-          </div>
-          <span>@ {new Date().getFullYear()} ALPS annie ling</span>
-        </div>
-      </div>
+      <NewsletterBar />
     </footer>
+  );
+}
+
+function NewsletterBar() {
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = email.trim();
+    if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { toast.error("please enter a valid email"); return; }
+    setBusy(true);
+    const { error } = await supabase.from("newsletter_subscribers").insert({ email: val });
+    setBusy(false);
+    if (error && !error.message.toLowerCase().includes("duplicate")) { toast.error(error.message); return; }
+    toast.success("subscribed — welcome to the ALPS list");
+    setEmail("");
+  };
+  return (
+    <div className="bg-primary text-primary-foreground">
+      <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px]">
+        <div className="flex items-center gap-4">
+          <span className="tracking-[0.2em] uppercase">stay connected</span>
+          <form className="flex items-center" onSubmit={submit}>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="hello@youremail.com"
+              className="bg-white/15 placeholder:text-white/70 text-white px-3 py-1.5 text-[11px] w-64 focus:outline-none"
+            />
+            <button disabled={busy} className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 text-[11px] tracking-wide border-l border-white/20 disabled:opacity-60">
+              {busy ? "…" : "subscribe"}
+            </button>
+          </form>
+        </div>
+        <span>© {new Date().getFullYear()} ALPS annie ling</span>
+      </div>
+    </div>
   );
 }
 
