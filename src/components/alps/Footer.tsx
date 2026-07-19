@@ -1,6 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, Youtube, Twitter, MessageCircle } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, MessageCircle, Phone } from "lucide-react";
+import { useState } from "react";
 import { SOCIALS, FEATURES } from "@/lib/alps-data";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const AWARDS = [
   { year: "2022", outlet: "NY Product Design — gold · ONE and ALL" },
@@ -81,11 +84,22 @@ export function Footer() {
                 <a href={SOCIALS.skincareInstagramBilingual} target="_blank" rel="noreferrer" aria-label="skincare instagram (en/zh)" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
               </div>
             </div>
-            <div className="pt-2">
-              <p className="text-[11px] text-foreground/60 mb-1">contact</p>
-              <a href={`mailto:${SOCIALS.email}`} className="text-foreground/80 hover:text-primary">{SOCIALS.email}</a>
+            <div className="pt-2 space-y-1.5">
+              <p className="text-[11px] text-foreground/60">contact</p>
+              <a href={`mailto:${SOCIALS.email}`} className="block text-foreground/80 hover:text-primary">{SOCIALS.email}</a>
+              <a href={SOCIALS.phoneHref} className="flex items-center gap-1.5 text-foreground/80 hover:text-primary">
+                <Phone className="h-3 w-3" />{SOCIALS.phone}
+              </a>
             </div>
           </div>
+        </Col>
+
+        <Col title="help">
+          <Link to="/shipping" className="text-foreground/80 hover:text-primary">shipping</Link>
+          <Link to="/returns" className="text-foreground/80 hover:text-primary">returns & exchanges</Link>
+          <Link to="/terms" className="text-foreground/80 hover:text-primary">terms of service</Link>
+          <Link to="/privacy" className="text-foreground/80 hover:text-primary">privacy</Link>
+          <Link to="/contact" className="text-foreground/80 hover:text-primary">contact us</Link>
         </Col>
 
         <Col title="pre-order">
@@ -93,25 +107,46 @@ export function Footer() {
         </Col>
       </div>
 
-      <div className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px]">
-          <div className="flex items-center gap-4">
-            <span className="tracking-[0.2em] uppercase">stay connected</span>
-            <form className="flex items-center" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                placeholder="hello@youremail.com"
-                className="bg-white/15 placeholder:text-white/70 text-white px-3 py-1.5 text-[11px] w-64 focus:outline-none"
-              />
-              <button className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 text-[11px] tracking-wide border-l border-white/20">
-                subscribe
-              </button>
-            </form>
-          </div>
-          <span>@ {new Date().getFullYear()} ALPS annie ling</span>
-        </div>
-      </div>
+      <NewsletterBar />
     </footer>
+  );
+}
+
+function NewsletterBar() {
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = email.trim();
+    if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { toast.error("please enter a valid email"); return; }
+    setBusy(true);
+    const { error } = await supabase.from("newsletter_subscribers").insert({ email: val });
+    setBusy(false);
+    if (error && !error.message.toLowerCase().includes("duplicate")) { toast.error(error.message); return; }
+    toast.success("subscribed — welcome to the ALPS list");
+    setEmail("");
+  };
+  return (
+    <div className="bg-primary text-primary-foreground">
+      <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px]">
+        <div className="flex items-center gap-4">
+          <span className="tracking-[0.2em] uppercase">stay connected</span>
+          <form className="flex items-center" onSubmit={submit}>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="hello@youremail.com"
+              className="bg-white/15 placeholder:text-white/70 text-white px-3 py-1.5 text-[11px] w-64 focus:outline-none"
+            />
+            <button disabled={busy} className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 text-[11px] tracking-wide border-l border-white/20 disabled:opacity-60">
+              {busy ? "…" : "subscribe"}
+            </button>
+          </form>
+        </div>
+        <span>© {new Date().getFullYear()} ALPS annie ling</span>
+      </div>
+    </div>
   );
 }
 

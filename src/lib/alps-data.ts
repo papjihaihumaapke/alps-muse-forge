@@ -193,6 +193,8 @@ export const SOCIALS = {
     "https://www.hkdesignincubation.org/?route=incubation_inner&category=11&company=2",
   fipAlumni: "https://hkfip.org/en/brand/alps-annie-ling/",
   email: "cs@ALPSannieling.com",
+  phone: "+1 (604) 505-2223",
+  phoneHref: "tel:+16045052223",
 };
 
 export const TAGLINES = [

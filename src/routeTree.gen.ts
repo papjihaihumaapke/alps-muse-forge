@@ -9,12 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as VeganTechRouteImport } from './routes/vegan-tech'
 import { Route as VeganSupplementRouteImport } from './routes/vegan-supplement'
 import { Route as VeganSkincareRouteImport } from './routes/vegan-skincare'
 import { Route as VeganPersonalCareRouteImport } from './routes/vegan-personal-care'
 import { Route as VeganMakeupRouteImport } from './routes/vegan-makeup'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ShippingRouteImport } from './routes/shipping'
+import { Route as ReturnsRouteImport } from './routes/returns'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PressRouteImport } from './routes/press'
 import { Route as PersonalCareRouteImport } from './routes/personal-care'
 import { Route as MyJourneyRouteImport } from './routes/my-journey'
@@ -32,6 +37,11 @@ import { Route as ProductProductIdRouteImport } from './routes/product.$productI
 import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
 import { Route as CheckoutCancelRouteImport } from './routes/checkout.cancel'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VeganTechRoute = VeganTechRouteImport.update({
   id: '/vegan-tech',
   path: '/vegan-tech',
@@ -57,9 +67,29 @@ const VeganMakeupRoute = VeganMakeupRouteImport.update({
   path: '/vegan-makeup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShippingRoute = ShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReturnsRoute = ReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PressRoute = PressRouteImport.update({
@@ -157,12 +187,17 @@ export interface FileRoutesByFullPath {
   '/my-journey': typeof MyJourneyRoute
   '/personal-care': typeof PersonalCareRoute
   '/press': typeof PressRoute
+  '/privacy': typeof PrivacyRoute
+  '/returns': typeof ReturnsRoute
+  '/shipping': typeof ShippingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/vegan-makeup': typeof VeganMakeupRoute
   '/vegan-personal-care': typeof VeganPersonalCareRoute
   '/vegan-skincare': typeof VeganSkincareRoute
   '/vegan-supplement': typeof VeganSupplementRoute
   '/vegan-tech': typeof VeganTechRoute
+  '/wishlist': typeof WishlistRoute
   '/checkout/cancel': typeof CheckoutCancelRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/product/$productId': typeof ProductProductIdRoute
@@ -181,12 +216,17 @@ export interface FileRoutesByTo {
   '/my-journey': typeof MyJourneyRoute
   '/personal-care': typeof PersonalCareRoute
   '/press': typeof PressRoute
+  '/privacy': typeof PrivacyRoute
+  '/returns': typeof ReturnsRoute
+  '/shipping': typeof ShippingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/vegan-makeup': typeof VeganMakeupRoute
   '/vegan-personal-care': typeof VeganPersonalCareRoute
   '/vegan-skincare': typeof VeganSkincareRoute
   '/vegan-supplement': typeof VeganSupplementRoute
   '/vegan-tech': typeof VeganTechRoute
+  '/wishlist': typeof WishlistRoute
   '/checkout/cancel': typeof CheckoutCancelRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/product/$productId': typeof ProductProductIdRoute
@@ -206,12 +246,17 @@ export interface FileRoutesById {
   '/my-journey': typeof MyJourneyRoute
   '/personal-care': typeof PersonalCareRoute
   '/press': typeof PressRoute
+  '/privacy': typeof PrivacyRoute
+  '/returns': typeof ReturnsRoute
+  '/shipping': typeof ShippingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/vegan-makeup': typeof VeganMakeupRoute
   '/vegan-personal-care': typeof VeganPersonalCareRoute
   '/vegan-skincare': typeof VeganSkincareRoute
   '/vegan-supplement': typeof VeganSupplementRoute
   '/vegan-tech': typeof VeganTechRoute
+  '/wishlist': typeof WishlistRoute
   '/checkout/cancel': typeof CheckoutCancelRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/product/$productId': typeof ProductProductIdRoute
@@ -232,12 +277,17 @@ export interface FileRouteTypes {
     | '/my-journey'
     | '/personal-care'
     | '/press'
+    | '/privacy'
+    | '/returns'
+    | '/shipping'
     | '/sitemap.xml'
+    | '/terms'
     | '/vegan-makeup'
     | '/vegan-personal-care'
     | '/vegan-skincare'
     | '/vegan-supplement'
     | '/vegan-tech'
+    | '/wishlist'
     | '/checkout/cancel'
     | '/checkout/success'
     | '/product/$productId'
@@ -256,12 +306,17 @@ export interface FileRouteTypes {
     | '/my-journey'
     | '/personal-care'
     | '/press'
+    | '/privacy'
+    | '/returns'
+    | '/shipping'
     | '/sitemap.xml'
+    | '/terms'
     | '/vegan-makeup'
     | '/vegan-personal-care'
     | '/vegan-skincare'
     | '/vegan-supplement'
     | '/vegan-tech'
+    | '/wishlist'
     | '/checkout/cancel'
     | '/checkout/success'
     | '/product/$productId'
@@ -280,12 +335,17 @@ export interface FileRouteTypes {
     | '/my-journey'
     | '/personal-care'
     | '/press'
+    | '/privacy'
+    | '/returns'
+    | '/shipping'
     | '/sitemap.xml'
+    | '/terms'
     | '/vegan-makeup'
     | '/vegan-personal-care'
     | '/vegan-skincare'
     | '/vegan-supplement'
     | '/vegan-tech'
+    | '/wishlist'
     | '/checkout/cancel'
     | '/checkout/success'
     | '/product/$productId'
@@ -305,17 +365,29 @@ export interface RootRouteChildren {
   MyJourneyRoute: typeof MyJourneyRoute
   PersonalCareRoute: typeof PersonalCareRoute
   PressRoute: typeof PressRoute
+  PrivacyRoute: typeof PrivacyRoute
+  ReturnsRoute: typeof ReturnsRoute
+  ShippingRoute: typeof ShippingRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   VeganMakeupRoute: typeof VeganMakeupRoute
   VeganPersonalCareRoute: typeof VeganPersonalCareRoute
   VeganSkincareRoute: typeof VeganSkincareRoute
   VeganSupplementRoute: typeof VeganSupplementRoute
   VeganTechRoute: typeof VeganTechRoute
+  WishlistRoute: typeof WishlistRoute
   ProductProductIdRoute: typeof ProductProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vegan-tech': {
       id: '/vegan-tech'
       path: '/vegan-tech'
@@ -351,11 +423,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VeganMakeupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shipping': {
+      id: '/shipping'
+      path: '/shipping'
+      fullPath: '/shipping'
+      preLoaderRoute: typeof ShippingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/returns': {
+      id: '/returns'
+      path: '/returns'
+      fullPath: '/returns'
+      preLoaderRoute: typeof ReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/press': {
@@ -501,12 +601,17 @@ const rootRouteChildren: RootRouteChildren = {
   MyJourneyRoute: MyJourneyRoute,
   PersonalCareRoute: PersonalCareRoute,
   PressRoute: PressRoute,
+  PrivacyRoute: PrivacyRoute,
+  ReturnsRoute: ReturnsRoute,
+  ShippingRoute: ShippingRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   VeganMakeupRoute: VeganMakeupRoute,
   VeganPersonalCareRoute: VeganPersonalCareRoute,
   VeganSkincareRoute: VeganSkincareRoute,
   VeganSupplementRoute: VeganSupplementRoute,
   VeganTechRoute: VeganTechRoute,
+  WishlistRoute: WishlistRoute,
   ProductProductIdRoute: ProductProductIdRoute,
 }
 export const routeTree = rootRouteImport
