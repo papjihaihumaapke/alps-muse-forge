@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Search, User, ShoppingBag, Globe, Menu, X } from "lucide-react";
+import { Search, User, ShoppingBag, Globe, Menu, X, Heart } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
@@ -87,6 +87,10 @@ export function Header() {
 
           <Link to="/account" aria-label="account" className="hover:text-primary transition-colors hidden sm:block">
             <User className="h-4 w-4" />
+          </Link>
+
+          <Link to="/wishlist" aria-label="wishlist" className="hover:text-primary transition-colors hidden sm:block">
+            <Heart className="h-4 w-4" />
           </Link>
 
           <button
