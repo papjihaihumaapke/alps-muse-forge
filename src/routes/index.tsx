@@ -270,13 +270,16 @@ function Designer() {
           <h2 className="text-3xl md:text-4xl mt-3 font-light">annie ling</h2>
           <div className="mt-6 space-y-4 text-foreground/80 leading-relaxed">
             <p>
-              annie ling trained at central saint martins and the hong kong polytechnic university school of design.
-              her work has been recognised by the dfa awards, hktdc and asia miles for its precision tailoring and
-              material innovation.
+              designer annie ling views fashion as an expression of identity, confidence, and modern living.
+              after studying fashion design and technology in canada and completing an MBA at the university of
+              leicester in the united kingdom, she founded ALPS Annie Ling in 2015 — a contemporary fashion
+              label where timeless elegance meets innovation.
             </p>
             <p>
-              her practice is grounded in a single principle — clothing should be functional, modern, scientific
-              and aspirational. nothing decorative. nothing without purpose.
+              named after annie ling's initials and inspired by the enduring spirit of the alps, the brand
+              reflects resilience, innovation, and exploration. ALPS Annie Ling seamlessly combines timeless
+              aesthetics with sports-inspired functionality and textile innovation, creating versatile, enduring
+              garments designed for contemporary life.
             </p>
             <Link to="/my-journey" className="link-red text-[12px] tracking-wide inline-block mt-4">
               read my journey →
