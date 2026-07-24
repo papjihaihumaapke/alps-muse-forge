@@ -47,6 +47,9 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
     if (slug === "accessories" && activeTag !== "all") {
       list = list.filter((p) => p.tags?.includes(activeTag));
     }
+    if (featureFilter) {
+      list = list.filter((p) => p.features?.includes(featureFilter));
+    }
     switch (sort) {
       case "price-asc":
         return [...list].sort((a, b) => a.priceHKD - b.priceHKD);
