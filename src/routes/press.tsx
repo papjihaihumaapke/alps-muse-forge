@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
 import { ExternalLink } from "lucide-react";
 import { SOCIALS } from "@/lib/alps-data";
+import nySmartFashion2022 from "@/assets/awards/ny-smart-fashion-2022.png.asset.json";
+import nyWomenswear2022 from "@/assets/awards/ny-womenswear-2022.png.asset.json";
 
 const ARTICLES = [
   {
