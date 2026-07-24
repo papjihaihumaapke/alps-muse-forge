@@ -66,16 +66,28 @@ function MyJourney() {
           </p>
           <div className="mt-8 space-y-5 text-foreground/80 leading-relaxed text-[15px]">
             <p>
-              driven by the desire to unite fashion, technology and craftsmanship, designer annie ling
-              founded ALPS Annie Ling in 2015. inspired by a new age of active living and cutting-edge
-              textile innovations, the brand is committed to designing enduring clothing that supports
-              wellbeing.
+              designer annie ling views fashion as an expression of identity, confidence, and modern living.
+              after studying fashion design and technology in canada and completing an MBA at the university of
+              leicester in the united kingdom, she founded ALPS Annie Ling in 2015 — a contemporary fashion
+              label where timeless elegance meets innovation.
             </p>
             <p>
-              people want to feel good in their clothing. we make this the design code of our
-              collections: modern, minimalist, high-quality everyday designs with a twist.
+              with a design language rooted in simplicity, annie is drawn to clean silhouettes elevated by
+              unexpected details, advanced textiles, and intelligent functionality. her collections are created
+              for those who embrace individuality, lead active lifestyles, and appreciate refined design with
+              purpose.
             </p>
-            <p className="num text-[11px] tracking-[0.25em] text-primary uppercase pt-2">— annie ling</p>
+            <p>
+              in addition to her eponymous label, annie has worked extensively as a design consultant,
+              partnering with global brands on apparel, lingerie, accessories, and technology-driven product
+              development.
+            </p>
+            <p>
+              named after annie ling's initials and inspired by the enduring spirit of the alps, the brand
+              reflects resilience, innovation, and exploration. ALPS Annie Ling seamlessly combines timeless
+              aesthetics with sports-inspired functionality and textile innovation, creating versatile, enduring
+              garments designed for contemporary life.
+            </p>
           </div>
           <div className="mt-10 pt-8 border-t border-border">
             <p className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">alumni programmes</p>
