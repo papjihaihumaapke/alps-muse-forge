@@ -134,8 +134,18 @@ export const Route = createFileRoute("/press")({
               <>
                 <span className="num col-span-2 text-primary text-sm">{a.year}</span>
                 <span className="col-span-4 text-sm">{a.outlet}</span>
-                <span className="col-span-5 text-sm text-foreground/70">{a.title}</span>
-                {"href" in a && a.href ? (
+                <span className="col-span-5 text-sm text-foreground/70 flex items-center gap-3">
+                  {a.image && (
+                    <img
+                      src={a.image}
+                      alt={`${a.outlet} ${a.year}`}
+                      className="h-14 w-auto rounded-sm shadow-sm shrink-0"
+                      loading="lazy"
+                    />
+                  )}
+                  <span>{a.title}</span>
+                </span>
+                {a.href ? (
                   <ExternalLink className="col-span-1 h-3.5 w-3.5 text-foreground/40 justify-self-end" />
                 ) : (
                   <span className="col-span-1" />
@@ -144,7 +154,7 @@ export const Route = createFileRoute("/press")({
             );
             return (
               <li key={i}>
-                {"href" in a && a.href ? (
+                {a.href ? (
                   <a
                     href={a.href}
                     target="_blank"
