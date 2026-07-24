@@ -24,14 +24,17 @@ function Checkout() {
   const [email, setEmail] = useState(user?.email ?? "");
   const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");
-  const [country, setCountry] = useState("HK");
+  const [country, setCountry] = useState(currency === "CAD" ? "CA" : "HK");
   const [province, setProvince] = useState("ON");
   const [promo, setPromo] = useState("");
   const [discount, setDiscount] = useState(0);
   const [busy, setBusy] = useState(false);
 
   const ctry = COUNTRIES.find((c) => c.code === country)!;
-  if (ctry.currency !== currency) setCurrency(ctry.currency);
+  // Keep cart currency in sync when the user picks a country with a different currency.
+  useEffect(() => {
+    if (ctry.currency !== currency) setCurrency(ctry.currency);
+  }, [ctry.currency, currency, setCurrency]);
 
   const shipping = country === "HK" ? 30 : country === "CA" ? 25 : 0;
   const taxableBase = Math.max(0, subtotal - discount);
