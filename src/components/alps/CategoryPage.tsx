@@ -24,6 +24,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
   if (!cat) throw notFound();
 
   const [activeTag, setActiveTag] = useState<"all" | AccessoryTag>("all");
+  const [activeSub, setActiveSub] = useState<string>("all");
   const [sort, setSort] = useState<SortKey>("default");
   const { data: dbRows = [] } = useDbProductsByCategory(slug);
   const { currency } = useCart();
@@ -35,17 +36,48 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
     return m;
   }, [dbRows]);
 
+  // Infer subcategory from slug prefix when DB doesn't have one set.
+  const inferSubcategory = (id: string): string | null => {
+    const m = id.toLowerCase().match(/^(oc|jk|tp|sk|sh|pt|dr)/);
+    if (!m) return null;
+    return { oc: "overcoat", jk: "jacket", tp: "top", sk: "skirt", sh: "shorts", pt: "pants", dr: "one-piece" }[m[1] as "oc"|"jk"|"tp"|"sk"|"sh"|"pt"|"dr"] ?? null;
+  };
+
+  const subBySlug = useMemo(() => {
+    const m = new Map<string, string | null>();
+    for (const r of dbRows) m.set(r.slug, r.subcategory ?? inferSubcategory(r.slug));
+    return m;
+  }, [dbRows]);
+
   const items = useMemo(() => {
     const staticList: Product[] = PRODUCTS.filter((p) => p.category === slug);
-    const dbList: Product[] = dbRows.map((r) => dbProductToCatalog(r) as Product);
+    const dbList = dbRows.map((r) => dbProductToCatalog(r));
     const map = new Map<string, Product>();
     for (const p of staticList) map.set(p.id, p);
-    for (const p of dbList) map.set(p.id, p); // DB wins
+    for (const p of dbList) {
+      const existing = map.get(p.id) as (Product & { galleryUrls?: string[] }) | undefined;
+      const dbHasImage = (p.galleryUrls?.length ?? 0) > 0;
+      if (existing && !dbHasImage) {
+        // Merge — keep the static image/features, take DB metadata for the rest.
+        map.set(p.id, {
+          ...(p as Product),
+          features: p.features?.length ? p.features : existing.features,
+          colors: p.colors?.length ? p.colors : existing.colors,
+          sizes: p.sizes?.length ? p.sizes : existing.sizes,
+          galleryUrls: existing.galleryUrls,
+        } as Product);
+      } else {
+        map.set(p.id, p as Product);
+      }
+    }
     let list = Array.from(map.values());
     // Region gating — hide items only stocked in the other region.
     list = list.filter((p) => productAvailableInRegion(stockBySlug.get(p.id) ?? {}, currency));
     if (slug === "accessories" && activeTag !== "all") {
       list = list.filter((p) => p.tags?.includes(activeTag));
+    }
+    if (slug === "innovation" && activeSub !== "all") {
+      list = list.filter((p) => (subBySlug.get(p.id) ?? inferSubcategory(p.id)) === activeSub);
     }
     if (featureFilter) {
       list = list.filter((p) => p.features?.includes(featureFilter));
@@ -60,9 +92,20 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
       default:
         return list;
     }
-  }, [slug, activeTag, sort, dbRows, stockBySlug, currency, featureFilter]);
+  }, [slug, activeTag, activeSub, sort, dbRows, stockBySlug, subBySlug, currency, featureFilter]);
 
   const showTagBar = slug === "accessories";
+  const showSubBar = slug === "innovation";
+  const SUB_OPTIONS: { key: string; label: string }[] = [
+    { key: "all", label: "all" },
+    { key: "overcoat", label: "overcoat" },
+    { key: "jacket", label: "jacket" },
+    { key: "top", label: "top" },
+    { key: "skirt", label: "skirt" },
+    { key: "shorts", label: "shorts" },
+    { key: "pants", label: "pants" },
+    { key: "one-piece", label: "one-piece" },
+  ];
 
   return (
     <Shell>
