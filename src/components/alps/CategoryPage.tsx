@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, notFound } from "@tanstack/react-router";
+import { FEATURES } from "@/lib/alps-data";
 import { Shell } from "@/components/alps/Shell";
 import {
   ACCESSORY_TAGS,
@@ -18,7 +19,7 @@ import { productAvailableInRegion } from "@/lib/region";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
-export function CategoryView({ slug }: { slug: CategorySlug }) {
+export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: CategorySlug; featureFilter?: string; onClearFeature?: () => void }) {
   const cat = CATEGORIES.find((c) => c.slug === slug);
   if (!cat) throw notFound();
 
@@ -26,6 +27,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
   const [sort, setSort] = useState<SortKey>("default");
   const { data: dbRows = [] } = useDbProductsByCategory(slug);
   const { currency } = useCart();
+  const activeFeature = featureFilter ? FEATURES.find((f) => f.key === featureFilter) : null;
 
   const stockBySlug = useMemo(() => {
     const m = new Map<string, { stock?: number; stock_ca?: number; is_external?: boolean }>();
@@ -45,6 +47,9 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
     if (slug === "accessories" && activeTag !== "all") {
       list = list.filter((p) => p.tags?.includes(activeTag));
     }
+    if (featureFilter) {
+      list = list.filter((p) => p.features?.includes(featureFilter));
+    }
     switch (sort) {
       case "price-asc":
         return [...list].sort((a, b) => a.priceHKD - b.priceHKD);
@@ -55,7 +60,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
       default:
         return list;
     }
-  }, [slug, activeTag, sort, dbRows, stockBySlug, currency]);
+  }, [slug, activeTag, sort, dbRows, stockBySlug, currency, featureFilter]);
 
   const showTagBar = slug === "accessories";
 
@@ -63,7 +68,25 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
     <Shell>
       <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pt-10 pb-6">
         <div className="flex items-start justify-between flex-wrap gap-6">
-          <h1 className="text-primary text-[15px] tracking-wide">{cat.name}</h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-primary text-[15px] tracking-wide">{cat.name}</h1>
+            {activeFeature && (
+              <span className="inline-flex items-center gap-2 border border-primary text-primary px-2.5 py-1 text-[11px] tracking-wide">
+                feature: {activeFeature.name}
+                {onClearFeature && (
+                  <button
+                    type="button"
+                    onClick={onClearFeature}
+                    aria-label="clear feature filter"
+                    className="hover:text-foreground"
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            )}
+          </div>
+
 
           <div className="flex flex-col items-end gap-4 ml-auto">
             <div className="relative">

@@ -39,7 +39,7 @@ export function Footer() {
               <Link
                 key={f.key}
                 to="/innovation"
-                hash={`feature-${f.key}`}
+                search={{ feature: f.key }}
                 className="text-foreground/80 hover:text-primary leading-snug"
               >
                 {f.name}

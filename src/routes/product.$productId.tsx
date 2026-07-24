@@ -1,4 +1,5 @@
-import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { createFileRoute, notFound, Link, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/lib/auth";
 import { useEffect, useMemo, useState } from "react";
 import { Minus, Plus, ChevronDown, Heart } from "lucide-react";
 import { useWishlist, useToggleWishlist } from "@/lib/wishlist";
@@ -327,10 +328,21 @@ function Accordion({ title, children, defaultOpen = false }: { title: string; ch
 function WishlistButton({ slug }: { slug: string }) {
   const { data: slugs = [] } = useWishlist();
   const toggle = useToggleWishlist();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const on = slugs.includes(slug);
+  const onClick = () => {
+    if (!user) {
+      toast("sign in to save items to your wishlist", {
+        action: { label: "sign in", onClick: () => navigate({ to: "/account" }) },
+      });
+      return;
+    }
+    toggle.mutate({ slug, on: !on });
+  };
   return (
     <button
-      onClick={() => toggle.mutate({ slug, on: !on })}
+      onClick={onClick}
       aria-label={on ? "remove from wishlist" : "save to wishlist"}
       title={on ? "remove from wishlist" : "save to wishlist"}
       className={`px-4 border transition ${on ? "border-primary text-primary" : "border-border hover:border-foreground"}`}
