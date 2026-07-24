@@ -68,11 +68,14 @@ export function Footer() {
           <div className="space-y-3">
             <div>
               <p className="text-[11px] text-foreground/60 mb-1.5">ALPS</p>
-              <div className="flex gap-3 text-foreground/80">
-                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="ALPS facebook" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
-                <a href={SOCIALS.x} target="_blank" rel="noreferrer" aria-label="ALPS x" className="hover:text-primary"><Twitter className="h-4 w-4" /></a>
+              <div className="flex flex-wrap gap-3 text-foreground/80">
+                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="ALPS facebook page" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
+                <a href={SOCIALS.facebookPersonal} target="_blank" rel="noreferrer" aria-label="annie ling facebook" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
                 <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="ALPS instagram" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
+                <a href={SOCIALS.instagram2} target="_blank" rel="noreferrer" aria-label="ALPS instagram alt" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
+                <a href={SOCIALS.x} target="_blank" rel="noreferrer" aria-label="ALPS x" className="hover:text-primary"><Twitter className="h-4 w-4" /></a>
                 <a href={SOCIALS.youtube} target="_blank" rel="noreferrer" aria-label="ALPS youtube" className="hover:text-primary"><Youtube className="h-4 w-4" /></a>
+                <a href={SOCIALS.tiktok} target="_blank" rel="noreferrer" aria-label="ALPS tiktok" className="hover:text-primary"><Music2 className="h-4 w-4" /></a>
                 <a href={SOCIALS.threads} target="_blank" rel="noreferrer" aria-label="ALPS threads" className="hover:text-primary"><MessageCircle className="h-4 w-4" /></a>
               </div>
             </div>
@@ -87,9 +90,6 @@ export function Footer() {
             <div className="pt-2 space-y-1.5">
               <p className="text-[11px] text-foreground/60">contact</p>
               <a href={`mailto:${SOCIALS.email}`} className="block text-foreground/80 hover:text-primary">{SOCIALS.email}</a>
-              <a href={SOCIALS.phoneHref} className="flex items-center gap-1.5 text-foreground/80 hover:text-primary">
-                <Phone className="h-3 w-3" />{SOCIALS.phone}
-              </a>
             </div>
           </div>
         </Col>
