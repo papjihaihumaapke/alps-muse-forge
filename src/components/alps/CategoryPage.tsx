@@ -60,7 +60,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
       default:
         return list;
     }
-  }, [slug, activeTag, sort, dbRows, stockBySlug, currency]);
+  }, [slug, activeTag, sort, dbRows, stockBySlug, currency, featureFilter]);
 
   const showTagBar = slug === "accessories";
 
