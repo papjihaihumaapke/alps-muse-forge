@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Shell } from "@/components/alps/Shell";
 import { SOCIALS } from "@/lib/alps-data";
-import { Phone, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -52,9 +52,6 @@ function ContactPage() {
         <div className="mt-6 grid gap-3 text-sm">
           <a href={`mailto:${SOCIALS.email}`} className="flex items-center gap-3 hover:text-primary">
             <Mail className="h-4 w-4 text-primary" />{SOCIALS.email}
-          </a>
-          <a href={SOCIALS.phoneHref} className="flex items-center gap-3 hover:text-primary">
-            <Phone className="h-4 w-4 text-primary" />{SOCIALS.phone}
           </a>
         </div>
 
