@@ -53,9 +53,6 @@ function ContactPage() {
           <a href={`mailto:${SOCIALS.email}`} className="flex items-center gap-3 hover:text-primary">
             <Mail className="h-4 w-4 text-primary" />{SOCIALS.email}
           </a>
-          <a href={SOCIALS.phoneHref} className="flex items-center gap-3 hover:text-primary">
-            <Phone className="h-4 w-4 text-primary" />{SOCIALS.phone}
-          </a>
         </div>
 
         <form className="mt-10 space-y-4" onSubmit={submit}>
