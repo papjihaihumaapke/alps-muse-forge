@@ -68,7 +68,25 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
     <Shell>
       <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pt-10 pb-6">
         <div className="flex items-start justify-between flex-wrap gap-6">
-          <h1 className="text-primary text-[15px] tracking-wide">{cat.name}</h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-primary text-[15px] tracking-wide">{cat.name}</h1>
+            {activeFeature && (
+              <span className="inline-flex items-center gap-2 border border-primary text-primary px-2.5 py-1 text-[11px] tracking-wide">
+                feature: {activeFeature.name}
+                {onClearFeature && (
+                  <button
+                    type="button"
+                    onClick={onClearFeature}
+                    aria-label="clear feature filter"
+                    className="hover:text-foreground"
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            )}
+          </div>
+
 
           <div className="flex flex-col items-end gap-4 ml-auto">
             <div className="relative">
