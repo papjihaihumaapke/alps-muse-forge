@@ -169,6 +169,28 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
                 })}
               </div>
             )}
+
+            {showSubBar && (
+              <div className="flex flex-wrap justify-end gap-1.5 max-w-[760px]">
+                {SUB_OPTIONS.map((t) => {
+                  const active = activeSub === t.key;
+                  return (
+                    <button
+                      key={t.key}
+                      onClick={() => setActiveSub(t.key)}
+                      className={
+                        "px-3 py-1 text-[11px] tracking-wide transition-colors border " +
+                        (active
+                          ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
+                          : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
+                      }
+                    >
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </section>
