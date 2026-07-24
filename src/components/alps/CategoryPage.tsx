@@ -19,7 +19,7 @@ import { productAvailableInRegion } from "@/lib/region";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
-export function CategoryView({ slug }: { slug: CategorySlug }) {
+export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: CategorySlug; featureFilter?: string; onClearFeature?: () => void }) {
   const cat = CATEGORIES.find((c) => c.slug === slug);
   if (!cat) throw notFound();
 
@@ -27,6 +27,7 @@ export function CategoryView({ slug }: { slug: CategorySlug }) {
   const [sort, setSort] = useState<SortKey>("default");
   const { data: dbRows = [] } = useDbProductsByCategory(slug);
   const { currency } = useCart();
+  const activeFeature = featureFilter ? FEATURES.find((f) => f.key === featureFilter) : null;
 
   const stockBySlug = useMemo(() => {
     const m = new Map<string, { stock?: number; stock_ca?: number; is_external?: boolean }>();
