@@ -184,6 +184,7 @@ export const SOCIALS = {
   x: "https://x.com/annie_ling_",
   threads: "https://www.threads.com/@alpsannieling",
   youtube: "https://www.youtube.com/channel/UCQkObngC_R1tDpdfV5Ebcmg",
+  tiktok: "https://www.tiktok.com/@alps.annieling",
   asiaMiles:
     "https://lifestyle.asiamiles.com/en/HK/p/IFC_0152_60001/ac0015-light-fresh-technology-cabas-220-shoulder-bag",
   skincareInstagram: "https://www.instagram.com/riman.yvr/",
