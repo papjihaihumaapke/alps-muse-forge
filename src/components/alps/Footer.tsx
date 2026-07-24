@@ -6,104 +6,112 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const AWARDS = [
-  { year: "2022", outlet: "NY Product Design — gold · ONE and ALL" },
-  { year: "2022", outlet: "HK Most Outstanding Business — fashion innovation" },
-  { year: "2021", outlet: "NY Product Design — gold · warrior" },
-  { year: "2021", outlet: "International Design Awards — silver · warrior" },
-  { year: "2018", outlet: "International Design Awards — silver · instant warming vest" },
+  { outlet: "new york product design awards", detail: "smart fashion 2022 – silver" },
+  { outlet: "new york product design awards", detail: "fashion and lifestyle" },
+  { outlet: "hong kong most outstanding business awards", detail: "best fashion innovation 2022" },
+  { outlet: "new york product design awards", detail: "smart fashion 2021 – gold" },
+  { outlet: "new york product design awards", detail: "womenswear 2021 – silver" },
+  { outlet: "international design awards", detail: "apparel project 2021 – silver" },
+  { outlet: "international design awards", detail: "recycle and sustainable fashion 2021 – bronze" },
+  { outlet: "international design awards", detail: "apparel category 2021 – honourable" },
+  { outlet: "international design awards 2021", detail: "prêt-à-porter 2021 – honourable" },
+  { outlet: "international design awards", detail: "sportswear 2018 – silver" },
 ];
+
+const SIZE_GROUPS = ["kids", "men", "women", "unisex"];
 
 export function Footer() {
   return (
     <footer className="bg-background text-foreground mt-24 border-t border-border">
-      <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 text-[12px]">
+      <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 text-[12px] leading-snug">
         <Col title="asia miles">
-          <a href={SOCIALS.asiaMiles} target="_blank" rel="noreferrer" className="text-foreground/80 hover:text-primary leading-snug">
+          <a
+            href={SOCIALS.asiaMiles}
+            target="_blank"
+            rel="noreferrer"
+            className="text-foreground/80 hover:text-primary"
+          >
             light fresh® technology CABAS 220 shoulder bag
           </a>
-          <span className="text-foreground/80 leading-snug">
-            kenichi multi function self cleaning backpack include one inner tie bag and one inner carry bag
-          </span>
         </Col>
 
         <Col title="size info">
-          <span className="text-foreground/80">kids</span>
-          <span className="text-foreground/80">men</span>
-          <span className="text-foreground/80">women</span>
-          <span className="text-foreground/80">unisex</span>
+          {SIZE_GROUPS.map((s) => (
+            <Link key={s} to="/innovation" className="text-foreground/80 hover:text-primary">
+              {s}
+            </Link>
+          ))}
         </Col>
 
-        <Col title="features" className="col-span-2 lg:col-span-2">
-          <div className="flex flex-wrap gap-x-3 gap-y-1.5">
-            {FEATURES.slice(0, 10).map((f) => (
+        <Col title="features">
+          <div className="flex flex-col gap-1">
+            {FEATURES.map((f) => (
               <Link
                 key={f.key}
                 to="/innovation"
                 search={{ feature: f.key }}
-                className="text-foreground/80 hover:text-primary leading-snug"
+                className="text-foreground/80 hover:text-primary"
               >
                 {f.name}
               </Link>
             ))}
           </div>
-          <Link to="/innovation" className="link-red mt-3 inline-block">view all features →</Link>
         </Col>
 
         <Col title="awards & accolades">
-          <div className="grid gap-1.5">
-            {AWARDS.slice(0, 3).map((a, i) => (
-              <Link
-                key={i}
-                to="/press"
-                className="text-foreground/80 hover:text-primary leading-snug"
-              >
-                <span className="num text-primary mr-2">{a.year}</span>{a.outlet}
+          <div className="flex flex-col gap-2">
+            {AWARDS.map((a, i) => (
+              <Link key={i} to="/press" className="text-foreground/80 hover:text-primary block">
+                <span className="block font-medium text-foreground">{a.outlet}</span>
+                <span className="block text-foreground/70">{a.detail}</span>
               </Link>
             ))}
-            <Link to="/press" className="link-red mt-2 inline-block">view all press →</Link>
           </div>
         </Col>
 
         <Col title="find us">
-          <div className="space-y-3">
+          <div className="space-y-5">
             <div>
-              <p className="text-[11px] text-foreground/60 mb-1.5">ALPS</p>
+              <p className="text-foreground font-medium mb-2">ALPS</p>
               <div className="flex flex-wrap gap-3 text-foreground/80">
-                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="ALPS facebook page" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
-                <a href={SOCIALS.facebookPersonal} target="_blank" rel="noreferrer" aria-label="annie ling facebook" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
-                <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="ALPS instagram" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
-                <a href={SOCIALS.instagram2} target="_blank" rel="noreferrer" aria-label="ALPS instagram alt" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
-                <a href={SOCIALS.x} target="_blank" rel="noreferrer" aria-label="ALPS x" className="hover:text-primary"><Twitter className="h-4 w-4" /></a>
-                <a href={SOCIALS.youtube} target="_blank" rel="noreferrer" aria-label="ALPS youtube" className="hover:text-primary"><Youtube className="h-4 w-4" /></a>
-                <a href={SOCIALS.tiktok} target="_blank" rel="noreferrer" aria-label="ALPS tiktok" className="hover:text-primary"><Music2 className="h-4 w-4" /></a>
-                <a href={SOCIALS.threads} target="_blank" rel="noreferrer" aria-label="ALPS threads" className="hover:text-primary"><MessageCircle className="h-4 w-4" /></a>
+                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="ALPS facebook page" className="hover:text-primary"><Facebook className="h-5 w-5" /></a>
+                <a href={SOCIALS.facebookPersonal} target="_blank" rel="noreferrer" aria-label="annie ling facebook" className="hover:text-primary"><Facebook className="h-5 w-5" /></a>
+                <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="ALPS instagram" className="hover:text-primary"><Instagram className="h-5 w-5" /></a>
+                <a href={SOCIALS.instagram2} target="_blank" rel="noreferrer" aria-label="ALPS instagram alt" className="hover:text-primary"><Instagram className="h-5 w-5" /></a>
+                <a href={SOCIALS.x} target="_blank" rel="noreferrer" aria-label="ALPS x" className="hover:text-primary"><Twitter className="h-5 w-5" /></a>
+                <a href={SOCIALS.youtube} target="_blank" rel="noreferrer" aria-label="ALPS youtube" className="hover:text-primary"><Youtube className="h-5 w-5" /></a>
+                <a href={SOCIALS.tiktok} target="_blank" rel="noreferrer" aria-label="ALPS tiktok" className="hover:text-primary"><Music2 className="h-5 w-5" /></a>
+                <a href={SOCIALS.threads} target="_blank" rel="noreferrer" aria-label="ALPS threads" className="hover:text-primary"><MessageCircle className="h-5 w-5" /></a>
               </div>
             </div>
             <div>
-              <p className="text-[11px] text-foreground/60 mb-1.5">vegan skincare</p>
+              <p className="text-foreground font-medium mb-2">vegan skincare</p>
               <div className="flex gap-3 text-foreground/80">
-                <a href={SOCIALS.skincareFacebook} target="_blank" rel="noreferrer" aria-label="skincare facebook" className="hover:text-primary"><Facebook className="h-4 w-4" /></a>
-                <a href={SOCIALS.skincareInstagram} target="_blank" rel="noreferrer" aria-label="skincare instagram (english)" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
-                <a href={SOCIALS.skincareInstagramBilingual} target="_blank" rel="noreferrer" aria-label="skincare instagram (en/zh)" className="hover:text-primary"><Instagram className="h-4 w-4" /></a>
+                <a href={SOCIALS.skincareFacebook} target="_blank" rel="noreferrer" aria-label="skincare facebook" className="hover:text-primary"><Facebook className="h-5 w-5" /></a>
+                <a href={SOCIALS.skincareInstagram} target="_blank" rel="noreferrer" aria-label="skincare instagram (english)" className="hover:text-primary"><Instagram className="h-5 w-5" /></a>
+                <a href={SOCIALS.skincareInstagramBilingual} target="_blank" rel="noreferrer" aria-label="skincare instagram (en/zh)" className="hover:text-primary"><Instagram className="h-5 w-5" /></a>
               </div>
             </div>
-            <div className="pt-2 space-y-1.5">
-              <p className="text-[11px] text-foreground/60">contact</p>
-              <a href={`mailto:${SOCIALS.email}`} className="block text-foreground/80 hover:text-primary">{SOCIALS.email}</a>
+            <div>
+              <p className="text-foreground font-medium mb-2">support</p>
+              <div className="flex flex-col gap-1.5">
+                <Link to="/shipping" className="text-foreground/80 hover:text-primary">shipping</Link>
+                <Link to="/returns" className="text-foreground/80 hover:text-primary">returns & exchanges</Link>
+                <Link to="/terms" className="text-foreground/80 hover:text-primary">terms of service</Link>
+                <Link to="/privacy" className="text-foreground/80 hover:text-primary">privacy</Link>
+              </div>
             </div>
           </div>
         </Col>
 
-        <Col title="help">
-          <Link to="/shipping" className="text-foreground/80 hover:text-primary">shipping</Link>
-          <Link to="/returns" className="text-foreground/80 hover:text-primary">returns & exchanges</Link>
-          <Link to="/terms" className="text-foreground/80 hover:text-primary">terms of service</Link>
-          <Link to="/privacy" className="text-foreground/80 hover:text-primary">privacy</Link>
-          <Link to="/contact" className="text-foreground/80 hover:text-primary">contact us</Link>
-        </Col>
-
         <Col title="pre-order">
           <Link to="/account" className="text-foreground/80 hover:text-primary">catch up new item</Link>
+          <div className="mt-8">
+            <p className="text-foreground font-medium mb-2">contact us</p>
+            <a href={`mailto:${SOCIALS.email}`} className="text-foreground/80 hover:text-primary block">
+              {SOCIALS.email}
+            </a>
+          </div>
         </Col>
       </div>
 
@@ -144,7 +152,7 @@ function NewsletterBar() {
             </button>
           </form>
         </div>
-        <span>© {new Date().getFullYear()} ALPS annie ling</span>
+        <span>© {new Date().getFullYear()} ALPS Annie Ling</span>
       </div>
     </div>
   );
@@ -152,9 +160,9 @@ function NewsletterBar() {
 
 function Col({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`flex flex-col gap-1.5 ${className}`}>
-      <h4 className="text-[12px] tracking-wide text-foreground font-medium mb-2">{title}</h4>
-      {children}
+    <div className={`flex flex-col ${className}`}>
+      <h4 className="text-[13px] tracking-wide text-foreground font-semibold mb-3">{title}</h4>
+      <div className="flex flex-col gap-1.5">{children}</div>
     </div>
   );
 }
