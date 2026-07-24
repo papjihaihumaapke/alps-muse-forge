@@ -164,9 +164,24 @@ function NewsletterBar() {
 
 function Col({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`flex flex-col ${className}`}>
+    <div className={`flex flex-col px-4 first:pl-0 last:pr-0 border-l border-border first:border-l-0 ${className}`}>
       <h4 className="text-[13px] tracking-wide text-foreground font-semibold mb-3">{title}</h4>
-      <div className="flex flex-col gap-1.5">{children}</div>
+      <div className="flex flex-col gap-1">{children}</div>
     </div>
   );
 }
+
+function SocialIcon({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      className="inline-flex items-center justify-center h-7 w-7 bg-foreground text-background hover:bg-primary transition-colors"
+    >
+      {children}
+    </a>
+  );
+}
+
