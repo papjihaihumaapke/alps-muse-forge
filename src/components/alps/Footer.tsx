@@ -23,7 +23,8 @@ const SIZE_GROUPS = ["kids", "men", "women", "unisex"];
 export function Footer() {
   return (
     <footer className="bg-background text-foreground mt-24 border-t border-border">
-      <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 text-[12px] leading-snug">
+      <div className="mx-auto max-w-[1760px] px-8 lg:px-12 py-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 text-[11px] leading-[1.4]">
+
         <Col title="asia miles">
           <a
             href={SOCIALS.asiaMiles}
