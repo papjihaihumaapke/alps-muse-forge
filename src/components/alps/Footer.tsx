@@ -74,24 +74,27 @@ export function Footer() {
           <div className="space-y-5">
             <div>
               <p className="text-foreground font-medium mb-2">ALPS</p>
-              <div className="flex flex-wrap gap-3 text-foreground/80">
-                <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="ALPS facebook page" className="hover:text-primary"><Facebook className="h-5 w-5" /></a>
-                <a href={SOCIALS.facebookPersonal} target="_blank" rel="noreferrer" aria-label="annie ling facebook" className="hover:text-primary"><Facebook className="h-5 w-5" /></a>
-                <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="ALPS instagram" className="hover:text-primary"><Instagram className="h-5 w-5" /></a>
-                <a href={SOCIALS.instagram2} target="_blank" rel="noreferrer" aria-label="ALPS instagram alt" className="hover:text-primary"><Instagram className="h-5 w-5" /></a>
-                <a href={SOCIALS.x} target="_blank" rel="noreferrer" aria-label="ALPS x" className="hover:text-primary"><Twitter className="h-5 w-5" /></a>
-                <a href={SOCIALS.youtube} target="_blank" rel="noreferrer" aria-label="ALPS youtube" className="hover:text-primary"><Youtube className="h-5 w-5" /></a>
-                <a href={SOCIALS.tiktok} target="_blank" rel="noreferrer" aria-label="ALPS tiktok" className="hover:text-primary"><Music2 className="h-5 w-5" /></a>
-                <a href={SOCIALS.threads} target="_blank" rel="noreferrer" aria-label="ALPS threads" className="hover:text-primary"><MessageCircle className="h-5 w-5" /></a>
+              <div className="flex flex-wrap gap-2">
+                <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-4 w-4" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-4 w-4" /></SocialIcon>
+                <SocialIcon href={SOCIALS.x} label="ALPS x"><Twitter className="h-4 w-4" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.youtube} label="ALPS youtube"><Youtube className="h-4 w-4" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.tiktok} label="ALPS tiktok"><Music2 className="h-4 w-4" /></SocialIcon>
+                <SocialIcon href={SOCIALS.threads} label="ALPS threads"><MessageCircle className="h-4 w-4" /></SocialIcon>
+              </div>
+              <div className="flex gap-2 mt-2">
+                <SocialIcon href={SOCIALS.facebookPersonal} label="annie ling facebook"><Facebook className="h-4 w-4" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.instagram2} label="ALPS instagram alt"><Instagram className="h-4 w-4" /></SocialIcon>
               </div>
             </div>
             <div>
-              <p className="text-foreground font-medium mb-2">vegan skincare</p>
-              <div className="flex gap-3 text-foreground/80">
-                <a href={SOCIALS.skincareFacebook} target="_blank" rel="noreferrer" aria-label="skincare facebook" className="hover:text-primary"><Facebook className="h-5 w-5" /></a>
-                <a href={SOCIALS.skincareInstagram} target="_blank" rel="noreferrer" aria-label="skincare instagram (english)" className="hover:text-primary"><Instagram className="h-5 w-5" /></a>
-                <a href={SOCIALS.skincareInstagramBilingual} target="_blank" rel="noreferrer" aria-label="skincare instagram (en/zh)" className="hover:text-primary"><Instagram className="h-5 w-5" /></a>
+              <p className="text-foreground font-semibold mb-2 text-[12px]">vegan skincare</p>
+              <div className="flex gap-2">
+                <SocialIcon href={SOCIALS.skincareFacebook} label="skincare facebook"><Facebook className="h-4 w-4" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.skincareInstagram} label="skincare instagram (english)"><Instagram className="h-4 w-4" /></SocialIcon>
+                <SocialIcon href={SOCIALS.skincareInstagramBilingual} label="skincare instagram (en/zh)"><Instagram className="h-4 w-4" /></SocialIcon>
               </div>
+
             </div>
             <div>
               <p className="text-foreground font-medium mb-2">support</p>
