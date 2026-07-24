@@ -36,6 +36,10 @@ export function dbProductToCatalog(d: DbProduct): Product & {
   isExternal?: boolean;
   externalUrl?: string | null;
 } {
+  // Filter out dev-only "/src/assets/..." paths that don't resolve on the published site.
+  const isProdSafe = (u: string) => !!u && !u.startsWith("/src/");
+  const gallery = (d.gallery_urls ?? []).filter(isProdSafe);
+  const fallback = d.image_url && isProdSafe(d.image_url) ? [d.image_url] : [];
   return {
     id: d.slug,
     name: d.name,
@@ -48,7 +52,7 @@ export function dbProductToCatalog(d: DbProduct): Product & {
     tags: d.tags as Product["tags"],
     description: d.description,
     techInfo: d.tech_info,
-    galleryUrls: (d.gallery_urls ?? []).length ? d.gallery_urls : (d.image_url ? [d.image_url] : []),
+    galleryUrls: gallery.length ? gallery : fallback,
     swatches: d.color_swatches ?? [],
     season: d.season,
     isExternal: d.is_external ?? false,
