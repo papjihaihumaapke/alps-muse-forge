@@ -26,16 +26,18 @@ const ARTICLES = [
   },
 ];
 
-const AWARDS = [
+const AWARDS: Array<{ year: string; outlet: string; title: string; href?: string; image?: string }> = [
   {
     year: "2022",
     outlet: "New York Product Design Awards",
-    title: "silver — fashion & lifestyle smart fashion · collection ONE and ALL",
+    title: "silver — smart fashion 2022 · collection ONE and ALL",
+    image: nySmartFashion2022.url,
   },
   {
     year: "2022",
     outlet: "New York Product Design Awards",
-    title: "silver — fashion & lifestyle womenswear · collection ONE and ALL",
+    title: "silver — womenswear 2022 · collection ONE and ALL",
+    image: nyWomenswear2022.url,
   },
   {
     year: "2022",
