@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, notFound } from "@tanstack/react-router";
+import { FEATURES } from "@/lib/alps-data";
 import { Shell } from "@/components/alps/Shell";
 import {
   ACCESSORY_TAGS,
