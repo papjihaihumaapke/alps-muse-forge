@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
 import { ExternalLink } from "lucide-react";
 import { SOCIALS } from "@/lib/alps-data";
+import nySmartFashion2022 from "@/assets/awards/ny-smart-fashion-2022.png.asset.json";
+import nyWomenswear2022 from "@/assets/awards/ny-womenswear-2022.png.asset.json";
 
 const ARTICLES = [
   {
@@ -24,16 +26,18 @@ const ARTICLES = [
   },
 ];
 
-const AWARDS = [
+const AWARDS: Array<{ year: string; outlet: string; title: string; href?: string; image?: string }> = [
   {
     year: "2022",
     outlet: "New York Product Design Awards",
-    title: "silver — fashion & lifestyle smart fashion · collection ONE and ALL",
+    title: "silver — smart fashion 2022 · collection ONE and ALL",
+    image: nySmartFashion2022.url,
   },
   {
     year: "2022",
     outlet: "New York Product Design Awards",
-    title: "silver — fashion & lifestyle womenswear · collection ONE and ALL",
+    title: "silver — womenswear 2022 · collection ONE and ALL",
+    image: nyWomenswear2022.url,
   },
   {
     year: "2022",
@@ -130,8 +134,18 @@ export const Route = createFileRoute("/press")({
               <>
                 <span className="num col-span-2 text-primary text-sm">{a.year}</span>
                 <span className="col-span-4 text-sm">{a.outlet}</span>
-                <span className="col-span-5 text-sm text-foreground/70">{a.title}</span>
-                {"href" in a && a.href ? (
+                <span className="col-span-5 text-sm text-foreground/70 flex items-center gap-3">
+                  {a.image && (
+                    <img
+                      src={a.image}
+                      alt={`${a.outlet} ${a.year}`}
+                      className="h-14 w-auto rounded-sm shadow-sm shrink-0"
+                      loading="lazy"
+                    />
+                  )}
+                  <span>{a.title}</span>
+                </span>
+                {a.href ? (
                   <ExternalLink className="col-span-1 h-3.5 w-3.5 text-foreground/40 justify-self-end" />
                 ) : (
                   <span className="col-span-1" />
@@ -140,7 +154,7 @@ export const Route = createFileRoute("/press")({
             );
             return (
               <li key={i}>
-                {"href" in a && a.href ? (
+                {a.href ? (
                   <a
                     href={a.href}
                     target="_blank"
