@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Shell } from "@/components/alps/Shell";
 import { useCart, formatMoney } from "@/lib/cart";
 import { COUNTRIES, CA_PROVINCES, taxRate } from "@/lib/tax";
