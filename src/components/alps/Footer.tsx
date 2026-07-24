@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, Youtube, Twitter, MessageCircle, Phone } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, MessageCircle, Music2 } from "lucide-react";
 import { useState } from "react";
 import { SOCIALS, FEATURES } from "@/lib/alps-data";
 import { supabase } from "@/integrations/supabase/client";
