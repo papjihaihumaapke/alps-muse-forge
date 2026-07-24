@@ -73,7 +73,7 @@ export function Footer() {
         <Col title="find us">
           <div className="space-y-5">
             <div>
-              <p className="text-foreground font-medium mb-2">ALPS</p>
+              <p className="text-foreground font-semibold mb-2 text-[12px] tracking-wider">ALPS</p>
               <div className="flex flex-wrap gap-2">
                 <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-4 w-4" fill="currentColor" strokeWidth={0} /></SocialIcon>
                 <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-4 w-4" /></SocialIcon>
