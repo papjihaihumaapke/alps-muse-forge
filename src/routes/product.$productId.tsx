@@ -1,4 +1,5 @@
-import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { createFileRoute, notFound, Link, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/lib/auth";
 import { useEffect, useMemo, useState } from "react";
 import { Minus, Plus, ChevronDown, Heart } from "lucide-react";
 import { useWishlist, useToggleWishlist } from "@/lib/wishlist";
