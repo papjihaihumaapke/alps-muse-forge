@@ -234,10 +234,12 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
                     </h3>
                     {external.isExternal && external.externalUrl ? (
                       <p className="text-[11px] text-primary mt-1.5 uppercase tracking-wider">visit site →</p>
-                    ) : (
+                    ) : (currency === "CAD" ? p.priceCAD : p.priceHKD) > 0 ? (
                       <p className="num text-[12px] text-primary mt-1.5 font-medium">
                         {currency} {(currency === "CAD" ? p.priceCAD : p.priceHKD).toFixed(2)}
                       </p>
+                    ) : (
+                      <p className="text-[11px] text-foreground/50 mt-1.5 tracking-wide">price on request</p>
                     )}
                     {p.colors.length > 1 && (
                       <div className="flex gap-1 justify-center mt-2">
@@ -257,7 +259,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
                               key={c}
                               title={c}
                               className="h-2 w-2 rounded-full border border-border/60"
-                              style={{ background: dbSw?.hex ?? PRODUCT_COLORS[c] }}
+                              style={{ background: dbSw?.hex ?? PRODUCT_COLORS[c] ?? "transparent" }}
                             />
                           );
                         })}
