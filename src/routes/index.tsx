@@ -132,88 +132,52 @@ function EditorialHero() {
   ] as const;
 
   return (
-    <section className="relative bg-background px-6 lg:px-10 pt-6 pb-32 md:pb-40">
-      <div className="mx-auto max-w-[1400px]">
-        <div className="grid grid-cols-12 gap-3">
-          {/* Top-left: hero image (thin) */}
-          <div className="col-span-12 lg:col-span-9">
-            <BannerBlock
-              banner={banners.hero}
-              fallbackImg={hero}
-              alt="ALPS editorial"
-              className="aspect-[32/5] w-full border border-border bg-card"
-              overlayAlign="left"
-              overlayTheme="light"
-            />
-          </div>
-
-          {/* Top-right: red block (thin) */}
-          <div className="col-span-6 lg:col-span-3">
-            <BannerBlock
-              banner={banners.red}
-              fallbackClass="bg-primary"
-              alt="promo"
-              className="aspect-[16/5] lg:aspect-auto lg:h-full w-full"
-              overlayAlign="center"
-              overlayTheme="light"
-            />
-          </div>
-
-          {/* Bottom-left: black band */}
-          <div className="col-span-12 lg:col-span-9">
-            <BannerBlock
-              banner={banners.black}
-              fallbackClass="bg-brand-black"
-              alt="promo"
-              className="aspect-[32/8] w-full"
-              overlayAlign="left"
-              overlayTheme="light"
-            />
-          </div>
-
-          {/* Bottom-right: two grey blocks stacked */}
-          <div className="col-span-12 lg:col-span-3 flex flex-col gap-3">
-            <BannerBlock
-              banner={banners.grey_large}
-              fallbackClass="bg-muted"
-              alt="promo"
-              className="flex-[4] min-h-[130px] w-full"
-              overlayAlign="center"
-              overlayTheme="dark"
-            />
-            <BannerBlock
-              banner={banners.grey_small}
-              fallbackClass="bg-muted-foreground/40"
-              alt="promo"
-              className="flex-[2] min-h-[80px] w-full"
-              overlayAlign="center"
-              overlayTheme="dark"
-            />
-          </div>
+    <section className="relative bg-background">
+      {/* Slim top artwork — mosaic band + shorter black title band, edge-to-edge */}
+      <div className="w-full px-4 md:px-6 pt-4">
+        <BannerBlock
+          banner={banners.hero}
+          fallbackImg={hero}
+          alt="ALPS editorial"
+          className="aspect-[32/4] md:aspect-[32/3.2] w-full border border-border bg-card"
+          overlayAlign="left"
+          overlayTheme="light"
+        />
+        <div className="mt-3">
+          <BannerBlock
+            banner={banners.black}
+            fallbackClass="bg-brand-black"
+            alt="promo"
+            className="aspect-[32/3] md:aspect-[32/2.2] w-full"
+            overlayAlign="left"
+            overlayTheme="light"
+          />
         </div>
+      </div>
 
-        {/* Floating category cards — full width on mobile, bigger on desktop */}
-        <div className="relative -mt-20 md:-mt-32 flex justify-center pointer-events-none">
-          <div className="pointer-events-auto bg-background px-4 md:px-10 pt-8 pb-10 w-full max-w-6xl">
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5 md:gap-6">
-              {cards.map((c) => (
-                <Link key={c.slug} to={`/${c.slug}`} className="group flex flex-col items-center text-center">
-                  <div className="text-[11px] tracking-[0.15em] leading-tight">
-                    <div className="text-foreground/80">{c.label}</div>
-                  </div>
-                  <div className="mt-3 w-full aspect-square overflow-hidden bg-muted">
-                    <img
-                      src={c.img}
-                      alt={c.label}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                  <span className="link-red text-[11px] mt-3 inline-block">view all</span>
-                </Link>
-              ))}
-            </div>
-          </div>
+      {/* Full-bleed category row — 5 evenly spaced tiles edge-to-edge */}
+      <div className="w-full pt-10 pb-16">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-0">
+          {cards.map((c) => (
+            <Link
+              key={c.slug}
+              to={`/${c.slug}`}
+              className="group flex flex-col items-center text-center"
+            >
+              <div className="w-full aspect-square overflow-hidden bg-muted">
+                <img
+                  src={c.img}
+                  alt={c.label}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="mt-4 text-[12px] tracking-[0.15em] text-foreground/80 px-2">
+                {c.label}
+              </div>
+              <span className="link-red text-[11px] mt-2 inline-block">view all</span>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

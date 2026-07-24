@@ -34,14 +34,14 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur border-b border-border">
-      <div className="mx-auto flex h-16 items-center justify-between px-6 lg:px-10">
+      <div className="mx-auto flex h-24 md:h-28 items-center justify-between px-6 lg:px-10">
         {/* Logo */}
         <Link to="/" aria-label="ALPS home" className="flex items-center gap-3 shrink-0">
-          <img src={logoBlack} alt="ALPS Annie Ling" className="h-16 md:h-20 w-auto" />
+          <img src={logoBlack} alt="ALPS Annie Ling" className="h-20 md:h-28 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden xl:flex items-center gap-7 text-[14px] font-semibold tracking-wide">
+        <nav className="hidden xl:flex items-center gap-8 text-[16px] font-semibold tracking-wide">
           {NAV.map((n) =>
             n.to === "/personal-care" ? (
               <div key={n.to} className="relative group">
