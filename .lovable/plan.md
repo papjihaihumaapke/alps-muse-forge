@@ -1,59 +1,68 @@
-## Goals
+This is a big list — I've grouped it into phases so we can ship the quick, high-impact fixes first and tackle the heavy data/import work in follow-ups. Each phase is a separate turn so you can review before we spend credits on the next one.
 
-1. Pull all product info (images, prices, colors, descriptions, tech specs) from your Google Drive folder.
-2. Move products from the static file (`src/lib/alps-data.ts`) into the Lovable Cloud database so the admin panel can truly edit them.
-3. Replace the single "personal care" section with the 5 vegan sub-categories.
-4. Fix missing fabric icons (recycle / vegan / wind-resistant / wrinkle-resistant) and the skincare icon.
-5. Show every product image (7–9 per item) in the product gallery.
-6. Fix the price display — use the color icons from Drive and the prices from the master price sheet.
-7. Admin: list every product, add/edit/delete, and tag each with a season.
+---
 
-## Phase 1 — Database schema (this turn)
+## Phase 1 — Immediate fixes (small, no re-import needed)
 
-Create tables in Lovable Cloud:
-- `products` (expand the existing one): add `subcategory`, `season` (`spring|summer|fall|winter|all-season`), `tech_info`, `description`, `gallery_urls[]`, `color_swatches` (jsonb: `[{name, hex, swatch_url}]`), `price_cad`, `price_hkd`, `display_order`, `active`.
-- `product_categories` lookup: `slug`, `name`, `parent_slug`, `display_order`. Seeded with existing top-level categories plus the 5 new vegan sub-categories under `personal-care`:
-  - `vegan-skincare`, `vegan-personal-care`, `vegan-makeup`, `vegan-supplement`, `vegan-tech`
-- Storage bucket `product-media` (public) for images uploaded from Drive / admin.
-- RLS: public read for `active=true`; admin-only write (uses existing `has_role(_, 'admin')`).
+**Footer + contact (from your marked-up screenshots)**
+- Remove mobile number `+1 (604) 505-2223` from footer entirely.
+- Fix email: `cs@ALPSannieling.com` → correct spelling (`cs@ALPSannieling.com` is currently shown; you wrote `cs@annieling.com` in the reference — confirm which is correct).
+- Social icons: split into **ALPS**: 2× Facebook, 2× Instagram, 1× Twitter, 1× YouTube, 1× TikTok, and **vegan skincare**: 1× Facebook + 2× Instagram. I'll need the actual URLs for the second FB and second IG (please paste).
+- Re-balance footer columns to match your reference layout (Asia Miles | size info | features | awards | find us | pre-order/contact us).
+- Make every footer line clickable:
+  - Feature names → open popup with the icon artwork + description (same popover pattern already on product pages).
+  - Size info (`kids` / `men` / `women` / `unisex`) → popup with a sizing chart per group.
+  - Awards → popup with certificate image + collection photos (needs uploads — see Phase 3).
+  - `Asia Miles`, social handles → external links.
 
-## Phase 2 — Drive sync (next turn, after schema approved)
+**Designer bio (`/my-journey` + homepage `04 / designer`)**
+- Replace AI-generated model photo with an image from your Drive (please point me at the correct file/folder).
+- Replace bio copy — please paste the correct bio text.
 
-A one-time admin-triggered server function `syncProductsFromDrive` that:
-- Walks the 5 vegan sub-folders + 4 ALPS apparel/accessories folders.
-- For each product folder: uploads all images to the `product-media` bucket, parses the price `.xls` + `Inventory` PDF, extracts color/swatch references, and upserts a `products` row.
-- Parses the `Properties-features icons 2026` PDFs to confirm feature-key coverage.
-- Idempotent: re-runs update rows in place.
+**Homepage layout balance**
+- Redo the bottom section grid using your reference screenshot as the target proportion.
+- Wire feature-icon click → popover (currently non-interactive there).
 
-## Phase 3 — Frontend
+---
 
-- Replace `PRODUCTS` static reads with `useQuery` against the DB via a public `listProducts` server fn (publishable client, anon SELECT on `active`).
-- `Header` nav: keep apparel categories; under "personal care" add a dropdown for the 5 vegan sub-categories.
-- New routes: `/personal-care/vegan-skincare`, `/vegan-personal-care`, `/vegan-makeup`, `/vegan-supplement`, `/vegan-tech` (reuse `CategoryView`).
-- Product detail: render full `gallery_urls` instead of one image; render `color_swatches` from DB so each product shows its correct swatch.
-- Add the 4 missing fabric icons (recycle, vegan, wind-resistant, wrinkle-resistant) as PNG assets; update skincare icon.
-- Price color: render in `--brand-red` (`text-primary`) on cards + detail page, instead of the current muted grey.
+## Phase 2 — Product page fixes (data-layer, one-shot SQL/admin)
 
-## Phase 4 — Admin
+- **Colour dots on innovation category tiles**: audit `color_swatches` for every product and swap to the correct branded swatches from the swatch library.
+- **Feature icons on innovation cards**: ensure each product's `features` array matches its real fabric tech (currently mismatched).
+- **Prices**: I need a source-of-truth price list (CSV or paste per SKU) — the current values were placeholder-imported.
+- **Sizes offered**: same — one authoritative list per style.
 
-Expand `/admin`:
-- Table of every product (paginated, searchable by name/category/season).
-- Row actions: edit, deactivate, delete.
-- Create modal: name, category + subcategory, season, prices, colors (multi), sizes, features (multi), description, tech_info, gallery uploads (uses storage bucket).
-- Bulk action: re-run Drive sync.
-- Season filter chips so you can quickly see e.g. all "winter" items.
+I can do all of the above via SQL updates once you provide the reference sheet.
 
-## Technical notes
+---
 
-- Admin writes go through `createServerFn` + `requireSupabaseAuth` + `has_role(_, 'admin')` check.
-- Public reads use a server publishable client to avoid the `JWT got 1 part` admin-client issue on Data API reads.
-- The Drive sync runs as an admin-only `createServerFn`; images are uploaded to Supabase Storage and the public URLs are persisted (so we are not dependent on Drive at runtime).
+## Phase 3 — Full re-import from your Drive (the big one)
 
-## Open questions before I start coding
+Current import pulled only 1 image per style and dumped everything into flat categories. To fix items 1, 2, 5, 6, and 8 (video) properly, I'll rewrite the sync to:
 
-I have enough to begin Phase 1 (schema). Two things I'll need from you between phases:
+- Walk each **sub-category folder** (overcoat / jacket / top / skirt / shorts / pants / one-piece / etc.) and set `subcategory` on every product.
+- For each style folder, upload **every** image (typically 6–9) into `gallery_urls`.
+- Detect `.mp4`/`.mov` in the folder and store into a new `video_urls` column, then render on the product page.
+- Read a `description.txt` / `README.md` per style if you include one, and populate: **a) style description, b) design features, c) technology benefits, d) care instructions, e) sizes, f) colours, g) technology icon keys**. If those aren't in the folder, I'll need a spreadsheet.
 
-1. **Drive folder access for sync** — the connector is now linked, so this is good.
-2. **Seasons** — confirm the set `spring | summer | fall | winter | all-season` (or you can specify e.g. `SS26 / FW26` instead).
+Before I run this: please confirm the Drive folder is fully organised the way you want (sub-category → style → images + video + description file). Re-running the import against a half-organised folder wastes credits.
 
-If this matches what you want, approve and I'll start with the schema migration, then move category-by-category through the Drive sync.
+---
+
+## Phase 4 — Admin panel additions
+
+- Sub-category dropdown (overcoat/jacket/top/skirt/etc.) on the product editor.
+- Video upload field.
+- Awards manager: upload certificate image + linked collection photos.
+- Size-chart manager: 4 charts (kids / women / men / unisex), edited in admin, shown in footer popup.
+
+---
+
+## What I need from you to start Phase 1 right now
+1. Correct email address (confirm spelling).
+2. URLs for the second Facebook page and second Instagram account.
+3. TikTok URL (you mentioned 2 "taboos" — I assume TikTok?).
+4. Correct designer bio copy.
+5. Which Drive image to use for Annie's portrait.
+
+Reply with those and I'll ship Phase 1 in the next turn.
