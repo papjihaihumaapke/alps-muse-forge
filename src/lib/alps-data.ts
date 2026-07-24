@@ -69,6 +69,8 @@ export const FEATURES: { key: string; name: string; desc: string }[] = [
   { key: "stretch", name: "stretch", desc: "4-way stretch construction for unrestricted movement." },
   { key: "natural", name: "natural", desc: "natural-origin fibres, ethically sourced." },
   { key: "vegan", name: "vegan", desc: "100% animal-free materials and processes." },
+  { key: "wind-resistance", name: "wind resistance", desc: "engineered weave blocks wind while remaining breathable." },
+  { key: "wrinkle-resistant", name: "wrinkle resistant", desc: "recovery fibres keep garments smooth all day." },
 ];
 
 export type AccessoryTag =
