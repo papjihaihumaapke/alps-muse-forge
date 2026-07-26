@@ -12,7 +12,7 @@ import catInnovation from "@/assets/categories/innovation.png";
 import catContemporary from "@/assets/categories/contemporary.png";
 import catAccessories from "@/assets/categories/accessories.png";
 import catCollab from "@/assets/categories/collaborations.png";
-import catPersonal from "@/assets/categories/personal-care.png";
+import veganPersonalCareIcon from "@/assets/vegan-personal-care-icon.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,7 +35,7 @@ const CAT_IMAGES: Record<string, string> = {
   contemporary: catContemporary,
   accessories: catAccessories,
   collaborations: catCollab,
-  "personal-care": catPersonal,
+  "personal-care": veganPersonalCareIcon.url,
 };
 
 
@@ -129,7 +129,7 @@ function EditorialHero() {
     { slug: "contemporary", label: "contemporary", img: catContemporary },
     { slug: "accessories", label: "accessories", img: catAccessories },
     { slug: "collaborations", label: "collaborations", img: catCollab },
-    { slug: "personal-care", label: "vegan skin & personal care", img: catPersonal },
+    { slug: "personal-care", label: "vegan skin & personal care", img: veganPersonalCareIcon.url },
   ] as const;
 
   return (
