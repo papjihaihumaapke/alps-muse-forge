@@ -200,7 +200,7 @@ function PressPage() {
           ))}
         </ul>
 
-        <h2 className="mt-24 text-2xl font-light">awards &amp; accolades</h2>
+        <h2 id="awards" className="mt-24 text-2xl font-light">awards &amp; accolades</h2>
         <p className="mt-3 text-sm text-foreground/60 max-w-xl">
           tap any award to view the full details, certificate, and category.
         </p>
