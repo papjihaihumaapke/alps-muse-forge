@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { INNOVATIONS, type Innovation } from "@/lib/innovations";
 import { featureIcon } from "@/lib/feature-icons";
 import {
@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 function InnovationCard({
   item,
