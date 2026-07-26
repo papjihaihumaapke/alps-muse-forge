@@ -16,6 +16,7 @@ import { Route as VeganSkincareRouteImport } from './routes/vegan-skincare'
 import { Route as VeganPersonalCareRouteImport } from './routes/vegan-personal-care'
 import { Route as VeganMakeupRouteImport } from './routes/vegan-makeup'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SizeInfoRouteImport } from './routes/size-info'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ReturnsRouteImport } from './routes/returns'
@@ -70,6 +71,11 @@ const VeganMakeupRoute = VeganMakeupRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SizeInfoRoute = SizeInfoRouteImport.update({
+  id: '/size-info',
+  path: '/size-info',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -191,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/returns': typeof ReturnsRoute
   '/shipping': typeof ShippingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/size-info': typeof SizeInfoRoute
   '/terms': typeof TermsRoute
   '/vegan-makeup': typeof VeganMakeupRoute
   '/vegan-personal-care': typeof VeganPersonalCareRoute
@@ -220,6 +227,7 @@ export interface FileRoutesByTo {
   '/returns': typeof ReturnsRoute
   '/shipping': typeof ShippingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/size-info': typeof SizeInfoRoute
   '/terms': typeof TermsRoute
   '/vegan-makeup': typeof VeganMakeupRoute
   '/vegan-personal-care': typeof VeganPersonalCareRoute
@@ -250,6 +258,7 @@ export interface FileRoutesById {
   '/returns': typeof ReturnsRoute
   '/shipping': typeof ShippingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/size-info': typeof SizeInfoRoute
   '/terms': typeof TermsRoute
   '/vegan-makeup': typeof VeganMakeupRoute
   '/vegan-personal-care': typeof VeganPersonalCareRoute
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/returns'
     | '/shipping'
     | '/sitemap.xml'
+    | '/size-info'
     | '/terms'
     | '/vegan-makeup'
     | '/vegan-personal-care'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/returns'
     | '/shipping'
     | '/sitemap.xml'
+    | '/size-info'
     | '/terms'
     | '/vegan-makeup'
     | '/vegan-personal-care'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/returns'
     | '/shipping'
     | '/sitemap.xml'
+    | '/size-info'
     | '/terms'
     | '/vegan-makeup'
     | '/vegan-personal-care'
@@ -369,6 +381,7 @@ export interface RootRouteChildren {
   ReturnsRoute: typeof ReturnsRoute
   ShippingRoute: typeof ShippingRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SizeInfoRoute: typeof SizeInfoRoute
   TermsRoute: typeof TermsRoute
   VeganMakeupRoute: typeof VeganMakeupRoute
   VeganPersonalCareRoute: typeof VeganPersonalCareRoute
@@ -428,6 +441,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/size-info': {
+      id: '/size-info'
+      path: '/size-info'
+      fullPath: '/size-info'
+      preLoaderRoute: typeof SizeInfoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -605,6 +625,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReturnsRoute: ReturnsRoute,
   ShippingRoute: ShippingRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SizeInfoRoute: SizeInfoRoute,
   TermsRoute: TermsRoute,
   VeganMakeupRoute: VeganMakeupRoute,
   VeganPersonalCareRoute: VeganPersonalCareRoute,
@@ -617,3 +638,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
