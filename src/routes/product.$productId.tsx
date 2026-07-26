@@ -15,6 +15,7 @@ import { useCart, buildCartItem } from "@/lib/cart";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { useDbProductBySlug, dbProductToCatalog } from "@/lib/products-db";
+import { SizeChartDialog, inferSizeChartKinds } from "@/components/alps/SizeChart";
 
 export const Route = createFileRoute("/product/$productId")({
   head: ({ params }) => {
