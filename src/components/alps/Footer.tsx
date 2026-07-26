@@ -171,7 +171,7 @@ function NewsletterBar() {
 
 function Col({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`flex flex-col px-4 first:pl-0 last:pr-0 border-l border-border first:border-l-0 ${className}`}>
+    <div className={`flex flex-col px-4 py-4 md:py-3 lg:py-0 ${className}`}>
       <h4 className="text-[13px] tracking-wide text-foreground font-semibold mb-3">{title}</h4>
       <div className="flex flex-col gap-1">{children}</div>
     </div>
