@@ -283,7 +283,9 @@ function ProductPage() {
                   </button>
                 ))}
               </div>
+              <SizeChartDialog kinds={inferSizeChartKinds(product.tags as string[], product.category)} />
             </div>
+
 
             <div className="mt-6">
               <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">quantity</h3>
