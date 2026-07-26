@@ -35,7 +35,7 @@ const CAT_IMAGES: Record<string, string> = {
   contemporary: catContemporary,
   accessories: catAccessories,
   collaborations: catCollab,
-  "personal-care": catPersonal,
+  "personal-care": veganPersonalCareIcon.url,
 };
 
 
@@ -129,7 +129,7 @@ function EditorialHero() {
     { slug: "contemporary", label: "contemporary", img: catContemporary },
     { slug: "accessories", label: "accessories", img: catAccessories },
     { slug: "collaborations", label: "collaborations", img: catCollab },
-    { slug: "personal-care", label: "vegan skin & personal care", img: catPersonal },
+    { slug: "personal-care", label: "vegan skin & personal care", img: veganPersonalCareIcon.url },
   ] as const;
 
   return (
