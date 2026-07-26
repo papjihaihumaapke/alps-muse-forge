@@ -38,7 +38,7 @@ export function Footer() {
 
         <Col title="size info">
           {SIZE_GROUPS.map((s) => (
-            <Link key={s} to="/innovation" className="text-foreground/80 hover:text-primary">
+            <Link key={s} to="/size-info" hash={s} className="text-foreground/80 hover:text-primary">
               {s}
             </Link>
           ))}
