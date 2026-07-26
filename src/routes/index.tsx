@@ -251,6 +251,7 @@ function BrandVideo() {
             key={current.id}
             className="absolute inset-0 h-full w-full"
             src={src}
+            onLoad={onIframeLoad}
             title={`ALPS fashion show — ${current.title}`}
             allow="autoplay; encrypted-media; picture-in-picture"
             allowFullScreen
