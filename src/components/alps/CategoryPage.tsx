@@ -369,3 +369,39 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
     </Shell>
   );
 }
+
+type FilterOption = string | { value: string; label: string };
+function FilterSelect({
+  value,
+  onChange,
+  label,
+  options,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  label: string;
+  options: FilterOption[];
+}) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="appearance-none bg-card border border-border text-[12px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
+      >
+        <option value="all">all {label}s</option>
+        {options.map((o) => {
+          const v = typeof o === "string" ? o : o.value;
+          const l = typeof o === "string" ? o : o.label;
+          return (
+            <option key={v} value={v}>
+              {l}
+            </option>
+          );
+        })}
+      </select>
+      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[10px]">▾</span>
+    </div>
+  );
+}
+
