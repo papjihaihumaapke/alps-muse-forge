@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
 import { ExternalLink } from "lucide-react";
 import { SOCIALS } from "@/lib/alps-data";
 import { AWARDS, type Award } from "@/lib/awards";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -157,6 +157,21 @@ function AwardDialog({
 
 function PressPage() {
   const [selected, setSelected] = useState<Award | null>(null);
+  const hash = useRouterState({ select: (s) => s.location.hash });
+
+  useEffect(() => {
+    if (!hash) return;
+    const id = hash.replace(/^#/, "");
+    const match = AWARDS.find((a) => a.id === id);
+    if (match) {
+      setSelected(match);
+      // also scroll the awards grid into view
+      requestAnimationFrame(() => {
+        document.getElementById("awards")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, [hash]);
+
 
   return (
     <Shell>
@@ -185,7 +200,7 @@ function PressPage() {
           ))}
         </ul>
 
-        <h2 className="mt-24 text-2xl font-light">awards &amp; accolades</h2>
+        <h2 id="awards" className="mt-24 text-2xl font-light">awards &amp; accolades</h2>
         <p className="mt-3 text-sm text-foreground/60 max-w-xl">
           tap any award to view the full details, certificate, and category.
         </p>

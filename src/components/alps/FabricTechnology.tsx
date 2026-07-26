@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { INNOVATIONS, type Innovation } from "@/lib/innovations";
 import { featureIcon } from "@/lib/feature-icons";
 import {
@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 function InnovationCard({
   item,
@@ -174,9 +174,25 @@ function InnovationDetail({
 
 export function FabricTechnology() {
   const [active, setActive] = useState<Innovation | null>(null);
+  const hash = useRouterState({ select: (s) => s.location.hash });
+
+  useEffect(() => {
+    if (!hash) return;
+    const id = hash.replace(/^#/, "");
+    const match =
+      INNOVATIONS.find((i) => i.slug === id) ??
+      INNOVATIONS.find((i) => i.filterKey === id);
+    if (match) {
+      setActive(match);
+      requestAnimationFrame(() => {
+        document.getElementById("fabric-technology")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, [hash]);
+
 
   return (
-    <section className="container mx-auto px-6 py-20">
+    <section id="fabric-technology" className="container mx-auto px-6 py-20">
       <div className="mb-12 max-w-2xl">
         <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
           textile science

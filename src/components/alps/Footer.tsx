@@ -3,6 +3,7 @@ import { Instagram, Facebook, Youtube, Twitter, MessageCircle, Music2 } from "lu
 import { useState } from "react";
 import { SOCIALS, FEATURES } from "@/lib/alps-data";
 import { AWARDS } from "@/lib/awards";
+import { INNOVATIONS } from "@/lib/innovations";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -45,16 +46,19 @@ export function Footer() {
 
         <Col title="features">
           <div className="flex flex-col gap-1">
-            {FEATURES.map((f) => (
-              <Link
-                key={f.key}
-                to="/innovation"
-                search={{ feature: f.key }}
-                className="text-foreground/80 hover:text-primary"
-              >
-                {f.name}
-              </Link>
-            ))}
+            {FEATURES.map((f) => {
+              const innovation = INNOVATIONS.find((i) => i.filterKey === f.key);
+              return (
+                <Link
+                  key={f.key}
+                  to="/innovation"
+                  hash={innovation?.slug}
+                  className="text-foreground/80 hover:text-primary"
+                >
+                  {f.name}
+                </Link>
+              );
+            })}
           </div>
         </Col>
 
