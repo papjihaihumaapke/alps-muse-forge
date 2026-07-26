@@ -1,16 +1,16 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Award as AwardIcon } from "lucide-react";
 import { SOCIALS } from "@/lib/alps-data";
 import { AWARDS, type Award } from "@/lib/awards";
 import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import bgWood from "@/assets/backgrounds/bg-wood.jpg.asset.json";
 
 const ARTICLES = [
   {
@@ -46,7 +46,6 @@ function LevelBadge({ level }: { level: Award["level"] }) {
     <span
       className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] tracking-[0.18em] uppercase ${LEVEL_STYLES[level]}`}
     >
-      {/* Non-color signifier so gold/silver/bronze are distinguishable without color */}
       <span aria-hidden className="font-semibold">
         {level === "gold" ? "★★★" : level === "silver" ? "★★" : level === "bronze" ? "★" : level === "winner" ? "✓" : "◆"}
       </span>
@@ -55,40 +54,32 @@ function LevelBadge({ level }: { level: Award["level"] }) {
   );
 }
 
-function AwardCard({ award, onClick }: { award: Award; onClick: () => void }) {
+/** Feature-style icon tile for an award. */
+function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={`${award.organization}, ${award.category}, ${award.year}, ${award.level} — view details`}
-      className="group text-left flex flex-col border border-border bg-background hover:border-primary focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors"
+      className="group flex flex-col items-center text-center gap-3 p-5 border border-border bg-background hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition"
     >
-      <div className="aspect-[4/5] w-full bg-muted overflow-hidden flex items-center justify-center">
+      <div className="h-24 w-24 flex items-center justify-center bg-muted/40 rounded-full overflow-hidden">
         {award.image ? (
           <img
             src={award.image}
-            alt={`${award.organization} — ${award.category} ${award.year} ${award.level}`}
+            alt={`${award.organization} ${award.category} ${award.year}`}
             loading="lazy"
-            className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+            className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="p-6 text-center">
-            <p className="num text-[11px] tracking-[0.25em] text-primary">{award.year}</p>
-            <p className="mt-3 text-sm font-medium">{award.organization}</p>
-            <p className="mt-2 text-xs text-foreground/60">{award.category}</p>
-          </div>
+          <AwardIcon className="h-10 w-10 text-primary" />
         )}
       </div>
-      <div className="p-4 border-t border-border flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-2">
-          <span className="num text-[11px] tracking-[0.25em] text-primary">{award.year}</span>
-          <LevelBadge level={award.level} />
-        </div>
-        <p className="text-[13px] font-medium leading-snug">{award.organization}</p>
-        <p className="text-xs text-foreground/70">{award.category}</p>
-        {award.project && (
-          <p className="text-[11px] text-foreground/50 italic">{award.project}</p>
-        )}
+      <div className="flex flex-col items-center gap-1.5">
+        <span className="num text-[10px] tracking-[0.25em] text-primary">{award.year}</span>
+        <LevelBadge level={award.level} />
+        <p className="text-[12px] font-medium leading-tight mt-1">{award.organization}</p>
+        <p className="text-[11px] text-foreground/70 leading-tight">{award.category}</p>
       </div>
     </button>
   );
@@ -105,50 +96,60 @@ function AwardDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-5xl w-[96vw] p-0 border-0 bg-transparent shadow-none max-h-[92vh] overflow-y-auto">
         {award && (
-          <>
-            <DialogHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="num text-[11px] tracking-[0.25em] text-primary">{award.year}</span>
-                <LevelBadge level={award.level} />
+          <div
+            className="relative w-full min-h-[80vh] flex flex-col items-center justify-center p-6 md:p-10"
+            style={{
+              backgroundImage: `url(${bgWood.url})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div aria-hidden className="absolute inset-0 bg-black/40" />
+            <div className="relative z-10 w-full flex flex-col items-center gap-6">
+              <div className="text-center text-white">
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <span className="num text-[11px] tracking-[0.25em] text-white/90">{award.year}</span>
+                  <LevelBadge level={award.level} />
+                </div>
+                <DialogTitle className="text-xl md:text-2xl font-light">
+                  {award.organization}
+                </DialogTitle>
+                <DialogDescription className="text-sm text-white/85 mt-1">
+                  {award.category}
+                  {award.project ? ` · ${award.project}` : ""}
+                </DialogDescription>
               </div>
-              <DialogTitle className="text-xl font-light">
-                {award.organization}
-              </DialogTitle>
-              <DialogDescription className="text-sm text-foreground/70">
-                {award.category}
-                {award.project ? ` · ${award.project}` : ""}
-              </DialogDescription>
-            </DialogHeader>
 
-            {(award.certificate || award.image) && (
-              <div className="mt-2 bg-muted p-2">
-                <img
-                  src={award.certificate ?? award.image}
-                  alt={`${award.organization} ${award.category} ${award.year} certificate`}
-                  className="w-full h-auto max-h-[60vh] object-contain"
-                />
-              </div>
-            )}
+              {(award.certificate || award.image) && (
+                <div className="bg-background p-3 md:p-4 shadow-2xl max-w-3xl w-full">
+                  <img
+                    src={award.certificate ?? award.image}
+                    alt={`${award.organization} ${award.category} ${award.year} certificate`}
+                    className="w-full h-auto max-h-[60vh] object-contain"
+                  />
+                </div>
+              )}
 
-            {award.description && (
-              <p className="mt-4 text-sm text-foreground/80 leading-relaxed">
-                {award.description}
-              </p>
-            )}
+              {award.description && (
+                <p className="text-sm text-white/90 leading-relaxed max-w-2xl text-center">
+                  {award.description}
+                </p>
+              )}
 
-            {award.href && (
-              <a
-                href={award.href}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-4 inline-flex items-center gap-2 text-sm link-red"
-              >
-                view award listing <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            )}
-          </>
+              {award.href && (
+                <a
+                  href={award.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-white hover:text-primary-foreground bg-primary px-4 py-2 tracking-[0.15em] uppercase text-[11px]"
+                >
+                  view award listing <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              )}
+            </div>
+          </div>
         )}
       </DialogContent>
     </Dialog>
@@ -165,13 +166,11 @@ function PressPage() {
     const match = AWARDS.find((a) => a.id === id);
     if (match) {
       setSelected(match);
-      // also scroll the awards grid into view
       requestAnimationFrame(() => {
         document.getElementById("awards")?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
   }, [hash]);
-
 
   return (
     <Shell>
@@ -202,11 +201,11 @@ function PressPage() {
 
         <h2 id="awards" className="mt-24 text-2xl font-light">awards &amp; accolades</h2>
         <p className="mt-3 text-sm text-foreground/60 max-w-xl">
-          tap any award to view the full details, certificate, and category.
+          tap any award to view the full details and certificate.
         </p>
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {AWARDS.map((a) => (
-            <AwardCard key={a.id} award={a} onClick={() => setSelected(a)} />
+            <AwardIconTile key={a.id} award={a} onClick={() => setSelected(a)} />
           ))}
         </div>
       </section>
