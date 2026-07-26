@@ -366,6 +366,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
           </div>
         )}
       </section>
+      {afterContent}
     </Shell>
   );
 }
