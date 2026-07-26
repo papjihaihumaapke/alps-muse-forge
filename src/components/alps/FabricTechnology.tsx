@@ -192,7 +192,7 @@ export function FabricTechnology() {
 
 
   return (
-    <section className="container mx-auto px-6 py-20">
+    <section id="fabric-technology" className="container mx-auto px-6 py-20">
       <div className="mb-12 max-w-2xl">
         <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
           textile science
