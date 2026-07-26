@@ -63,7 +63,7 @@ export function Footer() {
         </Col>
 
         <Col title="awards & accolades">
-          <div className="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1">
+          <div className="flex flex-col gap-2">
             {AWARDS.map((a) => (
               <Link
                 key={a.id}
@@ -71,14 +71,15 @@ export function Footer() {
                 hash={a.id}
                 className="text-foreground/80 hover:text-primary block"
               >
-                <span className="block font-medium text-foreground">{a.organization}</span>
-                <span className="block text-foreground/70">
+                <span className="block font-medium text-foreground text-[11px]">{a.organization}</span>
+                <span className="block text-foreground/70 text-[10px]">
                   {a.category} {a.year} — {a.level}
                 </span>
               </Link>
             ))}
           </div>
         </Col>
+
 
 
         <Col title="find us">
