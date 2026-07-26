@@ -11,7 +11,18 @@ const SIZE_GROUPS = ["kids", "men", "women", "unisex"];
 export function Footer() {
   return (
     <footer className="bg-background text-foreground mt-24 border-t border-border">
-      <div className="mx-auto max-w-[1760px] px-8 lg:px-12 py-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 text-[11px] leading-[1.4]">
+      <div
+        className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 py-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 text-[11px] leading-[1.4]
+          [&>*]:border-l [&>*]:border-t [&>*]:border-border
+          [&>*:nth-child(odd)]:border-l-0
+          [&>*:nth-child(-n+2)]:border-t-0
+          md:[&>*]:border-l md:[&>*]:border-t
+          md:[&>*:nth-child(odd)]:border-l md:[&>*:nth-child(3n+1)]:border-l-0
+          md:[&>*:nth-child(-n+2)]:border-t md:[&>*:nth-child(-n+3)]:border-t-0
+          lg:[&>*:nth-child(3n+1)]:border-l lg:[&>*:nth-child(6n+1)]:border-l-0
+          lg:[&>*]:border-t-0"
+      >
+
 
         <Col title="asia miles">
           <a
@@ -160,7 +171,7 @@ function NewsletterBar() {
 
 function Col({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`flex flex-col px-4 first:pl-0 last:pr-0 border-l border-border first:border-l-0 ${className}`}>
+    <div className={`flex flex-col px-4 py-4 md:py-3 lg:py-0 ${className}`}>
       <h4 className="text-[13px] tracking-wide text-foreground font-semibold mb-3">{title}</h4>
       <div className="flex flex-col gap-1">{children}</div>
     </div>
