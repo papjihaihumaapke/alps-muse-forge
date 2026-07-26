@@ -197,13 +197,45 @@ const FASHION_SHOW_VIDEOS = [
 function BrandVideo() {
   const [index, setIndex] = useState(0);
   const current = FASHION_SHOW_VIDEOS[index];
-  const playlist = FASHION_SHOW_VIDEOS.map((v) => v.id).join(",");
   const next = () => setIndex((i) => (i + 1) % FASHION_SHOW_VIDEOS.length);
   const prev = () => setIndex((i) => (i - 1 + FASHION_SHOW_VIDEOS.length) % FASHION_SHOW_VIDEOS.length);
+  // No YouTube `playlist`/`loop` params — those let YouTube auto-play unrelated
+  // clips. We drive the strict 5-video sequence ourselves via the IFrame API
+  // `onStateChange` postMessage below.
   const src =
     `https://www.youtube.com/embed/${current.id}` +
-    `?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1` +
-    `&playlist=${playlist}&loop=1`;
+    `?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&enablejsapi=1`;
+
+  // Listen for the video ending and advance to the next approved fashion show.
+  useEffect(() => {
+    function onMessage(e: MessageEvent) {
+      if (typeof e.data !== "string") return;
+      try {
+        const msg = JSON.parse(e.data);
+        // state 0 === ended
+        if (msg?.event === "onStateChange" && msg?.info === 0) {
+          setIndex((i) => (i + 1) % FASHION_SHOW_VIDEOS.length);
+        }
+      } catch {
+        /* not a YT message */
+      }
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  // Ask the YouTube iframe to start sending state events once it loads.
+  const onIframeLoad = (e: React.SyntheticEvent<HTMLIFrameElement>) => {
+    e.currentTarget.contentWindow?.postMessage(
+      JSON.stringify({ event: "listening" }),
+      "*",
+    );
+    e.currentTarget.contentWindow?.postMessage(
+      JSON.stringify({ event: "command", func: "addEventListener", args: ["onStateChange"] }),
+      "*",
+    );
+  };
+
 
   return (
     <section className="bg-brand-black text-white py-20 md:py-28">
