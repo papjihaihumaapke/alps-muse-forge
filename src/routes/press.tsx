@@ -157,6 +157,21 @@ function AwardDialog({
 
 function PressPage() {
   const [selected, setSelected] = useState<Award | null>(null);
+  const hash = useRouterState({ select: (s) => s.location.hash });
+
+  useEffect(() => {
+    if (!hash) return;
+    const id = hash.replace(/^#/, "");
+    const match = AWARDS.find((a) => a.id === id);
+    if (match) {
+      setSelected(match);
+      // also scroll the awards grid into view
+      requestAnimationFrame(() => {
+        document.getElementById("awards")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, [hash]);
+
 
   return (
     <Shell>
