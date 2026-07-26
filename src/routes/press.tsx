@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
 import { ExternalLink } from "lucide-react";
 import { SOCIALS } from "@/lib/alps-data";
 import { AWARDS, type Award } from "@/lib/awards";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
