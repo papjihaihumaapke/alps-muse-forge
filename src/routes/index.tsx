@@ -12,7 +12,7 @@ import catInnovation from "@/assets/categories/innovation.png";
 import catContemporary from "@/assets/categories/contemporary.png";
 import catAccessories from "@/assets/categories/accessories.png";
 import catCollab from "@/assets/categories/collaborations.png";
-import catPersonal from "@/assets/categories/personal-care.png";
+import veganPersonalCareIcon from "@/assets/vegan-personal-care-icon.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
