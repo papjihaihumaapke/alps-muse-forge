@@ -2,21 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, Youtube, Twitter, MessageCircle, Music2 } from "lucide-react";
 import { useState } from "react";
 import { SOCIALS, FEATURES } from "@/lib/alps-data";
+import { AWARDS } from "@/lib/awards";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-const AWARDS = [
-  { outlet: "new york product design awards", detail: "smart fashion 2022 – silver" },
-  { outlet: "new york product design awards", detail: "fashion and lifestyle" },
-  { outlet: "hong kong most outstanding business awards", detail: "best fashion innovation 2022" },
-  { outlet: "new york product design awards", detail: "smart fashion 2021 – gold" },
-  { outlet: "new york product design awards", detail: "womenswear 2021 – silver" },
-  { outlet: "international design awards", detail: "apparel project 2021 – silver" },
-  { outlet: "international design awards", detail: "recycle and sustainable fashion 2021 – bronze" },
-  { outlet: "international design awards", detail: "apparel category 2021 – honourable" },
-  { outlet: "international design awards 2021", detail: "prêt-à-porter 2021 – honourable" },
-  { outlet: "international design awards", detail: "sportswear 2018 – silver" },
-];
 
 const SIZE_GROUPS = ["kids", "men", "women", "unisex"];
 
