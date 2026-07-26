@@ -3,6 +3,7 @@ import { Instagram, Facebook, Youtube, Twitter, MessageCircle, Music2 } from "lu
 import { useState } from "react";
 import { SOCIALS, FEATURES } from "@/lib/alps-data";
 import { AWARDS } from "@/lib/awards";
+import { INNOVATIONS } from "@/lib/innovations";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
