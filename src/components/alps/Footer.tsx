@@ -6,8 +6,10 @@ import { AWARDS } from "@/lib/awards";
 import { INNOVATIONS } from "@/lib/innovations";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { openSizeInfo, type SizeKind } from "@/lib/size-info-store";
 
-const SIZE_GROUPS = ["kids", "men", "women", "unisex"];
+const SIZE_GROUPS: SizeKind[] = ["kids", "men", "women", "unisex"];
+
 
 export function Footer() {
   return (
@@ -38,11 +40,17 @@ export function Footer() {
 
         <Col title="size info">
           {SIZE_GROUPS.map((s) => (
-            <Link key={s} to="/size-info" hash={s} className="text-foreground/80 hover:text-primary">
+            <button
+              key={s}
+              type="button"
+              onClick={() => openSizeInfo(s)}
+              className="text-left text-foreground/80 hover:text-primary"
+            >
               {s}
-            </Link>
+            </button>
           ))}
         </Col>
+
 
         <Col title="features">
           <div className="flex flex-col gap-1">
