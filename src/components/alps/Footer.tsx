@@ -46,16 +46,19 @@ export function Footer() {
 
         <Col title="features">
           <div className="flex flex-col gap-1">
-            {FEATURES.map((f) => (
-              <Link
-                key={f.key}
-                to="/innovation"
-                search={{ feature: f.key }}
-                className="text-foreground/80 hover:text-primary"
-              >
-                {f.name}
-              </Link>
-            ))}
+            {FEATURES.map((f) => {
+              const innovation = INNOVATIONS.find((i) => i.filterKey === f.key);
+              return (
+                <Link
+                  key={f.key}
+                  to="/innovation"
+                  hash={innovation?.slug}
+                  className="text-foreground/80 hover:text-primary"
+                >
+                  {f.name}
+                </Link>
+              );
+            })}
           </div>
         </Col>
 
