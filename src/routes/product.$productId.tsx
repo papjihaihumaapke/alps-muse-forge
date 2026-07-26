@@ -48,60 +48,70 @@ function ProductPage() {
     return staticProduct;
   }, [dbRow, staticProduct]);
 
-  // Wait for DB lookup before throwing notFound (in case it's a DB-only product).
-  if (!product && !dbLoading) throw notFound();
-  if (!product) {
-    return <Shell><div className="p-10 text-center text-foreground/50">loading…</div></Shell>;
-  }
-
-  const dbExtras = product as Product & {
+  const dbExtras = (product ?? {}) as Product & {
     description?: string | null;
     techInfo?: string | null;
     galleryUrls?: string[];
     swatches?: Array<{ name: string; hex?: string; swatch_url?: string; image_url?: string }>;
   };
 
-  const isPersonalCare =
-    product.category === "personal-care" || product.category.startsWith("vegan-");
+  const isPersonalCare = product
+    ? product.category === "personal-care" || product.category.startsWith("vegan-")
+    : false;
 
-  const [color, setColor] = useState(product.colors[0] ?? "default");
-  const [size, setSize] = useState(product.sizes[0] ?? "one size");
+  const [color, setColor] = useState(product?.colors[0] ?? "default");
+  const [size, setSize] = useState(product?.sizes[0] ?? "one size");
   const [qty, setQty] = useState(1);
   const [openFeature, setOpenFeature] = useState<string | null>(null);
 
   const gallery = useMemo(() => {
+    if (!product) return [] as string[];
     const seen = new Set<string>();
     const out: string[] = [];
     const push = (u?: string) => { if (u && !seen.has(u)) { seen.add(u); out.push(u); } };
-    // per-color product photos first (so each colorway has its own image in the strip)
     (dbExtras.swatches ?? []).forEach((s) => push(s.image_url));
     (dbExtras.galleryUrls ?? []).forEach(push);
     productGallery(product.id, product.colors).forEach(push);
     return out;
-  }, [product.id, product.colors, dbExtras.galleryUrls, dbExtras.swatches]);
+  }, [product, dbExtras.galleryUrls, dbExtras.swatches]);
 
-  const [activeImage, setActiveImage] = useState<string | undefined>(
-    () =>
-      dbExtras.swatches?.find((s) => s.name === (product.colors[0] ?? ""))?.image_url ||
-      (dbExtras.galleryUrls && dbExtras.galleryUrls[0]) ||
-      productImageForColor(product.id, product.colors[0]) ||
-      gallery[0],
-  );
+  const [activeImage, setActiveImage] = useState<string | undefined>(undefined);
 
-  // Sync main image when the selected colour changes.
+  // Initialize / sync active image when product resolves or colour changes.
   useEffect(() => {
+    if (!product) return;
     const dbMatch = dbExtras.swatches?.find((s) => s.name === color);
     if (dbMatch?.image_url) { setActiveImage(dbMatch.image_url); return; }
     if (dbMatch?.swatch_url) { setActiveImage(dbMatch.swatch_url); return; }
     const next = productImageForColor(product.id, color);
-    if (next) setActiveImage(next);
-  }, [color, product.id, dbExtras.swatches]);
+    if (next) { setActiveImage(next); return; }
+    if (gallery[0]) setActiveImage(gallery[0]);
+  }, [color, product, dbExtras.swatches, gallery]);
+
+  // Sync colour default when product resolves from DB.
+  useEffect(() => {
+    if (product && !product.colors.includes(color)) {
+      setColor(product.colors[0] ?? "default");
+    }
+    if (product && !product.sizes.includes(size)) {
+      setSize(product.sizes[0] ?? "one size");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product]);
 
   const { add } = useCart();
   const onAdd = () => {
-    const it = buildCartItem(product!.id, color, size, qty);
+    if (!product) return;
+    const it = buildCartItem(product.id, color, size, qty);
     if (it) { add(it); toast.success("added to bag"); }
   };
+
+  // Early returns AFTER all hooks so hook order stays stable.
+  if (!product && !dbLoading) throw notFound();
+  if (!product) {
+    return <Shell><div className="p-10 text-center text-foreground/50">loading…</div></Shell>;
+  }
+
 
   return (
     <Shell>
