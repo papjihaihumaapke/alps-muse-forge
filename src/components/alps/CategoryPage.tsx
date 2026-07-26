@@ -26,6 +26,10 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
   const [activeTag, setActiveTag] = useState<"all" | AccessoryTag>("all");
   const [activeSub, setActiveSub] = useState<string>("all");
   const [sort, setSort] = useState<SortKey>("default");
+  const [colorFilter, setColorFilter] = useState<string>("all");
+  const [sizeFilter, setSizeFilter] = useState<string>("all");
+  const [featureFilterLocal, setFeatureFilterLocal] = useState<string>("all");
+
   const { data: dbRows = [] } = useDbProductsByCategory(slug);
   const { currency } = useCart();
   const activeFeature = featureFilter ? FEATURES.find((f) => f.key === featureFilter) : null;
