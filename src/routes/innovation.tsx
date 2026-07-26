@@ -24,15 +24,15 @@ function InnovationPage() {
   const { feature } = Route.useSearch();
   const navigate = useNavigate();
   return (
-    <>
-      <CategoryView
-        slug="innovation"
-        featureFilter={feature}
-        onClearFeature={() => navigate({ to: "/innovation", search: {} })}
-      />
-      <div className="border-t border-border bg-brand-light">
-        <FabricTechnology />
-      </div>
-    </>
+    <CategoryView
+      slug="innovation"
+      featureFilter={feature}
+      onClearFeature={() => navigate({ to: "/innovation", search: {} })}
+      afterContent={
+        <div className="border-t border-border bg-brand-light">
+          <FabricTechnology />
+        </div>
+      }
+    />
   );
 }
