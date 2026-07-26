@@ -15,6 +15,7 @@ import { useCart, buildCartItem } from "@/lib/cart";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { useDbProductBySlug, dbProductToCatalog } from "@/lib/products-db";
+import { SizeChartDialog, inferSizeChartKinds } from "@/components/alps/SizeChart";
 
 export const Route = createFileRoute("/product/$productId")({
   head: ({ params }) => {
@@ -282,7 +283,9 @@ function ProductPage() {
                   </button>
                 ))}
               </div>
+              <SizeChartDialog kinds={inferSizeChartKinds(product.tags as string[], product.category)} />
             </div>
+
 
             <div className="mt-6">
               <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">quantity</h3>

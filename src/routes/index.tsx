@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Play } from "lucide-react";
+
 import { Shell } from "@/components/alps/Shell";
 import { supabase } from "@/integrations/supabase/client";
 import hero from "@/assets/backgrounds/bg-01.jpg";
@@ -185,30 +185,82 @@ function EditorialHero() {
 }
 
 
+const FASHION_SHOW_VIDEOS = [
+  { id: "hOwILjHbycM", title: "summer VI — one and all" },
+  { id: "JaQfMZ2WeFQ", title: "summer V — warrior" },
+  { id: "8W-xg0TIxZY", title: "summer IV — mutant" },
+  { id: "QCctsSVdBk8", title: "summer II — tropical in iceland" },
+  { id: "qdgqm0mWtC4", title: "winter II — muted" },
+];
+
 function BrandVideo() {
+  const [index, setIndex] = useState(0);
+  const current = FASHION_SHOW_VIDEOS[index];
+  const playlist = FASHION_SHOW_VIDEOS.map((v) => v.id).join(",");
+  const next = () => setIndex((i) => (i + 1) % FASHION_SHOW_VIDEOS.length);
+  const prev = () => setIndex((i) => (i - 1 + FASHION_SHOW_VIDEOS.length) % FASHION_SHOW_VIDEOS.length);
+  const src =
+    `https://www.youtube.com/embed/${current.id}` +
+    `?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1` +
+    `&playlist=${playlist}&loop=1`;
+
   return (
     <section className="bg-brand-black text-white py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        <div className="mb-10 flex items-end justify-between">
+        <div className="mb-6 flex items-end justify-between gap-4">
           <h2 className="text-3xl md:text-4xl font-light">ALPS fashion shows</h2>
+          <span className="num text-[11px] tracking-[0.25em] text-white/60">
+            {String(index + 1).padStart(2, "0")} / {String(FASHION_SHOW_VIDEOS.length).padStart(2, "0")}
+          </span>
         </div>
-        <div className="relative aspect-video bg-zinc-900 overflow-hidden group cursor-pointer">
+        <div className="relative aspect-video bg-zinc-900 overflow-hidden">
           <iframe
+            key={current.id}
             className="absolute inset-0 h-full w-full"
-            src="https://www.youtube.com/embed/videoseries?list=UUQkObngC_R1tDpdfV5Ebcmg&autoplay=1&mute=1&loop=1"
-            title="ALPS Annie Ling — fashion shows"
-            allow="autoplay; encrypted-media"
+            src={src}
+            title={`ALPS fashion show — ${current.title}`}
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
           />
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-              <Play className="h-6 w-6 text-white fill-white" />
-            </div>
+        </div>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+          <p className="text-sm tracking-wide text-white/80">{current.title}</p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={prev}
+              className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase border border-white/30 hover:border-white transition"
+            >
+              prev
+            </button>
+            <button
+              onClick={next}
+              className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase border border-white/30 hover:border-white transition"
+            >
+              next
+            </button>
           </div>
+        </div>
+        <div className="mt-6 grid grid-cols-2 sm:grid-cols-5 gap-2">
+          {FASHION_SHOW_VIDEOS.map((v, i) => (
+            <button
+              key={v.id}
+              onClick={() => setIndex(i)}
+              className={`text-left p-3 border transition ${
+                i === index ? "border-primary bg-primary/10" : "border-white/20 hover:border-white/60"
+              }`}
+            >
+              <span className="num text-[10px] tracking-[0.25em] text-white/50 block">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span className="text-xs mt-1 block">{v.title}</span>
+            </button>
+          ))}
         </div>
       </div>
     </section>
   );
 }
+
 
 function Innovation() {
   return (
