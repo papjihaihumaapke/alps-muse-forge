@@ -174,6 +174,22 @@ function InnovationDetail({
 
 export function FabricTechnology() {
   const [active, setActive] = useState<Innovation | null>(null);
+  const hash = useRouterState({ select: (s) => s.location.hash });
+
+  useEffect(() => {
+    if (!hash) return;
+    const id = hash.replace(/^#/, "");
+    const match =
+      INNOVATIONS.find((i) => i.slug === id) ??
+      INNOVATIONS.find((i) => i.filterKey === id);
+    if (match) {
+      setActive(match);
+      requestAnimationFrame(() => {
+        document.getElementById("fabric-technology")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, [hash]);
+
 
   return (
     <section className="container mx-auto px-6 py-20">
