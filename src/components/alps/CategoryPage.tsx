@@ -86,6 +86,15 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
     if (featureFilter) {
       list = list.filter((p) => p.features?.includes(featureFilter));
     }
+    if (featureFilterLocal !== "all") {
+      list = list.filter((p) => p.features?.includes(featureFilterLocal));
+    }
+    if (colorFilter !== "all") {
+      list = list.filter((p) => p.colors?.some((c) => c.toLowerCase() === colorFilter.toLowerCase()));
+    }
+    if (sizeFilter !== "all") {
+      list = list.filter((p) => p.sizes?.some((s) => s.toLowerCase() === sizeFilter.toLowerCase()));
+    }
     switch (sort) {
       case "price-asc":
         return [...list].sort((a, b) => a.priceHKD - b.priceHKD);
