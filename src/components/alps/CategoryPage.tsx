@@ -172,21 +172,55 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
 
 
           <div className="flex flex-col items-end gap-4 ml-auto">
-            <div className="relative">
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as SortKey)}
-                className="appearance-none bg-card border border-border text-[12px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
-              >
-                <option value="default">Default Sorting</option>
-                <option value="name">Sort by name</option>
-                <option value="price-asc">Price: low to high</option>
-                <option value="price-desc">Price: high to low</option>
-              </select>
-              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[10px]">
-                ▾
-              </span>
+            <div className="flex flex-wrap justify-end items-center gap-2">
+              {colorOptions.length > 0 && (
+                <FilterSelect
+                  value={colorFilter}
+                  onChange={setColorFilter}
+                  label="color"
+                  options={colorOptions}
+                />
+              )}
+              {sizeOptions.length > 0 && (
+                <FilterSelect
+                  value={sizeFilter}
+                  onChange={setSizeFilter}
+                  label="size"
+                  options={sizeOptions}
+                />
+              )}
+              {featureOptions.length > 0 && !featureFilter && (
+                <FilterSelect
+                  value={featureFilterLocal}
+                  onChange={setFeatureFilterLocal}
+                  label="feature"
+                  options={featureOptions.map((f) => ({ value: f.key, label: f.name }))}
+                />
+              )}
+              {(colorFilter !== "all" || sizeFilter !== "all" || featureFilterLocal !== "all") && (
+                <button
+                  type="button"
+                  onClick={() => { setColorFilter("all"); setSizeFilter("all"); setFeatureFilterLocal("all"); }}
+                  className="text-[11px] tracking-wide text-primary hover:underline"
+                >
+                  clear filters
+                </button>
+              )}
+              <div className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as SortKey)}
+                  className="appearance-none bg-card border border-border text-[12px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
+                >
+                  <option value="default">default sorting</option>
+                  <option value="name">sort by name</option>
+                  <option value="price-asc">price: low to high</option>
+                  <option value="price-desc">price: high to low</option>
+                </select>
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[10px]">▾</span>
+              </div>
             </div>
+
 
             {showTagBar && (
               <div className="flex flex-wrap justify-end gap-1.5 max-w-[760px]">
