@@ -105,7 +105,34 @@ export function CategoryView({ slug, featureFilter, onClearFeature }: { slug: Ca
       default:
         return list;
     }
-  }, [slug, activeTag, activeSub, sort, dbRows, stockBySlug, subBySlug, currency, featureFilter]);
+  }, [slug, activeTag, activeSub, sort, dbRows, stockBySlug, subBySlug, currency, featureFilter, featureFilterLocal, colorFilter, sizeFilter]);
+
+  // Build filter options from currently-scoped catalog (category + region).
+  const scopedItems = useMemo(() => {
+    const staticList = PRODUCTS.filter((p) => p.category === slug);
+    const dbList = dbRows.map((r) => dbProductToCatalog(r));
+    const map = new Map<string, Product>();
+    for (const p of staticList) map.set(p.id, p);
+    for (const p of dbList) map.set(p.id, p as Product);
+    return Array.from(map.values()).filter((p) => productAvailableInRegion(stockBySlug.get(p.id) ?? {}, currency));
+  }, [slug, dbRows, stockBySlug, currency]);
+
+  const colorOptions = useMemo(() => {
+    const s = new Set<string>();
+    scopedItems.forEach((p) => p.colors?.forEach((c) => s.add(c)));
+    return Array.from(s).sort();
+  }, [scopedItems]);
+  const sizeOptions = useMemo(() => {
+    const s = new Set<string>();
+    scopedItems.forEach((p) => p.sizes?.forEach((sz) => s.add(sz)));
+    return Array.from(s).sort();
+  }, [scopedItems]);
+  const featureOptions = useMemo(() => {
+    const s = new Set<string>();
+    scopedItems.forEach((p) => p.features?.forEach((f) => s.add(f)));
+    return FEATURES.filter((f) => s.has(f.key));
+  }, [scopedItems]);
+
 
   const showTagBar = slug === "accessories";
   const showSubBar = slug === "innovation";
