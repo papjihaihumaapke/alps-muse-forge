@@ -2,10 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Shell } from "@/components/alps/Shell";
 import { SOCIALS } from "@/lib/alps-data";
-import { Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import bgSlats from "@/assets/backgrounds/bg-slats.jpg.asset.json";
+import bgPebbles from "@/assets/backgrounds/bg-pebbles.jpg";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -40,40 +39,62 @@ function ContactPage() {
 
   return (
     <Shell>
-      {/* Hero with background image + centered contact panel */}
+      {/* Hero: pebble background with centered contact card */}
       <section
-        className="relative w-full min-h-[520px] md:min-h-[600px] flex items-center justify-center px-6 py-16"
+        className="relative w-full min-h-[560px] md:min-h-[640px] flex items-center justify-center px-6 py-16"
         style={{
-          backgroundImage: `url(${bgSlats.url})`,
+          backgroundImage: `url(${bgPebbles})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div aria-hidden className="absolute inset-0 bg-black/30" />
-        <div className="relative z-10 w-full max-w-2xl bg-background/95 backdrop-blur-sm shadow-2xl px-8 md:px-12 py-10 md:py-12">
-          <span className="num text-[11px] tracking-[0.3em] text-primary">say hello</span>
-          <h1 className="text-3xl md:text-4xl font-light mt-3">contact</h1>
-          <p className="mt-5 text-sm text-foreground/80 leading-relaxed">
-            for orders, wholesale enquiries, press requests and custom collaborations —
-            please reach out below.
-          </p>
+        <div
+          className="relative z-10 w-full max-w-3xl grid grid-cols-1 md:grid-cols-[1.15fr_1fr] shadow-2xl"
+        >
+          {/* Left: grey info panel */}
+          <div className="bg-[#8f8f8f] text-white px-8 md:px-10 py-10 md:py-12">
+            <p className="text-sm md:text-base tracking-[0.35em] uppercase text-center">contact</p>
 
-          <div className="mt-8 space-y-4 text-sm">
-            <div>
-              <p className="text-[11px] tracking-[0.25em] uppercase text-foreground/60">hong kong office</p>
-              <p className="mt-1 text-foreground/85">7/F, CITA, 63 Tai Yip Street, Kowloon Bay</p>
+            <div className="mt-8 space-y-6 text-[13px] leading-relaxed">
+              <div>
+                <p className="font-semibold">hong kong office</p>
+                <p className="mt-1 text-white/90">
+                  address&nbsp;: 7/F, CITA, 63 Tai Yip Street, Kowloon Bay
+                </p>
+              </div>
+              <div>
+                <p className="font-semibold">vancouver office</p>
+                <p className="mt-1 text-white/90">address&nbsp;: TBC</p>
+              </div>
+              <div>
+                <p className="text-white/90">
+                  email&nbsp;:{" "}
+                  <a href={`mailto:${SOCIALS.email}`} className="underline underline-offset-4 hover:text-white">
+                    {SOCIALS.email}
+                  </a>
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-[11px] tracking-[0.25em] uppercase text-foreground/60">vancouver office</p>
-              <p className="mt-1 text-foreground/85">address: TBC</p>
+          </div>
+
+          {/* Right: ALPS cross logo panel */}
+          <div className="relative bg-white px-6 py-10 md:py-12 flex items-center justify-center">
+            {/* Red vertical divider that meets the grey panel */}
+            <div
+              aria-hidden
+              className="hidden md:block absolute left-0 top-0 bottom-0 w-[3px] bg-primary"
+            />
+            <div className="relative w-full max-w-[260px] aspect-square">
+              {/* A / L / P / S positioned in the four corners */}
+              <span className="absolute top-0 left-0 text-6xl md:text-7xl font-light leading-none tracking-tight">A</span>
+              <span className="absolute top-0 right-0 text-6xl md:text-7xl font-light leading-none tracking-tight">L</span>
+              <span className="absolute bottom-0 left-0 text-6xl md:text-7xl font-light leading-none tracking-tight">P</span>
+              <span className="absolute bottom-0 right-0 text-6xl md:text-7xl font-light leading-none tracking-tight">S</span>
+              {/* Centre wordmark */}
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] tracking-[0.35em] uppercase text-foreground">
+                annie&nbsp;ling
+              </span>
             </div>
-            <a
-              href={`mailto:${SOCIALS.email}`}
-              className="inline-flex items-center gap-3 pt-2 text-foreground hover:text-primary"
-            >
-              <Mail className="h-4 w-4 text-primary" />
-              {SOCIALS.email}
-            </a>
           </div>
         </div>
       </section>
