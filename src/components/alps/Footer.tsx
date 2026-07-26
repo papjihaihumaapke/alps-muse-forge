@@ -48,15 +48,23 @@ export function Footer() {
         </Col>
 
         <Col title="awards & accolades">
-          <div className="flex flex-col gap-2">
-            {AWARDS.map((a, i) => (
-              <Link key={i} to="/press" className="text-foreground/80 hover:text-primary block">
-                <span className="block font-medium text-foreground">{a.outlet}</span>
-                <span className="block text-foreground/70">{a.detail}</span>
+          <div className="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1">
+            {AWARDS.map((a) => (
+              <Link
+                key={a.id}
+                to="/press"
+                hash={a.id}
+                className="text-foreground/80 hover:text-primary block"
+              >
+                <span className="block font-medium text-foreground">{a.organization}</span>
+                <span className="block text-foreground/70">
+                  {a.category} {a.year} — {a.level}
+                </span>
               </Link>
             ))}
           </div>
         </Col>
+
 
         <Col title="find us">
           <div className="space-y-5">
