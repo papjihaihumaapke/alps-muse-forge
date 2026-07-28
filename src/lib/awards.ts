@@ -174,6 +174,8 @@ export const AWARDS: Award[] = [
     category: "best presenter — shark tank pitching",
     year: 2019,
     level: "winner",
+    image: dip2019BestPresenter.url,
+    certificate: dip2019BestPresenter.url,
     description:
       "best presenter award at the dip graduation ceremony 2019 shark tank pitching.",
   },
