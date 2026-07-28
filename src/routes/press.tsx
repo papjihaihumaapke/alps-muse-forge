@@ -127,15 +127,15 @@ function AwardDialog({
               }}
             />
             <div className="relative z-10 w-full flex flex-col items-center gap-5">
-              <div className="text-center text-white">
+              <div className="text-center text-white bg-black/50 backdrop-blur-sm px-6 py-3 rounded-sm">
                 <div className="flex items-center justify-center gap-3 mb-2">
-                  <span className="num text-[11px] tracking-[0.25em] text-white/90">{award.year}</span>
+                  <span className="num text-[11px] tracking-[0.25em] text-white">{award.year}</span>
                   <LevelBadge level={award.level} />
                 </div>
-                <DialogTitle className="text-xl md:text-2xl font-light">
+                <DialogTitle className="text-xl md:text-2xl font-normal text-white">
                   {award.organization}
                 </DialogTitle>
-                <DialogDescription className="text-sm text-white/85 mt-1">
+                <DialogDescription className="text-sm text-white mt-1">
                   {award.category}
                   {award.project ? ` · ${award.project}` : ""}
                 </DialogDescription>
