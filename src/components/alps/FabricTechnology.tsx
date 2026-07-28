@@ -5,6 +5,8 @@ import { featureIcon } from "@/lib/feature-icons";
 import { X } from "lucide-react";
 import { useRouterState, useNavigate } from "@tanstack/react-router";
 import bgSlats from "@/assets/backgrounds/bg-slats.jpg.asset.json";
+import { useInnovationId, openInnovation, closeInnovation } from "@/lib/innovation-store";
+
 
 
 function InnovationCard({
