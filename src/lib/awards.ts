@@ -99,6 +99,7 @@ export const AWARDS: Award[] = [
     level: "silver",
     image: nyWomens2021Badge.url,
     certificate: nyWomens2021Cert.url,
+    gallery: [nyWomens2021Letter.url],
     description:
       "silver winner in the clothing & accessories — womenswear category for the warrior collection.",
   },
