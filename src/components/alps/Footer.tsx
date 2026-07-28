@@ -16,14 +16,15 @@ export function Footer() {
   return (
     <footer className="bg-background text-foreground mt-24 border-t-2 border-foreground/40">
       <div
-        className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 pt-0 pb-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 text-[11px] leading-[1.4]
+        className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 pt-0 pb-10 grid grid-cols-2 md:grid-cols-3 text-[11px] leading-[1.4]
+          lg:[grid-template-columns:0.72fr_0.7fr_0.95fr_1.05fr_1.45fr_0.85fr]
           [&>*]:border-l-2 [&>*]:border-t-2 [&>*]:border-foreground/40
           [&>*:nth-child(odd)]:border-l-0
           [&>*:nth-child(-n+2)]:border-t-0
           md:[&>*]:border-l-2 md:[&>*]:border-t-2
           md:[&>*:nth-child(odd)]:border-l-2 md:[&>*:nth-child(3n+1)]:border-l-0
           md:[&>*:nth-child(-n+2)]:border-t-2 md:[&>*:nth-child(-n+3)]:border-t-0
-          lg:[&>*:nth-child(3n+1)]:border-l-2 lg:[&>*:nth-child(6n+1)]:border-l-0
+          lg:[&>*]:border-l-2 lg:[&>*:first-child]:border-l-0
           lg:[&>*]:border-t-0"
       >
 
