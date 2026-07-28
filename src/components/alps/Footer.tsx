@@ -58,14 +58,14 @@ export function Footer() {
             {FEATURES.map((f) => {
               const innovation = INNOVATIONS.find((i) => i.filterKey === f.key);
               return (
-                <Link
+                <button
                   key={f.key}
-                  to="/innovation"
-                  hash={innovation?.slug}
-                  className="text-foreground/80 hover:text-primary"
+                  type="button"
+                  onClick={() => openInnovation(innovation?.slug ?? f.key)}
+                  className="text-left text-foreground/80 hover:text-primary"
                 >
                   {f.name}
-                </Link>
+                </button>
               );
             })}
           </div>
