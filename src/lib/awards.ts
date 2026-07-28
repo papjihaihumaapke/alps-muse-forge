@@ -160,6 +160,8 @@ export const AWARDS: Award[] = [
     category: "best fashion design brand",
     year: 2021,
     level: "winner",
+    image: hkmos2021Statue.url,
+    gallery: [hkmos2021Statue.url],
     description:
       "recognised as the best fashion design brand of 2021 by the hong kong most outstanding services awards.",
   },
