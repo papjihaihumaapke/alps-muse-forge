@@ -9,8 +9,8 @@ const CHARTS: Record<SizeKind, Chart> = {
     title: "kid's measurement chart",
     headers: ["age 2-4", "age 5-7", "age 8-10", "age 11-13"],
     rows: [
-      { label: "height", values: ["95-105 cm", "105-120 cm", "120-135 cm", "135-150 cm"] },
-      { label: "bust", values: ["50-58 cm", "56-64 cm", "62-70 cm", "68-76 cm"] },
+      { label: "height", values: ["100-115 cm", "110-125 cm", "120-135 cm", "130-145 cm"] },
+      { label: "bust", values: ["50-56 cm", "56-62 cm", "62-68 cm", "68-74 cm"] },
       { label: "waist", values: ["50-55 cm", "55-60 cm", "60-65 cm", "65-70 cm"] },
       { label: "hip", values: ["58-64 cm", "64-70 cm", "70-76 cm", "76-82 cm"] },
     ],
