@@ -94,7 +94,7 @@ export function Footer() {
           <div className="space-y-5">
             <div>
               <p className="text-foreground font-semibold mb-2 text-[12px] tracking-wider">ALPS</p>
-              <div className="grid grid-cols-6 gap-1.5 max-w-[220px]">
+              <div className="flex flex-nowrap items-center gap-1.5">
                 <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-3.5 w-3.5" fill="currentColor" strokeWidth={0} /></SocialIcon>
                 <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-3.5 w-3.5" /></SocialIcon>
                 <SocialIcon href={SOCIALS.x} label="ALPS x"><Twitter className="h-3.5 w-3.5" fill="currentColor" strokeWidth={0} /></SocialIcon>
