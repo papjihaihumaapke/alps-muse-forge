@@ -198,7 +198,7 @@ function SocialIcon({ href, label, children }: { href: string; label: string; ch
       target="_blank"
       rel="noreferrer"
       aria-label={label}
-      className="inline-flex items-center justify-center h-7 w-7 bg-foreground text-background hover:bg-primary transition-colors"
+      className="inline-flex items-center justify-center aspect-square w-full max-w-[30px] bg-foreground text-background hover:bg-primary transition-colors"
     >
       {children}
     </a>
