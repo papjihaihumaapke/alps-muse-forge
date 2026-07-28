@@ -5,6 +5,8 @@ import { SOCIALS } from "@/lib/alps-data";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import bgPebbles from "@/assets/backgrounds/bg-pebbles.jpg";
+import alpsLogo from "@/assets/brand/alps-logo-black.png";
+
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -58,13 +60,9 @@ function ContactPage() {
             <div className="mt-8 space-y-6 text-[13px] leading-relaxed">
               <div>
                 <p className="font-semibold">hong kong office</p>
-                <p className="mt-1 text-white/90">
-                  address&nbsp;: 7/F, CITA, 63 Tai Yip Street, Kowloon Bay
-                </p>
               </div>
               <div>
                 <p className="font-semibold">vancouver office</p>
-                <p className="mt-1 text-white/90">address&nbsp;: TBC</p>
               </div>
               <div>
                 <p className="text-white/90">
@@ -77,27 +75,23 @@ function ContactPage() {
             </div>
           </div>
 
-          {/* Right: ALPS cross logo panel */}
-          <div className="relative bg-white px-6 py-10 md:py-12 flex items-center justify-center">
+          {/* Right: official ALPS Annie Ling logo */}
+          <div className="relative bg-white px-8 py-10 md:py-12 flex items-center justify-center">
             {/* Red vertical divider that meets the grey panel */}
             <div
               aria-hidden
               className="hidden md:block absolute left-0 top-0 bottom-0 w-[3px] bg-primary"
             />
-            <div className="relative w-full max-w-[260px] aspect-square">
-              {/* A / L / P / S positioned in the four corners */}
-              <span className="absolute top-0 left-0 text-6xl md:text-7xl font-light leading-none tracking-tight">A</span>
-              <span className="absolute top-0 right-0 text-6xl md:text-7xl font-light leading-none tracking-tight">L</span>
-              <span className="absolute bottom-0 left-0 text-6xl md:text-7xl font-light leading-none tracking-tight">P</span>
-              <span className="absolute bottom-0 right-0 text-6xl md:text-7xl font-light leading-none tracking-tight">S</span>
-              {/* Centre wordmark */}
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] tracking-[0.35em] uppercase text-foreground">
-                annie&nbsp;ling
-              </span>
-            </div>
+            <img
+              src={alpsLogo}
+              alt="ALPS Annie Ling"
+              className="w-full max-w-[260px] h-auto object-contain"
+              loading="lazy"
+            />
           </div>
         </div>
       </section>
+
 
       {/* Enquiry form */}
       <section className="max-w-2xl mx-auto px-6 py-16">
