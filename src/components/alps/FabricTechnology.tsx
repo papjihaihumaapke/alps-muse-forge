@@ -259,11 +259,8 @@ export function FabricTechnology() {
         ))}
       </div>
 
-      <InnovationDetail
-        item={active}
-        open={!!active}
-        onOpenChange={(v) => !v && setActive(null)}
-      />
+      <InnovationDetail item={active} onClose={() => setActive(null)} />
+
     </section>
   );
 }
