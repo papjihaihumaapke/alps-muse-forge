@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { INNOVATIONS, type Innovation } from "@/lib/innovations";
 import { featureIcon } from "@/lib/feature-icons";
 import { X } from "lucide-react";
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useRouterState, useNavigate } from "@tanstack/react-router";
 import bgSlats from "@/assets/backgrounds/bg-slats.jpg.asset.json";
 
 
