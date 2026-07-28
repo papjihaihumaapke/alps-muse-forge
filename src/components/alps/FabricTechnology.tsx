@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { INNOVATIONS, type Innovation } from "@/lib/innovations";
 import { featureIcon } from "@/lib/feature-icons";
 import { X } from "lucide-react";
 import { useRouterState, useNavigate } from "@tanstack/react-router";
 import bgSlats from "@/assets/backgrounds/bg-slats.jpg.asset.json";
+import { useInnovationId, openInnovation, closeInnovation } from "@/lib/innovation-store";
+
 
 
 function InnovationCard({
@@ -216,8 +218,15 @@ function InnovationDetail({
 }
 
 
+export function InnovationModal() {
+  const id = useInnovationId();
+  const item =
+    (id && (INNOVATIONS.find((i) => i.slug === id) ?? INNOVATIONS.find((i) => i.filterKey === id))) ||
+    null;
+  return <InnovationDetail item={item} onClose={closeInnovation} />;
+}
+
 export function FabricTechnology() {
-  const [active, setActive] = useState<Innovation | null>(null);
   const hash = useRouterState({ select: (s) => s.location.hash });
 
   useEffect(() => {
@@ -227,7 +236,7 @@ export function FabricTechnology() {
       INNOVATIONS.find((i) => i.slug === id) ??
       INNOVATIONS.find((i) => i.filterKey === id);
     if (match) {
-      setActive(match);
+      openInnovation(match.slug);
       requestAnimationFrame(() => {
         document.getElementById("fabric-technology")?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
@@ -254,13 +263,11 @@ export function FabricTechnology() {
           <InnovationCard
             key={item.slug}
             item={item}
-            onOpen={() => setActive(item)}
+            onOpen={() => openInnovation(item.slug)}
           />
         ))}
       </div>
-
-      <InnovationDetail item={active} onClose={() => setActive(null)} />
-
     </section>
   );
 }
+

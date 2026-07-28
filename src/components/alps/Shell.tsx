@@ -1,6 +1,7 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { SizeInfoSection } from "./SizeInfoSection";
+import { InnovationModal } from "./FabricTechnology";
 
 export function Shell({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +10,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
       <SizeInfoSection />
       <Footer />
+      <InnovationModal />
     </div>
   );
 }
-
