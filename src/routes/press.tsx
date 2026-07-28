@@ -94,8 +94,8 @@ function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }
       </span>
 
       {/* status bar — fixed width so every level aligns identically */}
-      <div className="mt-2 w-32">
-        <LevelBadge level={award.level} />
+      <div className="mt-2 w-32 flex">
+        <LevelBadge level={award.level} className="w-full" />
       </div>
 
       {/* organization/name (above category) */}
