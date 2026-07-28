@@ -31,6 +31,8 @@ export type Award = {
   description?: string;
   image?: string;
   certificate?: string;
+  /** Additional related images (award letter, extra photos) shown as thumbnails inside the popup. */
+  gallery?: string[];
   href?: string;
 };
 
