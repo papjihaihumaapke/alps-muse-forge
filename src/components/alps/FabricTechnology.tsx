@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { INNOVATIONS, type Innovation } from "@/lib/innovations";
 import { featureIcon } from "@/lib/feature-icons";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { X } from "lucide-react";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import bgSlats from "@/assets/backgrounds/bg-slats.jpg.asset.json";
+
 
 function InnovationCard({
   item,
