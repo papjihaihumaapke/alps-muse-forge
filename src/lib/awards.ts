@@ -166,6 +166,17 @@ export const AWARDS: Award[] = [
       "recognised as the best fashion design brand of 2021 by the hong kong most outstanding services awards.",
   },
 
+  // 2019
+  {
+    id: "dip-2019-best-presenter",
+    organization: "dip graduation ceremony",
+    category: "best presenter — shark tank pitching",
+    year: 2019,
+    level: "winner",
+    description:
+      "best presenter award at the dip graduation ceremony 2019 shark tank pitching.",
+  },
+
   // 2018
   {
     id: "ida-2018-sportswear",
