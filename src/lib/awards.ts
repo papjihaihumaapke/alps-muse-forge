@@ -47,7 +47,9 @@ export const AWARDS: Award[] = [
     project: "collection ONE and ALL",
     year: 2022,
     level: "silver",
-    image: nySmart2022.url,
+    image: nySmart2022Cert.url,
+    certificate: nySmart2022Cert.url,
+    gallery: [nySmart2022Letter.url],
     description:
       "silver winner in the clothing & accessories — smart fashion category for the ONE and ALL collection, recognising textile innovation and intelligent functionality.",
   },
