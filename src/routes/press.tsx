@@ -41,11 +41,17 @@ const LEVEL_STYLES: Record<string, string> = {
   "honourable mention": "bg-foreground/80 text-background",
 };
 
-function LevelBadge({ level }: { level: Award["level"] }) {
+function LevelBadge({
+  level,
+  className = "",
+}: {
+  level: Award["level"];
+  className?: string;
+}) {
   const display = level === "honourable mention" ? "honourable" : level;
   return (
     <span
-      className={`inline-flex items-center justify-center gap-1.5 w-full h-7 px-2 text-[10px] tracking-[0.18em] uppercase ${LEVEL_STYLES[level]}`}
+      className={`inline-flex items-center justify-center gap-1.5 h-7 px-3 text-[10px] tracking-[0.18em] uppercase ${LEVEL_STYLES[level]} ${className}`}
     >
       <span aria-hidden className="font-semibold">
         {level === "gold" ? "★★★" : level === "silver" ? "★★" : level === "bronze" ? "★" : level === "winner" ? "✓" : "◆"}
@@ -54,6 +60,7 @@ function LevelBadge({ level }: { level: Award["level"] }) {
     </span>
   );
 }
+
 
 /** Feature-style icon tile for an award. Fixed structure so every card
  *  has: image → year → status bar → org name → category (aligned bottom). */
