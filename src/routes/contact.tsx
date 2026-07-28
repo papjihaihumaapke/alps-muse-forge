@@ -5,6 +5,8 @@ import { SOCIALS } from "@/lib/alps-data";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import bgPebbles from "@/assets/backgrounds/bg-pebbles.jpg";
+import alpsLogo from "@/assets/brand/alps-logo-black.png";
+
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
