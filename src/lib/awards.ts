@@ -88,9 +88,9 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "gold",
-    image: nySmart2021Badge.url,
+    image: nySmart2021Cert.url,
     certificate: nySmart2021Cert.url,
-    gallery: [nySmart2021Letter.url],
+    gallery: [nySmart2021Letter.url, nySmart2021Badge.url],
     description:
       "gold winner in the clothing & accessories — smart fashion category for the warrior collection.",
   },
@@ -101,9 +101,9 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "silver",
-    image: nyWomens2021Badge.url,
+    image: nyWomens2021Cert.url,
     certificate: nyWomens2021Cert.url,
-    gallery: [nyWomens2021Letter.url],
+    gallery: [nyWomens2021Letter.url, nyWomens2021Badge.url],
     description:
       "silver winner in the clothing & accessories — womenswear category for the warrior collection.",
   },
