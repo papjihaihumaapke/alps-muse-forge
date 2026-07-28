@@ -86,6 +86,7 @@ export const AWARDS: Award[] = [
     level: "gold",
     image: nySmart2021Badge.url,
     certificate: nySmart2021Cert.url,
+    gallery: [nySmart2021Letter.url],
     description:
       "gold winner in the clothing & accessories — smart fashion category for the warrior collection.",
   },
