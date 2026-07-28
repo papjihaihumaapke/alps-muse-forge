@@ -15,6 +15,7 @@ import ida2021SustainableBronze from "@/assets/awards/ida-2021-sustainable-bronz
 import ida2021ApparelHm from "@/assets/awards/ida-2021-apparel-hm.png.asset.json";
 import ida2021PretHm from "@/assets/awards/ida-2021-pret-hm.png.asset.json";
 import ida2018SportswearSilver from "@/assets/awards/ida-2018-sportswear-silver.png.asset.json";
+import dip2019BestPresenter from "@/assets/awards/dip-2019-best-presenter-cert.jpg.asset.json";
 
 export type AwardLevel =
   | "gold"
@@ -173,6 +174,8 @@ export const AWARDS: Award[] = [
     category: "best presenter — shark tank pitching",
     year: 2019,
     level: "winner",
+    image: dip2019BestPresenter.url,
+    certificate: dip2019BestPresenter.url,
     description:
       "best presenter award at the dip graduation ceremony 2019 shark tank pitching.",
   },
