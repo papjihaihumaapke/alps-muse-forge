@@ -118,7 +118,14 @@ function AwardDialog({
               backgroundRepeat: "no-repeat",
             }}
           >
-            <div aria-hidden className="absolute inset-0 bg-black/45" />
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.65) 45%, rgba(0,0,0,0.78) 100%)",
+              }}
+            />
             <div className="relative z-10 w-full flex flex-col items-center gap-5">
               <div className="text-center text-white">
                 <div className="flex items-center justify-center gap-3 mb-2">
