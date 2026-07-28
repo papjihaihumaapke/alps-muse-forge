@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { INNOVATIONS, type Innovation } from "@/lib/innovations";
 import { featureIcon } from "@/lib/feature-icons";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { X } from "lucide-react";
+import { useRouterState, useNavigate } from "@tanstack/react-router";
+import bgSlats from "@/assets/backgrounds/bg-slats.jpg.asset.json";
+
 
 function InnovationCard({
   item,
@@ -61,44 +58,84 @@ function InnovationCard({
 
 function InnovationDetail({
   item,
-  open,
-  onOpenChange,
+  onClose,
 }: {
   item: Innovation | null;
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
+  onClose: () => void;
 }) {
+  const open = !!item;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  if (!open || typeof document === "undefined") return null;
   const icon = item ? featureIcon(item.slug) : undefined;
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={item?.title}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
+      style={{
+        backgroundImage: `url(${bgSlats.url})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div aria-hidden className="absolute inset-0 bg-black/45" />
+      <div
+        className="relative z-10 w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-background shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="close"
+          className="absolute top-3 right-3 z-20 h-8 w-8 flex items-center justify-center border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
         {item && (
-          <>
-            <DialogHeader>
-              <div className="flex items-center gap-4 mb-2">
-                {icon && (
-                  <div className="h-16 w-16 shrink-0 bg-muted flex items-center justify-center p-2">
-                    <img
-                      src={icon}
-                      alt=""
-                      aria-hidden
-                      className="max-h-full max-w-full object-contain"
-                    />
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <p className="num text-[10px] tracking-[0.3em] text-foreground/40 uppercase">
-                    innovation {String(item.n).padStart(2, "0")}
-                  </p>
-                  <DialogTitle className="text-2xl font-light text-primary mt-1">
-                    {item.title}
-                  </DialogTitle>
+          <div className="p-6 sm:p-8">
+            <div className="flex items-center gap-4 mb-2 pr-10">
+              {icon && (
+                <div className="h-16 w-16 shrink-0 bg-muted flex items-center justify-center p-2">
+                  <img
+                    src={icon}
+                    alt=""
+                    aria-hidden
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
+              )}
+              <div className="min-w-0">
+                <p className="num text-[10px] tracking-[0.3em] text-foreground/40 uppercase">
+                  innovation {String(item.n).padStart(2, "0")}
+                </p>
+                <h3 className="text-2xl font-light text-primary mt-1">
+                  {item.title}
+                </h3>
               </div>
-              <DialogDescription className="text-sm text-foreground/80 leading-relaxed pt-2">
-                {item.intro}
-              </DialogDescription>
-            </DialogHeader>
+            </div>
+            <p className="text-sm text-foreground/80 leading-relaxed pt-2">
+              {item.intro}
+            </p>
 
             <div className="mt-4 space-y-6 text-sm">
               <section>
@@ -154,23 +191,30 @@ function InnovationDetail({
 
               {item.filterKey && (
                 <div className="pt-2 border-t border-border">
-                  <Link
-                    to="/innovation"
-                    search={{ feature: item.filterKey }}
-                    onClick={() => onOpenChange(false)}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const key = item.filterKey!;
+                      onClose();
+                      navigate({ to: "/innovation", search: { feature: key } });
+                    }}
                     className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-primary hover:underline"
                   >
                     shop products with {item.title} →
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>
-          </>
+          </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>,
+    document.body,
   );
 }
+
 
 export function FabricTechnology() {
   const [active, setActive] = useState<Innovation | null>(null);
@@ -215,11 +259,8 @@ export function FabricTechnology() {
         ))}
       </div>
 
-      <InnovationDetail
-        item={active}
-        open={!!active}
-        onOpenChange={(v) => !v && setActive(null)}
-      />
+      <InnovationDetail item={active} onClose={() => setActive(null)} />
+
     </section>
   );
 }
