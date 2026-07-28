@@ -96,24 +96,24 @@ export function Footer() {
             <div>
               <p className="text-foreground font-semibold mb-2 text-[12px] tracking-wider">ALPS</p>
               <div className="flex flex-nowrap items-center gap-1.5">
-                <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-3.5 w-3.5" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-3.5 w-3.5" /></SocialIcon>
-                <SocialIcon href={SOCIALS.x} label="ALPS x"><Twitter className="h-3.5 w-3.5" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                <SocialIcon href={SOCIALS.youtube} label="ALPS youtube"><Youtube className="h-3.5 w-3.5" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                <SocialIcon href={SOCIALS.tiktok} label="ALPS tiktok"><Music2 className="h-3.5 w-3.5" /></SocialIcon>
-                <SocialIcon href={SOCIALS.threads} label="ALPS threads"><MessageCircle className="h-3.5 w-3.5" /></SocialIcon>
+                <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
+                <SocialIcon href={SOCIALS.x} label="ALPS x"><Twitter className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.youtube} label="ALPS youtube"><Youtube className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.tiktok} label="ALPS tiktok"><Music2 className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
+                <SocialIcon href={SOCIALS.threads} label="ALPS threads"><MessageCircle className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
               </div>
-              <div className="flex gap-2 mt-2">
-                <SocialIcon href={SOCIALS.facebookPersonal} label="annie ling facebook"><Facebook className="h-4 w-4" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                <SocialIcon href={SOCIALS.instagram2} label="ALPS instagram alt"><Instagram className="h-4 w-4" /></SocialIcon>
+              <div className="flex flex-nowrap items-center gap-1.5 mt-2">
+                <SocialIcon href={SOCIALS.facebookPersonal} label="annie ling facebook"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.instagram2} label="ALPS instagram alt"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
               </div>
             </div>
             <div>
               <p className="text-foreground font-semibold mb-2 text-[12px]">vegan skincare</p>
-              <div className="flex gap-2">
-                <SocialIcon href={SOCIALS.skincareFacebook} label="skincare facebook"><Facebook className="h-4 w-4" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                <SocialIcon href={SOCIALS.skincareInstagram} label="skincare instagram (english)"><Instagram className="h-4 w-4" /></SocialIcon>
-                <SocialIcon href={SOCIALS.skincareInstagramBilingual} label="skincare instagram (en/zh)"><Instagram className="h-4 w-4" /></SocialIcon>
+              <div className="flex flex-nowrap items-center gap-1.5">
+                <SocialIcon href={SOCIALS.skincareFacebook} label="skincare facebook"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.skincareInstagram} label="skincare instagram (english)"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
+                <SocialIcon href={SOCIALS.skincareInstagramBilingual} label="skincare instagram (en/zh)"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
               </div>
 
             </div>
