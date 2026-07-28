@@ -60,7 +60,9 @@ export const AWARDS: Award[] = [
     project: "collection ONE and ALL",
     year: 2022,
     level: "silver",
-    image: nyWomens2022.url,
+    image: nyWomens2022Cert.url,
+    certificate: nyWomens2022Cert.url,
+    gallery: [nyWomens2022Letter.url],
     description:
       "silver winner in the clothing & accessories — womenswear category for the ONE and ALL collection.",
   },
