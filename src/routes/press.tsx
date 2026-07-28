@@ -113,9 +113,9 @@ function AwardDialog({
             className="relative w-full min-h-[80vh] flex flex-col items-center justify-center p-6 md:p-10"
             style={{
               backgroundImage: `url(${bgWood.url})`,
-              backgroundSize: "auto 100%",
+              backgroundSize: "cover",
               backgroundPosition: "center",
-              backgroundRepeat: "repeat-x",
+              backgroundRepeat: "no-repeat",
             }}
           >
             <div aria-hidden className="absolute inset-0 bg-black/45" />
