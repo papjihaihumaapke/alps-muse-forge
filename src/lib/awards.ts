@@ -124,13 +124,13 @@ export const AWARDS: Award[] = [
   {
     id: "ida-2021-sustainable-bronze",
     organization: "international design awards",
-    category: "recycled and sustainable fashion",
+    category: "recycled & sustainable fashion",
     project: "collection warrior",
     year: 2021,
     level: "bronze",
     image: ida2021SustainableBronze.url,
     description:
-      "bronze — other fashion designs, recycle & sustainable fashion for the warrior collection.",
+      "bronze — other fashion designs, recycled & sustainable fashion for the warrior collection.",
   },
   {
     id: "ida-2021-apparel-hm",
