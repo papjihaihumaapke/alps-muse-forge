@@ -7,6 +7,7 @@ import { INNOVATIONS } from "@/lib/innovations";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { openSizeInfo, type SizeKind } from "@/lib/size-info-store";
+import { openInnovation } from "@/lib/innovation-store";
 
 const SIZE_GROUPS: SizeKind[] = ["kids", "men", "women", "unisex"];
 
