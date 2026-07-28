@@ -1,9 +1,13 @@
-import nySmart2022 from "@/assets/awards/ny-smart-fashion-2022.png.asset.json";
-import nyWomens2022 from "@/assets/awards/ny-womenswear-2022.png.asset.json";
+import nySmart2022Cert from "@/assets/awards/ny-2022-smart-fashion-cert.png.asset.json";
+import nySmart2022Letter from "@/assets/awards/ny-2022-smart-fashion-letter.png.asset.json";
+import nyWomens2022Cert from "@/assets/awards/ny-2022-womenswear-cert.png.asset.json";
+import nyWomens2022Letter from "@/assets/awards/ny-2022-womenswear-letter.png.asset.json";
 import nySmart2021Cert from "@/assets/awards/ny-smart-fashion-2021-cert.png.asset.json";
 import nySmart2021Badge from "@/assets/awards/ny-smart-fashion-2021-badge.png.asset.json";
+import nySmart2021Letter from "@/assets/awards/ny-2021-smart-fashion-letter.png.asset.json";
 import nyWomens2021Cert from "@/assets/awards/ny-womenswear-2021-cert.png.asset.json";
 import nyWomens2021Badge from "@/assets/awards/ny-womenswear-2021-badge.png.asset.json";
+import nyWomens2021Letter from "@/assets/awards/ny-2021-womenswear-letter.png.asset.json";
 import ida2021ApparelSilver from "@/assets/awards/ida-2021-apparel-silver.png.asset.json";
 import ida2021SustainableBronze from "@/assets/awards/ida-2021-sustainable-bronze.png.asset.json";
 import ida2021ApparelHm from "@/assets/awards/ida-2021-apparel-hm.png.asset.json";
@@ -27,6 +31,8 @@ export type Award = {
   description?: string;
   image?: string;
   certificate?: string;
+  /** Additional related images (award letter, extra photos) shown as thumbnails inside the popup. */
+  gallery?: string[];
   href?: string;
 };
 
@@ -41,7 +47,9 @@ export const AWARDS: Award[] = [
     project: "collection ONE and ALL",
     year: 2022,
     level: "silver",
-    image: nySmart2022.url,
+    image: nySmart2022Cert.url,
+    certificate: nySmart2022Cert.url,
+    gallery: [nySmart2022Letter.url],
     description:
       "silver winner in the clothing & accessories — smart fashion category for the ONE and ALL collection, recognising textile innovation and intelligent functionality.",
   },
@@ -52,7 +60,9 @@ export const AWARDS: Award[] = [
     project: "collection ONE and ALL",
     year: 2022,
     level: "silver",
-    image: nyWomens2022.url,
+    image: nyWomens2022Cert.url,
+    certificate: nyWomens2022Cert.url,
+    gallery: [nyWomens2022Letter.url],
     description:
       "silver winner in the clothing & accessories — womenswear category for the ONE and ALL collection.",
   },
@@ -76,6 +86,7 @@ export const AWARDS: Award[] = [
     level: "gold",
     image: nySmart2021Badge.url,
     certificate: nySmart2021Cert.url,
+    gallery: [nySmart2021Letter.url],
     description:
       "gold winner in the clothing & accessories — smart fashion category for the warrior collection.",
   },
@@ -88,6 +99,7 @@ export const AWARDS: Award[] = [
     level: "silver",
     image: nyWomens2021Badge.url,
     certificate: nyWomens2021Cert.url,
+    gallery: [nyWomens2021Letter.url],
     description:
       "silver winner in the clothing & accessories — womenswear category for the warrior collection.",
   },
