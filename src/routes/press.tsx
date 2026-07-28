@@ -267,7 +267,7 @@ function PressPage() {
         <p className="mt-3 text-sm text-foreground/60 max-w-xl">
           tap any award to view the full details and certificate.
         </p>
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 items-stretch">
           {AWARDS.map((a) => (
             <AwardIconTile key={a.id} award={a} onClick={() => setSelected(a)} />
           ))}
