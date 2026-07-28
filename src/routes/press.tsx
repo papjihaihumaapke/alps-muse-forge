@@ -94,6 +94,17 @@ function AwardDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
+  const images = award
+    ? [award.certificate ?? award.image, ...(award.gallery ?? [])].filter(
+        (v): v is string => Boolean(v),
+      )
+    : [];
+  const [activeIdx, setActiveIdx] = useState(0);
+  useEffect(() => {
+    if (open) setActiveIdx(0);
+  }, [open, award?.id]);
+  const active = images[activeIdx];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl w-[96vw] p-0 border-0 bg-transparent shadow-none max-h-[92vh] overflow-y-auto">
@@ -102,12 +113,13 @@ function AwardDialog({
             className="relative w-full min-h-[80vh] flex flex-col items-center justify-center p-6 md:p-10"
             style={{
               backgroundImage: `url(${bgWood.url})`,
-              backgroundSize: "cover",
+              backgroundSize: "auto 100%",
               backgroundPosition: "center",
+              backgroundRepeat: "repeat-x",
             }}
           >
-            <div aria-hidden className="absolute inset-0 bg-black/40" />
-            <div className="relative z-10 w-full flex flex-col items-center gap-6">
+            <div aria-hidden className="absolute inset-0 bg-black/45" />
+            <div className="relative z-10 w-full flex flex-col items-center gap-5">
               <div className="text-center text-white">
                 <div className="flex items-center justify-center gap-3 mb-2">
                   <span className="num text-[11px] tracking-[0.25em] text-white/90">{award.year}</span>
@@ -122,13 +134,31 @@ function AwardDialog({
                 </DialogDescription>
               </div>
 
-              {(award.certificate || award.image) && (
-                <div className="bg-background p-3 md:p-4 shadow-2xl max-w-3xl w-full">
-                  <img
-                    src={award.certificate ?? award.image}
-                    alt={`${award.organization} ${award.category} ${award.year} certificate`}
-                    className="w-full h-auto max-h-[60vh] object-contain"
-                  />
+              {active && (
+                <img
+                  src={active}
+                  alt={`${award.organization} ${award.category} ${award.year}`}
+                  className="max-h-[62vh] w-auto max-w-full object-contain drop-shadow-2xl"
+                />
+              )}
+
+              {images.length > 1 && (
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  {images.map((src, i) => (
+                    <button
+                      key={src}
+                      type="button"
+                      onClick={() => setActiveIdx(i)}
+                      className={`h-16 w-12 md:h-20 md:w-14 overflow-hidden border-2 transition ${
+                        i === activeIdx
+                          ? "border-primary"
+                          : "border-white/40 hover:border-white"
+                      }`}
+                      aria-label={`view image ${i + 1}`}
+                    >
+                      <img src={src} alt="" className="h-full w-full object-cover bg-white/5" />
+                    </button>
+                  ))}
                 </div>
               )}
 
