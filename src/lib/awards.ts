@@ -74,6 +74,8 @@ export const AWARDS: Award[] = [
     category: "best fashion innovation",
     year: 2022,
     level: "winner",
+    image: hkmob2022Statue.url,
+    gallery: [hkmob2022Statue.url],
     description:
       "recognised as the best fashion innovation of 2022 by the hong kong most outstanding business awards.",
   },
