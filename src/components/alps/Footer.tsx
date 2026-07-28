@@ -92,7 +92,7 @@ export function Footer() {
 
 
 
-        <Col title="find us">
+        <Col title="find us" className="col-span-2 md:col-span-1 !border-l-0 md:!border-l-2 lg:!border-l-2">
           <div className="space-y-5">
             <div>
               <p className="text-foreground font-semibold mb-2 text-[12px] tracking-wider">ALPS</p>
@@ -130,7 +130,7 @@ export function Footer() {
           </div>
         </Col>
 
-        <Col title="pre-order">
+        <Col title="pre-order" className="col-span-2 md:col-span-1 !border-l-0 md:!border-l-2 lg:!border-l-2">
           <Link to="/account" className="text-foreground/80 hover:text-primary">catch up new item</Link>
           <div className="mt-8">
             <p className="text-foreground font-medium mb-2">contact us</p>
