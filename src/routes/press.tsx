@@ -41,49 +41,76 @@ const LEVEL_STYLES: Record<string, string> = {
   "honourable mention": "bg-foreground/80 text-background",
 };
 
-function LevelBadge({ level }: { level: Award["level"] }) {
+function LevelBadge({
+  level,
+  className = "",
+}: {
+  level: Award["level"];
+  className?: string;
+}) {
+  const display = level === "honourable mention" ? "honourable" : level;
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] tracking-[0.18em] uppercase ${LEVEL_STYLES[level]}`}
+      className={`inline-flex items-center justify-center gap-1.5 h-7 px-3 text-[10px] tracking-[0.18em] uppercase ${LEVEL_STYLES[level]} ${className}`}
     >
       <span aria-hidden className="font-semibold">
         {level === "gold" ? "★★★" : level === "silver" ? "★★" : level === "bronze" ? "★" : level === "winner" ? "✓" : "◆"}
       </span>
-      {level}
+      {display}
     </span>
   );
 }
 
-/** Feature-style icon tile for an award. */
+
+/** Feature-style icon tile for an award. Fixed structure so every card
+ *  has: image → year → status bar → org name → category (aligned bottom). */
 function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }) {
+  const displayLevel =
+    award.level === "honourable mention" ? "honourable" : award.level;
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={`${award.organization}, ${award.category}, ${award.year}, ${award.level} — view details`}
-      className="group flex flex-col items-center text-center gap-3 p-5 border border-border bg-background hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition"
+      aria-label={`${award.organization}, ${award.category}, ${award.year}, ${displayLevel} — view details`}
+      className="group h-full flex flex-col items-center text-center p-5 border border-border bg-background hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition"
     >
-      <div className="h-24 w-24 flex items-center justify-center bg-muted/40 rounded-full overflow-hidden">
+      {/* image area — fixed size; object-contain preserves tall statue proportions */}
+      <div className="h-28 w-28 flex items-center justify-center bg-muted/40 rounded-full overflow-hidden">
         {award.image ? (
           <img
             src={award.image}
             alt={`${award.organization} ${award.category} ${award.year}`}
             loading="lazy"
-            className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+            className="max-h-full max-w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <AwardIcon className="h-10 w-10 text-primary" />
         )}
       </div>
-      <div className="flex flex-col items-center gap-1.5">
-        <span className="num text-[10px] tracking-[0.25em] text-primary">{award.year}</span>
-        <LevelBadge level={award.level} />
-        <p className="text-[12px] font-medium leading-tight mt-1">{award.organization}</p>
-        <p className="text-[11px] text-foreground/70 leading-tight">{award.category}</p>
+
+      {/* year */}
+      <span className="num mt-3 text-[10px] tracking-[0.25em] text-primary">
+        {award.year}
+      </span>
+
+      {/* status bar — fixed width so every level aligns identically */}
+      <div className="mt-2 w-32 flex">
+        <LevelBadge level={award.level} className="w-full" />
       </div>
+
+      {/* organization/name (above category) */}
+      <p className="mt-3 text-[12px] font-medium leading-tight">
+        {award.organization}
+      </p>
+
+      {/* category (bottom-aligned across cards) */}
+      <p className="mt-auto pt-3 text-[11px] text-foreground/70 leading-tight whitespace-nowrap">
+        {award.category}
+      </p>
     </button>
   );
 }
+
 
 function AwardDialog({
   award,
@@ -240,7 +267,7 @@ function PressPage() {
         <p className="mt-3 text-sm text-foreground/60 max-w-xl">
           tap any award to view the full details and certificate.
         </p>
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 items-stretch">
           {AWARDS.map((a) => (
             <AwardIconTile key={a.id} award={a} onClick={() => setSelected(a)} />
           ))}

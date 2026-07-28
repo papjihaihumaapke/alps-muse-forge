@@ -1,13 +1,15 @@
 import nySmart2022Cert from "@/assets/awards/ny-2022-smart-fashion-cert.png.asset.json";
-import nySmart2022Letter from "@/assets/awards/ny-2022-smart-fashion-letter.png.asset.json";
+import nySmart2022Letter from "@/assets/awards/ny-2022-smart-fashion-letter-v2.png.asset.json";
 import nyWomens2022Cert from "@/assets/awards/ny-2022-womenswear-cert.png.asset.json";
-import nyWomens2022Letter from "@/assets/awards/ny-2022-womenswear-letter.png.asset.json";
-import nySmart2021Cert from "@/assets/awards/ny-smart-fashion-2021-cert.png.asset.json";
+import nyWomens2022Letter from "@/assets/awards/ny-2022-womenswear-letter-v2.png.asset.json";
+import nySmart2021Cert from "@/assets/awards/ny-2021-smart-fashion-cert.png.asset.json";
 import nySmart2021Badge from "@/assets/awards/ny-smart-fashion-2021-badge.png.asset.json";
 import nySmart2021Letter from "@/assets/awards/ny-2021-smart-fashion-letter.png.asset.json";
-import nyWomens2021Cert from "@/assets/awards/ny-womenswear-2021-cert.png.asset.json";
+import nyWomens2021Cert from "@/assets/awards/ny-2021-womenswear-cert.png.asset.json";
 import nyWomens2021Badge from "@/assets/awards/ny-womenswear-2021-badge.png.asset.json";
 import nyWomens2021Letter from "@/assets/awards/ny-2021-womenswear-letter.png.asset.json";
+import hkmob2022Statue from "@/assets/awards/hkmob-2022-statue.png.asset.json";
+import hkmos2021Statue from "@/assets/awards/hkmos-2021-statue.png.asset.json";
 import ida2021ApparelSilver from "@/assets/awards/ida-2021-apparel-silver.png.asset.json";
 import ida2021SustainableBronze from "@/assets/awards/ida-2021-sustainable-bronze.png.asset.json";
 import ida2021ApparelHm from "@/assets/awards/ida-2021-apparel-hm.png.asset.json";
@@ -72,6 +74,8 @@ export const AWARDS: Award[] = [
     category: "best fashion innovation",
     year: 2022,
     level: "winner",
+    image: hkmob2022Statue.url,
+    gallery: [hkmob2022Statue.url],
     description:
       "recognised as the best fashion innovation of 2022 by the hong kong most outstanding business awards.",
   },
@@ -84,9 +88,9 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "gold",
-    image: nySmart2021Badge.url,
+    image: nySmart2021Cert.url,
     certificate: nySmart2021Cert.url,
-    gallery: [nySmart2021Letter.url],
+    gallery: [nySmart2021Letter.url, nySmart2021Badge.url],
     description:
       "gold winner in the clothing & accessories — smart fashion category for the warrior collection.",
   },
@@ -97,9 +101,9 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "silver",
-    image: nyWomens2021Badge.url,
+    image: nyWomens2021Cert.url,
     certificate: nyWomens2021Cert.url,
-    gallery: [nyWomens2021Letter.url],
+    gallery: [nyWomens2021Letter.url, nyWomens2021Badge.url],
     description:
       "silver winner in the clothing & accessories — womenswear category for the warrior collection.",
   },
@@ -120,13 +124,13 @@ export const AWARDS: Award[] = [
   {
     id: "ida-2021-sustainable-bronze",
     organization: "international design awards",
-    category: "recycled and sustainable fashion",
+    category: "recycled & sustainable fashion",
     project: "collection warrior",
     year: 2021,
     level: "bronze",
     image: ida2021SustainableBronze.url,
     description:
-      "bronze — other fashion designs, recycle & sustainable fashion for the warrior collection.",
+      "bronze — other fashion designs, recycled & sustainable fashion for the warrior collection.",
   },
   {
     id: "ida-2021-apparel-hm",
@@ -156,6 +160,8 @@ export const AWARDS: Award[] = [
     category: "best fashion design brand",
     year: 2021,
     level: "winner",
+    image: hkmos2021Statue.url,
+    gallery: [hkmos2021Statue.url],
     description:
       "recognised as the best fashion design brand of 2021 by the hong kong most outstanding services awards.",
   },
