@@ -170,7 +170,7 @@ function AwardDialog({
               )}
 
               {award.description && (
-                <p className="text-sm text-white/90 leading-relaxed max-w-2xl text-center">
+                <p className="text-sm text-white leading-relaxed max-w-2xl text-center bg-black/50 backdrop-blur-sm px-5 py-3 rounded-sm">
                   {award.description}
                 </p>
               )}
