@@ -72,62 +72,56 @@ export function Footer() {
           </div>
         </Col>
 
-        {/* Combined wide column: awards & accolades + find us */}
-        <Col title="" className="col-span-2 md:col-span-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+        <Col title="awards & accolades">
+          <div className="flex flex-col gap-2">
+            {AWARDS.map((a) => (
+              <Link
+                key={a.id}
+                to="/press"
+                hash={a.id}
+                className="text-foreground/80 hover:text-primary block"
+              >
+                <span className="block font-medium text-foreground text-[11px]">{a.organization}</span>
+                <span className="block text-foreground/70 text-[10px]">
+                  {a.category} {a.year} — {a.level}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </Col>
+
+        <Col title="find us">
+          <div className="space-y-5">
             <div>
-              <h4 className="text-[13px] tracking-wide text-foreground font-semibold mb-3">awards & accolades</h4>
-              <div className="flex flex-col gap-2">
-                {AWARDS.map((a) => (
-                  <Link
-                    key={a.id}
-                    to="/press"
-                    hash={a.id}
-                    className="text-foreground/80 hover:text-primary block"
-                  >
-                    <span className="block font-medium text-foreground text-[11px]">{a.organization}</span>
-                    <span className="block text-foreground/70 text-[10px]">
-                      {a.category} {a.year} — {a.level}
-                    </span>
-                  </Link>
-                ))}
+              <p className="text-foreground font-semibold mb-2 text-[12px] tracking-wider">ALPS</p>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
+                <SocialIcon href={SOCIALS.x} label="ALPS x"><Twitter className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.youtube} label="ALPS youtube"><Youtube className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.tiktok} label="ALPS tiktok"><Music2 className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
+                <SocialIcon href={SOCIALS.threads} label="ALPS threads"><MessageCircle className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                <SocialIcon href={SOCIALS.facebookPersonal} label="annie ling facebook"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.instagram2} label="ALPS instagram alt"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
               </div>
             </div>
             <div>
-              <h4 className="text-[13px] tracking-wide text-foreground font-semibold mb-3">find us</h4>
-              <div className="space-y-5">
-                <div>
-                  <p className="text-foreground font-semibold mb-2 text-[12px] tracking-wider">ALPS</p>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                    <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
-                    <SocialIcon href={SOCIALS.x} label="ALPS x"><Twitter className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                    <SocialIcon href={SOCIALS.youtube} label="ALPS youtube"><Youtube className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                    <SocialIcon href={SOCIALS.tiktok} label="ALPS tiktok"><Music2 className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
-                    <SocialIcon href={SOCIALS.threads} label="ALPS threads"><MessageCircle className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                    <SocialIcon href={SOCIALS.facebookPersonal} label="annie ling facebook"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                    <SocialIcon href={SOCIALS.instagram2} label="ALPS instagram alt"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-foreground font-semibold mb-2 text-[12px]">vegan skincare</p>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <SocialIcon href={SOCIALS.skincareFacebook} label="skincare facebook"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
-                    <SocialIcon href={SOCIALS.skincareInstagram} label="skincare instagram (english)"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
-                    <SocialIcon href={SOCIALS.skincareInstagramBilingual} label="skincare instagram (en/zh)"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-foreground font-medium mb-2">support</p>
-                  <div className="flex flex-col gap-1.5">
-                    <Link to="/shipping" className="text-foreground/80 hover:text-primary">shipping</Link>
-                    <Link to="/returns" className="text-foreground/80 hover:text-primary">returns & exchanges</Link>
-                    <Link to="/terms" className="text-foreground/80 hover:text-primary">terms of service</Link>
-                    <Link to="/privacy" className="text-foreground/80 hover:text-primary">privacy</Link>
-                  </div>
-                </div>
+              <p className="text-foreground font-semibold mb-2 text-[12px]">vegan skincare</p>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <SocialIcon href={SOCIALS.skincareFacebook} label="skincare facebook"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.skincareInstagram} label="skincare instagram (english)"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
+                <SocialIcon href={SOCIALS.skincareInstagramBilingual} label="skincare instagram (en/zh)"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
+              </div>
+            </div>
+            <div>
+              <p className="text-foreground font-medium mb-2">support</p>
+              <div className="flex flex-col gap-1.5">
+                <Link to="/shipping" className="text-foreground/80 hover:text-primary">shipping</Link>
+                <Link to="/returns" className="text-foreground/80 hover:text-primary">returns & exchanges</Link>
+                <Link to="/terms" className="text-foreground/80 hover:text-primary">terms of service</Link>
+                <Link to="/privacy" className="text-foreground/80 hover:text-primary">privacy</Link>
               </div>
             </div>
           </div>
