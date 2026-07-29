@@ -17,12 +17,7 @@ import ida2021PretHm from "@/assets/awards/ida-2021-pret-hm.png.asset.json";
 import ida2018SportswearSilver from "@/assets/awards/ida-2018-sportswear-silver.png.asset.json";
 import dip2019BestPresenter from "@/assets/awards/dip-2019-best-presenter-cert.jpg.asset.json";
 
-export type AwardLevel =
-  | "gold"
-  | "silver"
-  | "bronze"
-  | "honourable mention"
-  | "winner";
+export type AwardLevel = "gold" | "silver" | "bronze" | "honourable mention" | "winner";
 
 export type Award = {
   id: string;
@@ -66,8 +61,7 @@ export const AWARDS: Award[] = [
     image: nyWomens2022Cert.url,
     certificate: nyWomens2022Cert.url,
     gallery: [nyWomens2022Letter.url],
-    description:
-      "silver winner in the clothing & accessories — womenswear category for the ONE and ALL collection.",
+    description: "silver winner in the clothing & accessories — womenswear category for the ONE and ALL collection.",
   },
   {
     id: "hkmoba-2022",
@@ -77,8 +71,7 @@ export const AWARDS: Award[] = [
     level: "winner",
     image: hkmob2022Statue.url,
     gallery: [hkmob2022Statue.url],
-    description:
-      "recognised as the best fashion innovation of 2022 by the hong kong most outstanding business awards.",
+    description: "recognised as the best fashion innovation of 2022 by the hong kong most outstanding business awards.",
   },
 
   // 2021 · NY Product Design Awards
@@ -92,8 +85,7 @@ export const AWARDS: Award[] = [
     image: nySmart2021Cert.url,
     certificate: nySmart2021Cert.url,
     gallery: [nySmart2021Letter.url, nySmart2021Badge.url],
-    description:
-      "gold winner in the clothing & accessories — smart fashion category for the warrior collection.",
+    description: "gold winner in the clothing & accessories — smart fashion category for the warrior collection.",
   },
   {
     id: "ny-2021-womenswear",
@@ -105,8 +97,7 @@ export const AWARDS: Award[] = [
     image: nyWomens2021Cert.url,
     certificate: nyWomens2021Cert.url,
     gallery: [nyWomens2021Letter.url, nyWomens2021Badge.url],
-    description:
-      "silver winner in the clothing & accessories — womenswear category for the warrior collection.",
+    description: "silver winner in the clothing & accessories — womenswear category for the warrior collection.",
   },
 
   // 2021 · International Design Awards
@@ -119,8 +110,7 @@ export const AWARDS: Award[] = [
     level: "silver",
     image: ida2021ApparelSilver.url,
     href: "https://www.idesignawards.com/winners-old/zoom.php?eid=9-34162-21",
-    description:
-      "silver — apparel category, apparel projects for the warrior collection.",
+    description: "silver — apparel category, apparel projects for the warrior collection.",
   },
   {
     id: "ida-2021-sustainable-bronze",
@@ -130,8 +120,7 @@ export const AWARDS: Award[] = [
     year: 2021,
     level: "bronze",
     image: ida2021SustainableBronze.url,
-    description:
-      "bronze — other fashion designs, recycled & sustainable fashion for the warrior collection.",
+    description: "bronze — other fashion designs, recycled & sustainable fashion for the warrior collection.",
   },
   {
     id: "ida-2021-apparel-hm",
@@ -141,8 +130,7 @@ export const AWARDS: Award[] = [
     year: 2021,
     level: "honourable mention",
     image: ida2021ApparelHm.url,
-    description:
-      "honourable mention — apparel category for the warrior collection.",
+    description: "honourable mention — apparel category for the warrior collection.",
   },
   {
     id: "ida-2021-pret-hm",
@@ -152,8 +140,7 @@ export const AWARDS: Award[] = [
     year: 2021,
     level: "honourable mention",
     image: ida2021PretHm.url,
-    description:
-      "honourable mention — prêt-à-porter for the warrior collection.",
+    description: "honourable mention — prêt-à-porter for the warrior collection.",
   },
   {
     id: "hkmosa-2021",
@@ -170,14 +157,13 @@ export const AWARDS: Award[] = [
   // 2019
   {
     id: "dip-2019-best-presenter",
-    organization: "dip graduation ceremony",
-    category: "best presenter — shark tank pitching",
+    organization: "DIP 2019 Best Presenter",
+    category: "Shark Tank pitching",
     year: 2019,
     level: "winner",
     image: dip2019BestPresenter.url,
     certificate: dip2019BestPresenter.url,
-    description:
-      "best presenter award at the dip graduation ceremony 2019 shark tank pitching.",
+    description: "best presenter award at the dip graduation ceremony 2019 shark tank pitching.",
   },
 
   // 2018
@@ -189,8 +175,7 @@ export const AWARDS: Award[] = [
     year: 2018,
     level: "silver",
     image: ida2018SportswearSilver.url,
-    description:
-      "silver — apparel category, sportswear for the permanent 99% germs killing instant warming vest.",
+    description: "silver — apparel category, sportswear for the permanent 99% germs killing instant warming vest.",
   },
 ];
 
