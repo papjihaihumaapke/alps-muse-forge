@@ -17,7 +17,7 @@ export function Footer() {
     <footer className="bg-background text-foreground mt-24 border-t-2 border-foreground/40">
       <div
         className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 pt-0 pb-10 grid grid-cols-2 md:grid-cols-3 text-[11px] leading-[1.4]
-          lg:[grid-template-columns:0.7fr_0.7fr_1.3fr_2fr_0.85fr]
+          lg:[grid-template-columns:0.65fr_0.65fr_1.1fr_1.35fr_1.1fr_0.75fr]
           [&>*]:border-l-2 [&>*]:border-t-2 [&>*]:border-foreground/40
           [&>*:nth-child(odd)]:border-l-0
           [&>*:nth-child(-n+2)]:border-t-0
