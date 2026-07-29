@@ -207,7 +207,3 @@ function SocialIcon({ href, label, children }: { href: string; label: string; ch
   );
 }
 
-
-
-
-update this code accordingly
