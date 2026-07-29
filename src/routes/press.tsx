@@ -64,9 +64,27 @@ function LevelBadge({
 
 /** Feature-style icon tile for an award. Fixed structure so every card
  *  has: image → year → status bar → org name → category (aligned bottom). */
+function splitOrgName(org: string): { top: string; bottom: string } {
+  const prefixes = ["new york", "hong kong", "international"];
+  const lower = org.toLowerCase();
+  for (const p of prefixes) {
+    if (lower.startsWith(p + " ")) {
+      return { top: org.slice(0, p.length), bottom: org.slice(p.length + 1) };
+    }
+    if (lower === p) {
+      return { top: org, bottom: "" };
+    }
+  }
+  // Fallback: split on first space
+  const idx = org.indexOf(" ");
+  if (idx === -1) return { top: org, bottom: "" };
+  return { top: org.slice(0, idx), bottom: org.slice(idx + 1) };
+}
+
 function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }) {
   const displayLevel =
     award.level === "honourable mention" ? "honourable" : award.level;
+  const { top: orgTop, bottom: orgBottom } = splitOrgName(award.organization);
   return (
     <button
       type="button"
@@ -98,10 +116,13 @@ function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }
         <LevelBadge level={award.level} className="w-full" />
       </div>
 
-      {/* organization/name (above category) */}
-      <p className="mt-3 text-[12px] font-medium leading-tight">
-        {award.organization}
-      </p>
+      {/* organization/name — city on top, rest on bottom */}
+      <div className="mt-3 leading-tight">
+        <p className="text-[12px] font-medium">{orgTop}</p>
+        {orgBottom && (
+          <p className="text-[12px] font-medium">{orgBottom}</p>
+        )}
+      </div>
 
       {/* category (bottom-aligned across cards) */}
       <p className="mt-auto pt-3 text-[11px] text-foreground/70 leading-tight whitespace-nowrap">
@@ -110,6 +131,7 @@ function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }
     </button>
   );
 }
+
 
 
 function AwardDialog({
