@@ -23,7 +23,7 @@ export function Footer() {
           md:grid-cols-3
 
           lg:grid-cols-none lg:px-12
-          lg:[grid-template-columns:minmax(0,0.78fr)_minmax(0,0.78fr)_minmax(0,1.18fr)_minmax(0,1.38fr)_minmax(0,0.98fr)_minmax(0,0.78fr)]
+          lg:[grid-template-columns:minmax(0,0.7fr)_minmax(0,0.7fr)_minmax(0,1.35fr)_minmax(0,1.35fr)_minmax(0,1.05fr)_minmax(0,0.7fr)]
 
           [&>*]:border-t-2
           [&>*]:border-foreground/40
@@ -41,8 +41,11 @@ export function Footer() {
           lg:[&>*]:border-l-0
           lg:[&>*]:border-t-0
           lg:[&>*+*]:border-l-2
+          lg:[&>*:last-child]:border-r-2
+          lg:[&>*:first-child]:border-l-2
         "
       >
+
         <Col title="asia miles">
           <a
             href={SOCIALS.asiaMiles}
