@@ -96,7 +96,7 @@ export function Footer() {
           <div className="space-y-5">
             <div>
               <p className="text-foreground font-semibold mb-2 text-[12px] tracking-wider">ALPS</p>
-              <div className="flex flex-nowrap items-center gap-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
                 <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
                 <SocialIcon href={SOCIALS.x} label="ALPS x"><Twitter className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
@@ -104,14 +104,14 @@ export function Footer() {
                 <SocialIcon href={SOCIALS.tiktok} label="ALPS tiktok"><Music2 className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
                 <SocialIcon href={SOCIALS.threads} label="ALPS threads"><MessageCircle className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
               </div>
-              <div className="flex flex-nowrap items-center gap-1.5 mt-2">
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
                 <SocialIcon href={SOCIALS.facebookPersonal} label="annie ling facebook"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
                 <SocialIcon href={SOCIALS.instagram2} label="ALPS instagram alt"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
               </div>
             </div>
             <div>
               <p className="text-foreground font-semibold mb-2 text-[12px]">vegan skincare</p>
-              <div className="flex flex-nowrap items-center gap-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <SocialIcon href={SOCIALS.skincareFacebook} label="skincare facebook"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
                 <SocialIcon href={SOCIALS.skincareInstagram} label="skincare instagram (english)"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
                 <SocialIcon href={SOCIALS.skincareInstagramBilingual} label="skincare instagram (en/zh)"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
