@@ -49,7 +49,7 @@ export const AWARDS: Award[] = [
     level: "silver",
     image: nySmart2022Cert.url,
     certificate: nySmart2022Cert.url,
-    gallery: [nySmart2022Letter.url],
+    gallery: [nySmart2022Letter.url, nySmart2022Badge.url],
     description:
       "silver winner in the clothing & accessories — smart fashion category for the ONE and ALL collection, recognising textile innovation and intelligent functionality.",
   },
@@ -62,7 +62,7 @@ export const AWARDS: Award[] = [
     level: "silver",
     image: nyWomens2022Cert.url,
     certificate: nyWomens2022Cert.url,
-    gallery: [nyWomens2022Letter.url],
+    gallery: [nyWomens2022Letter.url, nyWomens2022Badge.url],
     description: "silver winner in the clothing & accessories — womenswear category for the ONE and ALL collection.",
   },
   {
