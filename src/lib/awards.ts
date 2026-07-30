@@ -2,6 +2,8 @@ import nySmart2022Cert from "@/assets/awards/ny-2022-smart-fashion-cert.png.asse
 import nySmart2022Letter from "@/assets/awards/ny-2022-smart-fashion-letter-v2.png.asset.json";
 import nyWomens2022Cert from "@/assets/awards/ny-2022-womenswear-cert.png.asset.json";
 import nyWomens2022Letter from "@/assets/awards/ny-2022-womenswear-letter-v2.png.asset.json";
+import nySmart2022Badge from "@/assets/awards/ny-smart-fashion-2022.png.asset.json";
+import nyWomens2022Badge from "@/assets/awards/ny-womenswear-2022.png.asset.json";
 import nySmart2021Cert from "@/assets/awards/ny-2021-smart-fashion-cert.png.asset.json";
 import nySmart2021Badge from "@/assets/awards/ny-smart-fashion-2021-badge.png.asset.json";
 import nySmart2021Letter from "@/assets/awards/ny-2021-smart-fashion-letter.png.asset.json";
@@ -47,7 +49,7 @@ export const AWARDS: Award[] = [
     level: "silver",
     image: nySmart2022Cert.url,
     certificate: nySmart2022Cert.url,
-    gallery: [nySmart2022Letter.url],
+    gallery: [nySmart2022Letter.url, nySmart2022Badge.url],
     description:
       "silver winner in the clothing & accessories — smart fashion category for the ONE and ALL collection, recognising textile innovation and intelligent functionality.",
   },
@@ -60,7 +62,7 @@ export const AWARDS: Award[] = [
     level: "silver",
     image: nyWomens2022Cert.url,
     certificate: nyWomens2022Cert.url,
-    gallery: [nyWomens2022Letter.url],
+    gallery: [nyWomens2022Letter.url, nyWomens2022Badge.url],
     description: "silver winner in the clothing & accessories — womenswear category for the ONE and ALL collection.",
   },
   {
