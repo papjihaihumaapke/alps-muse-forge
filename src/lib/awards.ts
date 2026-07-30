@@ -2,6 +2,8 @@ import nySmart2022Cert from "@/assets/awards/ny-2022-smart-fashion-cert.png.asse
 import nySmart2022Letter from "@/assets/awards/ny-2022-smart-fashion-letter-v2.png.asset.json";
 import nyWomens2022Cert from "@/assets/awards/ny-2022-womenswear-cert.png.asset.json";
 import nyWomens2022Letter from "@/assets/awards/ny-2022-womenswear-letter-v2.png.asset.json";
+import nySmart2022Badge from "@/assets/awards/ny-smart-fashion-2022.png.asset.json";
+import nyWomens2022Badge from "@/assets/awards/ny-womenswear-2022.png.asset.json";
 import nySmart2021Cert from "@/assets/awards/ny-2021-smart-fashion-cert.png.asset.json";
 import nySmart2021Badge from "@/assets/awards/ny-smart-fashion-2021-badge.png.asset.json";
 import nySmart2021Letter from "@/assets/awards/ny-2021-smart-fashion-letter.png.asset.json";
