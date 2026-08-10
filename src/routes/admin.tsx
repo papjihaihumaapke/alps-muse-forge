@@ -18,6 +18,18 @@ import { featureIcon } from "@/lib/feature-icons";
 import { ChevronDown, ChevronRight, X, Plus, Image as ImageIcon, Palette } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SWATCH_LIBRARY, type SwatchGroup } from "@/lib/color-swatches";
+import {
+  asArray,
+  eventDateLabel,
+  kindLabel,
+  slugify,
+  JOURNEY_POST_KINDS,
+  type JourneyImage,
+  type JourneyLink,
+  type JourneyPost,
+  type PageSection,
+} from "@/lib/journey";
+import type { Json } from "@/integrations/supabase/types";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -99,7 +111,9 @@ function AdminPage() {
             <TabsTrigger value="banners">homepage banners</TabsTrigger>
             <TabsTrigger value="orders">orders</TabsTrigger>
             <TabsTrigger value="customers">customers</TabsTrigger>
-            <TabsTrigger value="journey">my journey</TabsTrigger>
+            <TabsTrigger value="journal">journey posts</TabsTrigger>
+            <TabsTrigger value="page-content">page content</TabsTrigger>
+            <TabsTrigger value="journey">journey extras</TabsTrigger>
             <TabsTrigger value="promos">promo codes</TabsTrigger>
             <TabsTrigger value="newsletter">newsletter</TabsTrigger>
             <TabsTrigger value="admins">admins</TabsTrigger>
@@ -108,6 +122,8 @@ function AdminPage() {
           <TabsContent value="banners"><BannersTab /></TabsContent>
           <TabsContent value="orders"><OrdersTab /></TabsContent>
           <TabsContent value="customers"><CustomersTab /></TabsContent>
+          <TabsContent value="journal"><JourneyPostsTab /></TabsContent>
+          <TabsContent value="page-content"><PageSectionsTab /></TabsContent>
           <TabsContent value="journey"><JourneyTab /></TabsContent>
           <TabsContent value="promos"><PromosTab /></TabsContent>
           <TabsContent value="newsletter"><NewsletterTab /></TabsContent>
@@ -1292,3 +1308,622 @@ function JourneyTab() {
   );
 }
 
+
+/* ============================================================
+   MY JOURNEY — BLOG / JOURNAL CMS
+   ============================================================ */
+
+async function uploadJournalImage(file: File): Promise<string | null> {
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const path = `journal/${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+  const { error } = await supabase.storage.from("product-media").upload(path, file, { upsert: false });
+  if (error) { toast.error(error.message); return null; }
+  const { data } = supabase.storage.from("product-media").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+type PostDraft = Omit<JourneyPost, "id"> & { id?: string };
+
+const blankPost = (): PostDraft => ({
+  title: "",
+  slug: null,
+  event_year: new Date().getFullYear(),
+  event_date: null,
+  event_label: null,
+  kind: "journal",
+  excerpt: null,
+  content: null,
+  cover_image_url: null,
+  images: [],
+  video_url: null,
+  links: [],
+  published: false,
+  sort_order: 0,
+});
+
+function JourneyPostsTab() {
+  const [posts, setPosts] = useState<JourneyPost[]>([]);
+  const [editing, setEditing] = useState<PostDraft | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    const { data, error } = await supabase
+      .from("journey_posts")
+      .select("*")
+      .order("event_year", { ascending: false })
+      .order("event_date", { ascending: false, nullsFirst: false })
+      .order("sort_order", { ascending: true });
+    setLoading(false);
+    if (error) return toast.error(error.message);
+    setPosts(
+      (data ?? []).map((r) => ({
+        ...r,
+        images: asArray<JourneyImage>(r.images),
+        links: asArray<JourneyLink>(r.links),
+      })) as JourneyPost[],
+    );
+  };
+  useEffect(() => { load(); }, []);
+
+  const save = async (draft: PostDraft) => {
+    if (!draft.title.trim()) return toast.error("a title is required");
+    if (!draft.event_year) return toast.error("an event year is required");
+    const payload = {
+      title: draft.title.trim(),
+      slug: draft.slug?.trim() || slugify(`${draft.event_year}-${draft.title}`),
+      event_year: Number(draft.event_year),
+      event_date: draft.event_date || null,
+      event_label: draft.event_label?.trim() || null,
+      kind: draft.kind,
+      excerpt: draft.excerpt?.trim() || null,
+      content: draft.content || null,
+      cover_image_url: draft.cover_image_url || null,
+      images: draft.images as unknown as Json,
+      video_url: draft.video_url?.trim() || null,
+      links: draft.links as unknown as Json,
+      published: draft.published,
+      sort_order: Number(draft.sort_order) || 0,
+    };
+    const { error } = draft.id
+      ? await supabase.from("journey_posts").update(payload).eq("id", draft.id)
+      : await supabase.from("journey_posts").insert(payload);
+    if (error) return toast.error(error.message);
+    toast.success(draft.id ? "post updated" : "post created");
+    setEditing(null);
+    load();
+  };
+
+  const remove = async (id: string, title: string) => {
+    if (!confirm(`delete "${title}"? this cannot be undone.`)) return;
+    const { error } = await supabase.from("journey_posts").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("post deleted");
+    load();
+  };
+
+  const togglePublished = async (post: JourneyPost) => {
+    const { error } = await supabase
+      .from("journey_posts")
+      .update({ published: !post.published })
+      .eq("id", post.id);
+    if (error) return toast.error(error.message);
+    load();
+  };
+
+  if (editing) {
+    return <PostEditor draft={editing} onChange={setEditing} onSave={save} onCancel={() => setEditing(null)} />;
+  }
+
+  return (
+    <div className="py-6 space-y-6">
+      <Section
+        title="journey posts"
+        subtitle="each entry appears on the my journey page, grouped under its event year — shows, events, press coverage, awards."
+      >
+        <div className="flex justify-end mb-4">
+          <Button size="sm" onClick={() => setEditing(blankPost())}>
+            <Plus className="h-3 w-3 mr-1" />new post
+          </Button>
+        </div>
+
+        {loading && <p className="text-xs text-muted-foreground">loading posts…</p>}
+        {!loading && posts.length === 0 && (
+          <p className="text-xs text-muted-foreground">
+            no posts yet. click "new post" to add your first journey entry.
+          </p>
+        )}
+
+        <div className="space-y-2">
+          {posts.map((p) => (
+            <div key={p.id} className="border border-border bg-card p-3 flex flex-wrap items-center gap-4">
+              <div className="h-14 w-20 shrink-0 bg-muted overflow-hidden">
+                {p.cover_image_url ? (
+                  <img src={p.cover_image_url} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center">
+                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-baseline gap-x-3">
+                  <span className="num text-[11px] tracking-[0.2em] text-muted-foreground">
+                    {eventDateLabel(p)}
+                  </span>
+                  <span className="text-[10px] tracking-[0.15em] uppercase text-primary">
+                    {kindLabel(p.kind)}
+                  </span>
+                </div>
+                <p className="text-sm truncate mt-0.5">{p.title || "(untitled)"}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {p.images.length} image{p.images.length === 1 ? "" : "s"}
+                  {p.video_url ? " · video" : ""}
+                  {p.links.length > 0 ? ` · ${p.links.length} link${p.links.length === 1 ? "" : "s"}` : ""}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <span className={p.published ? "text-foreground/70" : "text-muted-foreground"}>
+                  {p.published ? "published" : "draft"}
+                </span>
+                <Switch checked={p.published} onCheckedChange={() => togglePublished(p)} />
+              </div>
+              <div className="flex items-center gap-3 text-xs">
+                <button className="link-red" onClick={() => setEditing({ ...p })}>edit</button>
+                <button className="link-red" onClick={() => remove(p.id, p.title)}>delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function PostEditor({ draft, onChange, onSave, onCancel }: {
+  draft: PostDraft;
+  onChange: (d: PostDraft) => void;
+  onSave: (d: PostDraft) => void;
+  onCancel: () => void;
+}) {
+  const set = (patch: Partial<PostDraft>) => onChange({ ...draft, ...patch });
+  const [busy, setBusy] = useState(false);
+
+  const addImages = async (files: FileList) => {
+    setBusy(true);
+    const uploaded: JourneyImage[] = [];
+    for (const file of Array.from(files)) {
+      const url = await uploadJournalImage(file);
+      if (url) uploaded.push({ url, caption: null });
+    }
+    setBusy(false);
+    if (uploaded.length) set({ images: [...draft.images, ...uploaded] });
+  };
+
+  return (
+    <div className="py-6 space-y-6">
+      <div className="flex items-center gap-4">
+        <button onClick={onCancel} className="text-xs link-red">← back to posts</button>
+        <div className="ml-auto flex items-center gap-3">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-muted-foreground">{draft.published ? "published" : "draft"}</span>
+            <Switch checked={draft.published} onCheckedChange={(v) => set({ published: v })} />
+          </div>
+          <Button size="sm" disabled={busy} onClick={() => onSave(draft)}>
+            {busy ? "uploading…" : "save post"}
+          </Button>
+        </div>
+      </div>
+
+      <Section title={draft.id ? "edit post" : "new post"} subtitle="the event year decides where this entry sits on the page.">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2">
+            <Field label="title">
+              <Input
+                value={draft.title}
+                placeholder="e.g. fashion show — summer VI: one and all"
+                onChange={(e) => set({ title: e.target.value })}
+              />
+            </Field>
+          </div>
+
+          <Field label="event year (required)">
+            <Input
+              type="number"
+              value={draft.event_year}
+              onChange={(e) => set({ event_year: Number(e.target.value) })}
+            />
+          </Field>
+
+          <Field label="exact date (optional)">
+            <Input
+              type="date"
+              value={draft.event_date ?? ""}
+              onChange={(e) => set({ event_date: e.target.value || null })}
+            />
+          </Field>
+
+          <Field label="date label (optional — overrides what's displayed)">
+            <Input
+              value={draft.event_label ?? ""}
+              placeholder="e.g. spring 2021, november 2021"
+              onChange={(e) => set({ event_label: e.target.value || null })}
+            />
+          </Field>
+
+          <Field label="type">
+            <select
+              value={draft.kind}
+              onChange={(e) => set({ kind: e.target.value })}
+              className="h-9 w-full border border-input bg-background px-3 text-sm"
+            >
+              {JOURNEY_POST_KINDS.map((k) => (
+                <option key={k.key} value={k.key}>{k.label}</option>
+              ))}
+            </select>
+          </Field>
+
+          <div className="md:col-span-2">
+            <Field label="short intro (optional — shown in italics under the title)">
+              <Input
+                value={draft.excerpt ?? ""}
+                onChange={(e) => set({ excerpt: e.target.value || null })}
+              />
+            </Field>
+          </div>
+
+          <div className="md:col-span-2">
+            <Field label="written content — leave a blank line between paragraphs">
+              <Textarea
+                rows={12}
+                value={draft.content ?? ""}
+                onChange={(e) => set({ content: e.target.value || null })}
+              />
+            </Field>
+          </div>
+
+          <div className="md:col-span-2">
+            <Field label="cover image (shown full-width at the top of the entry)">
+              <div className="flex items-start gap-4">
+                <div className="h-24 w-36 shrink-0 bg-muted overflow-hidden">
+                  {draft.cover_image_url ? (
+                    <img src={draft.cover_image_url} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs block cursor-pointer link-red">
+                    upload cover image
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const f = e.target.files?.[0]; if (!f) return;
+                      setBusy(true);
+                      const url = await uploadJournalImage(f);
+                      setBusy(false);
+                      if (url) set({ cover_image_url: url });
+                    }} />
+                  </label>
+                  <Input
+                    value={draft.cover_image_url ?? ""}
+                    placeholder="…or paste an image url"
+                    onChange={(e) => set({ cover_image_url: e.target.value || null })}
+                  />
+                  {draft.cover_image_url && (
+                    <button className="text-xs link-red" onClick={() => set({ cover_image_url: null })}>
+                      remove cover image
+                    </button>
+                  )}
+                </div>
+              </div>
+            </Field>
+          </div>
+
+          <div className="md:col-span-2">
+            <Field label="gallery images (as many as you like)">
+              <div className="space-y-3">
+                <label className="text-xs inline-block cursor-pointer link-red">
+                  upload images
+                  <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
+                    if (e.target.files?.length) addImages(e.target.files);
+                  }} />
+                </label>
+                {draft.images.map((img, i) => (
+                  <div key={i} className="flex items-start gap-3 border border-border p-2">
+                    <img src={img.url} alt="" className="h-16 w-24 shrink-0 object-cover bg-muted" />
+                    <Input
+                      value={img.caption ?? ""}
+                      placeholder="caption (optional)"
+                      onChange={(e) => {
+                        const next = [...draft.images];
+                        next[i] = { ...img, caption: e.target.value || null };
+                        set({ images: next });
+                      }}
+                    />
+                    <div className="flex flex-col gap-1 shrink-0">
+                      <button
+                        className="text-[10px] link-red disabled:opacity-40"
+                        disabled={i === 0}
+                        onClick={() => {
+                          const next = [...draft.images];
+                          [next[i - 1], next[i]] = [next[i], next[i - 1]];
+                          set({ images: next });
+                        }}
+                      >move up</button>
+                      <button
+                        className="text-[10px] link-red"
+                        onClick={() => set({ images: draft.images.filter((_, j) => j !== i) })}
+                      >remove</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Field>
+          </div>
+
+          <div className="md:col-span-2">
+            <Field label="video url (youtube or vimeo links are embedded automatically)">
+              <Input
+                value={draft.video_url ?? ""}
+                placeholder="https://www.youtube.com/watch?v=…"
+                onChange={(e) => set({ video_url: e.target.value || null })}
+              />
+            </Field>
+          </div>
+
+          <div className="md:col-span-2">
+            <Field label="related / external links (press articles, partner sites)">
+              <div className="space-y-2">
+                {draft.links.map((l, i) => (
+                  <div key={i} className="flex gap-2">
+                    <Input
+                      value={l.label}
+                      placeholder="link text"
+                      onChange={(e) => {
+                        const next = [...draft.links];
+                        next[i] = { ...l, label: e.target.value };
+                        set({ links: next });
+                      }}
+                    />
+                    <Input
+                      value={l.url}
+                      placeholder="https://…"
+                      onChange={(e) => {
+                        const next = [...draft.links];
+                        next[i] = { ...l, url: e.target.value };
+                        set({ links: next });
+                      }}
+                    />
+                    <button
+                      className="text-xs link-red shrink-0"
+                      onClick={() => set({ links: draft.links.filter((_, j) => j !== i) })}
+                    >remove</button>
+                  </div>
+                ))}
+                <button
+                  className="text-xs link-red"
+                  onClick={() => set({ links: [...draft.links, { label: "", url: "" }] })}
+                >+ add a link</button>
+              </div>
+            </Field>
+          </div>
+
+          <Field label="order within the year (lower shows first)">
+            <Input
+              type="number"
+              value={draft.sort_order}
+              onChange={(e) => set({ sort_order: Number(e.target.value) })}
+            />
+          </Field>
+
+          <Field label="url slug (optional — generated from the title if left blank)">
+            <Input
+              value={draft.slug ?? ""}
+              onChange={(e) => set({ slug: e.target.value || null })}
+            />
+          </Field>
+        </div>
+
+        <div className="flex gap-3 mt-6">
+          <Button disabled={busy} onClick={() => onSave(draft)}>{busy ? "uploading…" : "save post"}</Button>
+          <Button variant="outline" onClick={onCancel}>cancel</Button>
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+/* ============================================================
+   PAGE CONTENT — editable prose sections (designer bio, etc.)
+   ============================================================ */
+
+type SectionDraft = Omit<PageSection, "id"> & { id?: string };
+
+function PageSectionsTab() {
+  const [rows, setRows] = useState<PageSection[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    const { data, error } = await supabase
+      .from("page_sections")
+      .select("*")
+      .eq("page", "my-journey")
+      .order("sort_order");
+    setLoading(false);
+    if (error) return toast.error(error.message);
+    setRows((data ?? []).map((r) => ({ ...r, links: asArray<JourneyLink>(r.links) })) as PageSection[]);
+  };
+  useEffect(() => { load(); }, []);
+
+  const add = async () => {
+    const { error } = await supabase.from("page_sections").insert({
+      page: "my-journey",
+      eyebrow: null,
+      heading: "new section",
+      subheading: null,
+      body: null,
+      image_url: null,
+      links: [] as unknown as Json,
+      sort_order: rows.length,
+      active: true,
+    });
+    if (error) return toast.error(error.message);
+    load();
+  };
+
+  const save = async (row: SectionDraft) => {
+    if (!row.id) return;
+    const { error } = await supabase.from("page_sections").update({
+      eyebrow: row.eyebrow?.trim() || null,
+      heading: row.heading?.trim() || null,
+      subheading: row.subheading?.trim() || null,
+      body: row.body || null,
+      image_url: row.image_url || null,
+      links: row.links as unknown as Json,
+      sort_order: Number(row.sort_order) || 0,
+      active: row.active,
+    }).eq("id", row.id);
+    if (error) return toast.error(error.message);
+    toast.success("section saved");
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("delete this section?")) return;
+    const { error } = await supabase.from("page_sections").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    load();
+  };
+
+  return (
+    <div className="py-6 space-y-6">
+      <Section
+        title="my journey — page content"
+        subtitle="the first section is the designer bio at the top of the page. add more sections (brand philosophy, anything else) and they appear below it, above the journal."
+      >
+        <div className="flex justify-end mb-4">
+          <Button size="sm" onClick={add}><Plus className="h-3 w-3 mr-1" />add section</Button>
+        </div>
+
+        {loading && <p className="text-xs text-muted-foreground">loading…</p>}
+        {!loading && rows.length === 0 && (
+          <p className="text-xs text-muted-foreground">
+            no sections yet — the page is showing its built-in bio. click "add section" to take over the copy.
+          </p>
+        )}
+
+        <div className="space-y-4">
+          {rows.map((row, idx) => (
+            <SectionEditor
+              key={row.id}
+              row={row}
+              isFirst={idx === 0}
+              onSave={save}
+              onDelete={() => remove(row.id)}
+            />
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function SectionEditor({ row, isFirst, onSave, onDelete }: {
+  row: PageSection;
+  isFirst: boolean;
+  onSave: (r: SectionDraft) => void;
+  onDelete: () => void;
+}) {
+  const [draft, setDraft] = useState<PageSection>(row);
+  useEffect(() => { setDraft(row); }, [row]);
+  const set = (patch: Partial<PageSection>) => setDraft({ ...draft, ...patch });
+
+  return (
+    <div className="border border-border bg-card p-4 space-y-4">
+      <div className="flex items-center gap-3">
+        <span className="text-[10px] tracking-[0.2em] uppercase text-primary">
+          {isFirst ? "designer bio (top of page)" : "additional section"}
+        </span>
+        <div className="ml-auto flex items-center gap-3 text-xs">
+          <span className="text-muted-foreground">{draft.active ? "visible" : "hidden"}</span>
+          <Switch checked={draft.active} onCheckedChange={(v) => set({ active: v })} />
+          <button className="link-red" onClick={onDelete}>delete</button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Field label="eyebrow (small label above the heading)">
+          <Input value={draft.eyebrow ?? ""} onChange={(e) => set({ eyebrow: e.target.value })} />
+        </Field>
+        <Field label="heading">
+          <Input value={draft.heading ?? ""} onChange={(e) => set({ heading: e.target.value })} />
+        </Field>
+        <Field label="subheading">
+          <Input value={draft.subheading ?? ""} onChange={(e) => set({ subheading: e.target.value })} />
+        </Field>
+      </div>
+
+      <Field label="body — leave a blank line between paragraphs">
+        <Textarea rows={10} value={draft.body ?? ""} onChange={(e) => set({ body: e.target.value })} />
+      </Field>
+
+      <Field label={isFirst ? "portrait image (leave blank to keep the current portrait)" : "image (optional — adds a side-by-side layout)"}>
+        <div className="flex items-start gap-4">
+          <div className="h-24 w-20 shrink-0 bg-muted overflow-hidden">
+            {draft.image_url ? (
+              <img src={draft.image_url} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center">
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+              </div>
+            )}
+          </div>
+          <div className="space-y-2 flex-1">
+            <label className="text-xs block cursor-pointer link-red">
+              upload image
+              <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                const f = e.target.files?.[0]; if (!f) return;
+                const url = await uploadJournalImage(f);
+                if (url) set({ image_url: url });
+              }} />
+            </label>
+            <Input
+              value={draft.image_url ?? ""}
+              placeholder="…or paste an image url"
+              onChange={(e) => set({ image_url: e.target.value || null })}
+            />
+          </div>
+        </div>
+      </Field>
+
+      <Field label="links">
+        <div className="space-y-2">
+          {draft.links.map((l, i) => (
+            <div key={i} className="flex gap-2">
+              <Input value={l.label} placeholder="link text" onChange={(e) => {
+                const next = [...draft.links]; next[i] = { ...l, label: e.target.value }; set({ links: next });
+              }} />
+              <Input value={l.url} placeholder="https://…" onChange={(e) => {
+                const next = [...draft.links]; next[i] = { ...l, url: e.target.value }; set({ links: next });
+              }} />
+              <button className="text-xs link-red shrink-0"
+                onClick={() => set({ links: draft.links.filter((_, j) => j !== i) })}>remove</button>
+            </div>
+          ))}
+          <button className="text-xs link-red"
+            onClick={() => set({ links: [...draft.links, { label: "", url: "" }] })}>+ add a link</button>
+        </div>
+      </Field>
+
+      <div className="flex items-end gap-4">
+        <div className="w-40">
+          <Field label="sort order">
+            <Input type="number" value={draft.sort_order}
+              onChange={(e) => set({ sort_order: Number(e.target.value) })} />
+          </Field>
+        </div>
+        <Button size="sm" onClick={() => onSave(draft)}>save section</Button>
+      </div>
+    </div>
+  );
+}
