@@ -113,6 +113,66 @@ export type Database = {
         }
         Relationships: []
       }
+      journey_posts: {
+        Row: {
+          content: string | null
+          cover_image_url: string | null
+          created_at: string
+          event_date: string | null
+          event_label: string | null
+          event_year: number
+          excerpt: string | null
+          id: string
+          images: Json
+          kind: string
+          links: Json
+          published: boolean
+          slug: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          event_date?: string | null
+          event_label?: string | null
+          event_year: number
+          excerpt?: string | null
+          id?: string
+          images?: Json
+          kind?: string
+          links?: Json
+          published?: boolean
+          slug?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          event_date?: string | null
+          event_label?: string | null
+          event_year?: number
+          excerpt?: string | null
+          id?: string
+          images?: Json
+          kind?: string
+          links?: Json
+          published?: boolean
+          slug?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string
