@@ -5,14 +5,13 @@ import { Shell } from "@/components/alps/Shell";
 import { supabase } from "@/integrations/supabase/client";
 import hero from "@/assets/backgrounds/bg-01.jpg";
 import textile from "@/assets/backgrounds/hightech-red.jpg";
-import designerAsset from "@/assets/brand/annie-designer.png.asset.json";
-const designer = designerAsset.url;
+import designer from "@/assets/brand/annie-designer-portrait.png";
 import logoBlack from "@/assets/brand/alps-logo-white.png";
 import catInnovation from "@/assets/categories/innovation.png";
 import catContemporary from "@/assets/categories/contemporary.png";
 import catAccessories from "@/assets/categories/accessories.png";
 import catCollab from "@/assets/categories/collaborations.png";
-import veganPersonalCareIcon from "@/assets/vegan-personal-care-icon.png.asset.json";
+import veganPersonalCareIcon from "@/assets/categories/vegan-personal-care.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,7 +34,7 @@ const CAT_IMAGES: Record<string, string> = {
   contemporary: catContemporary,
   accessories: catAccessories,
   collaborations: catCollab,
-  "personal-care": veganPersonalCareIcon.url,
+  "personal-care": veganPersonalCareIcon,
 };
 
 
@@ -129,7 +128,7 @@ function EditorialHero() {
     { slug: "contemporary", label: "contemporary", img: catContemporary },
     { slug: "accessories", label: "accessories", img: catAccessories },
     { slug: "collaborations", label: "collaborations", img: catCollab },
-    { slug: "personal-care", label: "vegan skin & personal care", img: veganPersonalCareIcon.url },
+    { slug: "personal-care", label: "vegan skin & personal care", img: veganPersonalCareIcon },
   ] as const;
 
   return (

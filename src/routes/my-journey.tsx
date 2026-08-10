@@ -3,8 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/alps/Shell";
 import { SOCIALS } from "@/lib/alps-data";
 import { supabase } from "@/integrations/supabase/client";
-import designerAsset from "@/assets/brand/annie-journey.png.asset.json";
-const designer = designerAsset.url;
+import designer from "@/assets/brand/annie-designer-portrait.png";
 
 type JourneyItem = {
   id: string;
