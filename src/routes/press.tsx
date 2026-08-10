@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import bgWood from "@/assets/backgrounds/bg-wood.jpg.asset.json";
+import bgWood from "@/assets/backgrounds/award-modal-wood.png";
 
 const ARTICLES = [
   {
@@ -161,7 +161,7 @@ function AwardDialog({
           <div
             className="relative w-full min-h-[80vh] flex flex-col items-center justify-center p-6 md:p-10"
             style={{
-              backgroundImage: `url(${bgWood.url})`,
+              backgroundImage: `url(${bgWood})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
