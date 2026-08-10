@@ -173,51 +173,6 @@ export type Database = {
         }
         Relationships: []
       }
-      page_sections: {
-        Row: {
-          active: boolean
-          body: string | null
-          created_at: string
-          eyebrow: string | null
-          heading: string | null
-          id: string
-          image_url: string | null
-          links: Json
-          page: string
-          sort_order: number
-          subheading: string | null
-          updated_at: string
-        }
-        Insert: {
-          active?: boolean
-          body?: string | null
-          created_at?: string
-          eyebrow?: string | null
-          heading?: string | null
-          id?: string
-          image_url?: string | null
-          links?: Json
-          page?: string
-          sort_order?: number
-          subheading?: string | null
-          updated_at?: string
-        }
-        Update: {
-          active?: boolean
-          body?: string | null
-          created_at?: string
-          eyebrow?: string | null
-          heading?: string | null
-          id?: string
-          image_url?: string | null
-          links?: Json
-          page?: string
-          sort_order?: number
-          subheading?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       newsletter_subscribers: {
         Row: {
           created_at: string
@@ -343,6 +298,51 @@ export type Database = {
           tax?: number
           total?: number
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      page_sections: {
+        Row: {
+          active: boolean
+          body: string | null
+          created_at: string
+          eyebrow: string | null
+          heading: string | null
+          id: string
+          image_url: string | null
+          links: Json
+          page: string
+          sort_order: number
+          subheading: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          body?: string | null
+          created_at?: string
+          eyebrow?: string | null
+          heading?: string | null
+          id?: string
+          image_url?: string | null
+          links?: Json
+          page?: string
+          sort_order?: number
+          subheading?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          body?: string | null
+          created_at?: string
+          eyebrow?: string | null
+          heading?: string | null
+          id?: string
+          image_url?: string | null
+          links?: Json
+          page?: string
+          sort_order?: number
+          subheading?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
