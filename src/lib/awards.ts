@@ -1,23 +1,23 @@
-import nySmart2022Cert from "@/assets/awards/ny-2022-smart-fashion-cert.png.asset.json";
-import nySmart2022Letter from "@/assets/awards/ny-2022-smart-fashion-letter-v2.png.asset.json";
+import nySmart2022Cert from "@/assets/awards/ny-2022-smart-fashion-cert.png";
+import nySmart2022Letter from "@/assets/awards/ny-2022-smart-fashion-letter-v2.png";
 import nySmart2022Card from "@/assets/awards/ny-2022-smart-fashion-card.png";
 import nyWomens2022Cert from "@/assets/awards/ny-2022-womenswear-certificate.png";
 import nyWomens2022Letter from "@/assets/awards/ny-2022-womenswear-letter.png";
 import nyWomens2022Card from "@/assets/awards/ny-2022-womenswear-card.png";
-import nySmart2021Cert from "@/assets/awards/ny-2021-smart-fashion-cert.png.asset.json";
-import nySmart2021Badge from "@/assets/awards/ny-smart-fashion-2021-badge.png.asset.json";
-import nySmart2021Letter from "@/assets/awards/ny-2021-smart-fashion-letter.png.asset.json";
-import nyWomens2021Cert from "@/assets/awards/ny-2021-womenswear-cert.png.asset.json";
-import nyWomens2021Badge from "@/assets/awards/ny-womenswear-2021-badge.png.asset.json";
-import nyWomens2021Letter from "@/assets/awards/ny-2021-womenswear-letter.png.asset.json";
-import hkmob2022Statue from "@/assets/awards/hkmob-2022-statue.png.asset.json";
-import hkmos2021Statue from "@/assets/awards/hkmos-2021-statue.png.asset.json";
-import ida2021ApparelSilver from "@/assets/awards/ida-2021-apparel-silver.png.asset.json";
-import ida2021SustainableBronze from "@/assets/awards/ida-2021-sustainable-bronze.png.asset.json";
-import ida2021ApparelHm from "@/assets/awards/ida-2021-apparel-hm.png.asset.json";
-import ida2021PretHm from "@/assets/awards/ida-2021-pret-hm.png.asset.json";
-import ida2018SportswearSilver from "@/assets/awards/ida-2018-sportswear-silver.png.asset.json";
-import dip2019BestPresenter from "@/assets/awards/dip-2019-best-presenter-cert.jpg.asset.json";
+import nySmart2021Cert from "@/assets/awards/ny-2021-smart-fashion-cert.png";
+import nySmart2021Badge from "@/assets/awards/ny-smart-fashion-2021-badge.png";
+import nySmart2021Letter from "@/assets/awards/ny-2021-smart-fashion-letter.png";
+import nyWomens2021Cert from "@/assets/awards/ny-2021-womenswear-cert.png";
+import nyWomens2021Badge from "@/assets/awards/ny-womenswear-2021-badge.png";
+import nyWomens2021Letter from "@/assets/awards/ny-2021-womenswear-letter.png";
+import hkmob2022Statue from "@/assets/awards/hkmob-2022-statue.png";
+import hkmos2021Statue from "@/assets/awards/hkmos-2021-statue.png";
+import ida2021ApparelSilver from "@/assets/awards/ida-2021-apparel-silver.png";
+import ida2021SustainableBronze from "@/assets/awards/ida-2021-sustainable-bronze.png";
+import ida2021ApparelHm from "@/assets/awards/ida-2021-apparel-hm.png";
+import ida2021PretHm from "@/assets/awards/ida-2021-pret-hm.png";
+import ida2018SportswearSilver from "@/assets/awards/ida-2018-sportswear-silver.png";
+import dip2019BestPresenter from "@/assets/awards/dip-2019-best-presenter-cert.jpg";
 
 export type AwardLevel = "gold" | "silver" | "bronze" | "honourable mention" | "winner";
 
@@ -47,9 +47,9 @@ export const AWARDS: Award[] = [
     project: "collection ONE and ALL",
     year: 2022,
     level: "silver",
-    image: nySmart2022Cert.url,
-    certificate: nySmart2022Cert.url,
-    gallery: [nySmart2022Letter.url, nySmart2022Card],
+    image: nySmart2022Cert,
+    certificate: nySmart2022Cert,
+    gallery: [nySmart2022Letter, nySmart2022Card],
     description:
       "silver winner in the clothing & accessories — smart fashion category for the ONE and ALL collection, recognising textile innovation and intelligent functionality.",
   },
@@ -71,8 +71,8 @@ export const AWARDS: Award[] = [
     category: "best fashion innovation",
     year: 2022,
     level: "winner",
-    image: hkmob2022Statue.url,
-    gallery: [hkmob2022Statue.url],
+    image: hkmob2022Statue,
+    gallery: [hkmob2022Statue],
     description: "recognised as the best fashion innovation of 2022 by the hong kong most outstanding business awards.",
   },
 
@@ -84,9 +84,9 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "gold",
-    image: nySmart2021Cert.url,
-    certificate: nySmart2021Cert.url,
-    gallery: [nySmart2021Letter.url, nySmart2021Badge.url],
+    image: nySmart2021Cert,
+    certificate: nySmart2021Cert,
+    gallery: [nySmart2021Letter, nySmart2021Badge],
     description: "gold winner in the clothing & accessories — smart fashion category for the warrior collection.",
   },
   {
@@ -96,9 +96,9 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "silver",
-    image: nyWomens2021Cert.url,
-    certificate: nyWomens2021Cert.url,
-    gallery: [nyWomens2021Letter.url, nyWomens2021Badge.url],
+    image: nyWomens2021Cert,
+    certificate: nyWomens2021Cert,
+    gallery: [nyWomens2021Letter, nyWomens2021Badge],
     description: "silver winner in the clothing & accessories — womenswear category for the warrior collection.",
   },
 
@@ -110,7 +110,7 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "silver",
-    image: ida2021ApparelSilver.url,
+    image: ida2021ApparelSilver,
     href: "https://www.idesignawards.com/winners-old/zoom.php?eid=9-34162-21",
     description: "silver — apparel category, apparel projects for the warrior collection.",
   },
@@ -121,7 +121,7 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "bronze",
-    image: ida2021SustainableBronze.url,
+    image: ida2021SustainableBronze,
     description: "bronze — other fashion designs, recycled & sustainable fashion for the warrior collection.",
   },
   {
@@ -131,7 +131,7 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "honourable mention",
-    image: ida2021ApparelHm.url,
+    image: ida2021ApparelHm,
     description: "honourable mention — apparel category for the warrior collection.",
   },
   {
@@ -141,7 +141,7 @@ export const AWARDS: Award[] = [
     project: "collection warrior",
     year: 2021,
     level: "honourable mention",
-    image: ida2021PretHm.url,
+    image: ida2021PretHm,
     description: "honourable mention — prêt-à-porter for the warrior collection.",
   },
   {
@@ -150,8 +150,8 @@ export const AWARDS: Award[] = [
     category: "best fashion design brand",
     year: 2021,
     level: "winner",
-    image: hkmos2021Statue.url,
-    gallery: [hkmos2021Statue.url],
+    image: hkmos2021Statue,
+    gallery: [hkmos2021Statue],
     description:
       "recognised as the best fashion design brand of 2021 by the hong kong most outstanding services awards.",
   },
@@ -163,8 +163,8 @@ export const AWARDS: Award[] = [
     category: "Shark Tank pitching",
     year: 2019,
     level: "winner",
-    image: dip2019BestPresenter.url,
-    certificate: dip2019BestPresenter.url,
+    image: dip2019BestPresenter,
+    certificate: dip2019BestPresenter,
     description: "best presenter award at the dip graduation ceremony 2019 shark tank pitching.",
   },
 
@@ -176,7 +176,7 @@ export const AWARDS: Award[] = [
     project: "permanent 99% germs killing instant warming vest",
     year: 2018,
     level: "silver",
-    image: ida2018SportswearSilver.url,
+    image: ida2018SportswearSilver,
     description: "silver — apparel category, sportswear for the permanent 99% germs killing instant warming vest.",
   },
 ];
