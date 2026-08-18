@@ -14,7 +14,7 @@ const SIZE_GROUPS: SizeKind[] = ["kids", "men", "women", "unisex"];
 
 export function Footer() {
   return (
-    <footer className="bg-background text-foreground mt-24 border-t-2 border-foreground/40">
+    <footer className="bg-background text-foreground mt-24">
       <div
         className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 pt-0 pb-10 grid grid-cols-2 md:grid-cols-3 text-[11px] leading-[1.4]
           lg:[grid-template-columns:0.65fr_0.65fr_1.1fr_1.35fr_1.1fr_0.75fr]
@@ -25,7 +25,8 @@ export function Footer() {
           md:[&>*:nth-child(odd)]:border-l-2 md:[&>*:nth-child(3n+1)]:border-l-0
           md:[&>*:nth-child(-n+2)]:border-t-2 md:[&>*:nth-child(-n+3)]:border-t-0
           lg:[&>*]:border-l-2 lg:[&>*:first-child]:border-l-0
-          lg:[&>*]:border-r-0 lg:[&>*]:border-t-0"
+          lg:[&>*]:border-r-0 lg:[&>*]:border-t-0
+          [&>*:nth-child(4)]:border-l-2 md:[&>*:nth-child(4)]:border-l-2 lg:[&>*:nth-child(4)]:border-l-2"
       >
 
 
