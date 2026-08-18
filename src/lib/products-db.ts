@@ -39,7 +39,10 @@ export function dbProductToCatalog(d: DbProduct): Product & {
 } {
   // Filter out dev-only "/src/assets/..." paths that don't resolve on the published site.
   const isProdSafe = (u: string) => !!u && !u.startsWith("/src/");
-  const gallery = (d.gallery_urls ?? []).filter(isProdSafe).map(localizeAssetUrl);
+  // A few source files (.psd) leaked into the galleries during import; browsers
+  // can't render them, so they'd show as an empty slot.
+  const isRenderable = (u: string) => !/\.(psd|ai|tiff?|heic)$/i.test(u);
+  const gallery = (d.gallery_urls ?? []).filter(isProdSafe).filter(isRenderable).map(localizeAssetUrl);
   const fallback = d.image_url && isProdSafe(d.image_url) ? [localizeAssetUrl(d.image_url)] : [];
   return {
     id: d.slug,
