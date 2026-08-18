@@ -367,7 +367,7 @@ function Designer() {
               garments designed for contemporary life.
             </p>
             <Link to="/my-journey" className="link-red text-[12px] tracking-wide inline-block mt-4">
-              read my journey →
+              read the design path →
             </Link>
           </div>
         </div>

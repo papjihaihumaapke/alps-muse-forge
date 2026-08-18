@@ -112,7 +112,8 @@ function AdminPage() {
             <TabsTrigger value="orders">orders</TabsTrigger>
             <TabsTrigger value="customers">customers</TabsTrigger>
             <TabsTrigger value="journal">journey posts</TabsTrigger>
-            <TabsTrigger value="page-content">page content</TabsTrigger>
+            <TabsTrigger value="page-content">design path content</TabsTrigger>
+            <TabsTrigger value="milestones">milestones</TabsTrigger>
             <TabsTrigger value="journey">journey extras</TabsTrigger>
             <TabsTrigger value="promos">promo codes</TabsTrigger>
             <TabsTrigger value="newsletter">newsletter</TabsTrigger>
@@ -124,6 +125,17 @@ function AdminPage() {
           <TabsContent value="customers"><CustomersTab /></TabsContent>
           <TabsContent value="journal"><JourneyPostsTab /></TabsContent>
           <TabsContent value="page-content"><PageSectionsTab /></TabsContent>
+          <TabsContent value="milestones">
+            <PageSectionsTab
+              page="milestones"
+              title="milestones — pictures & text"
+              subtitle="picture-and-text blocks shown below the awards on the milestones page. each block takes an image, a heading and as much copy as you like; they alternate sides down the page."
+              firstLabel="milestone block"
+              restLabel="milestone block"
+              firstImageLabel="image (optional — adds a side-by-side layout)"
+              emptyHint='no blocks yet — click "add section" to put a picture and some text on the milestones page.'
+            />
+          </TabsContent>
           <TabsContent value="journey"><JourneyTab /></TabsContent>
           <TabsContent value="promos"><PromosTab /></TabsContent>
           <TabsContent value="newsletter"><NewsletterTab /></TabsContent>
@@ -1739,7 +1751,23 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
 
 type SectionDraft = Omit<PageSection, "id"> & { id?: string };
 
-function PageSectionsTab() {
+function PageSectionsTab({
+  page = "my-journey",
+  title = "design path — page content",
+  subtitle = "the first section is the designer bio at the top of the page. add more sections (brand philosophy, anything else) and they appear below it, above the journal.",
+  firstLabel = "designer bio (top of page)",
+  restLabel = "additional section",
+  firstImageLabel = "portrait image (leave blank to keep the current portrait)",
+  emptyHint = 'no sections yet — the page is showing its built-in bio. click "add section" to take over the copy.',
+}: {
+  page?: string;
+  title?: string;
+  subtitle?: string;
+  firstLabel?: string;
+  restLabel?: string;
+  firstImageLabel?: string;
+  emptyHint?: string;
+} = {}) {
   const [rows, setRows] = useState<PageSection[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -1747,17 +1775,17 @@ function PageSectionsTab() {
     const { data, error } = await supabase
       .from("page_sections")
       .select("*")
-      .eq("page", "my-journey")
+      .eq("page", page)
       .order("sort_order");
     setLoading(false);
     if (error) return toast.error(error.message);
     setRows((data ?? []).map((r) => ({ ...r, links: asArray<JourneyLink>(r.links) })) as PageSection[]);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [page]);
 
   const add = async () => {
     const { error } = await supabase.from("page_sections").insert({
-      page: "my-journey",
+      page,
       eyebrow: null,
       heading: "new section",
       subheading: null,
@@ -1797,19 +1825,14 @@ function PageSectionsTab() {
 
   return (
     <div className="py-6 space-y-6">
-      <Section
-        title="my journey — page content"
-        subtitle="the first section is the designer bio at the top of the page. add more sections (brand philosophy, anything else) and they appear below it, above the journal."
-      >
+      <Section title={title} subtitle={subtitle}>
         <div className="flex justify-end mb-4">
           <Button size="sm" onClick={add}><Plus className="h-3 w-3 mr-1" />add section</Button>
         </div>
 
         {loading && <p className="text-xs text-muted-foreground">loading…</p>}
         {!loading && rows.length === 0 && (
-          <p className="text-xs text-muted-foreground">
-            no sections yet — the page is showing its built-in bio. click "add section" to take over the copy.
-          </p>
+          <p className="text-xs text-muted-foreground">{emptyHint}</p>
         )}
 
         <div className="space-y-4">
@@ -1818,6 +1841,9 @@ function PageSectionsTab() {
               key={row.id}
               row={row}
               isFirst={idx === 0}
+              firstLabel={firstLabel}
+              restLabel={restLabel}
+              firstImageLabel={firstImageLabel}
               onSave={save}
               onDelete={() => remove(row.id)}
             />
@@ -1828,9 +1854,12 @@ function PageSectionsTab() {
   );
 }
 
-function SectionEditor({ row, isFirst, onSave, onDelete }: {
+function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, onSave, onDelete }: {
   row: PageSection;
   isFirst: boolean;
+  firstLabel: string;
+  restLabel: string;
+  firstImageLabel: string;
   onSave: (r: SectionDraft) => void;
   onDelete: () => void;
 }) {
@@ -1842,7 +1871,7 @@ function SectionEditor({ row, isFirst, onSave, onDelete }: {
     <div className="border border-border bg-card p-4 space-y-4">
       <div className="flex items-center gap-3">
         <span className="text-[10px] tracking-[0.2em] uppercase text-primary">
-          {isFirst ? "designer bio (top of page)" : "additional section"}
+          {isFirst ? firstLabel : restLabel}
         </span>
         <div className="ml-auto flex items-center gap-3 text-xs">
           <span className="text-muted-foreground">{draft.active ? "visible" : "hidden"}</span>
@@ -1867,7 +1896,7 @@ function SectionEditor({ row, isFirst, onSave, onDelete }: {
         <Textarea rows={10} value={draft.body ?? ""} onChange={(e) => set({ body: e.target.value })} />
       </Field>
 
-      <Field label={isFirst ? "portrait image (leave blank to keep the current portrait)" : "image (optional — adds a side-by-side layout)"}>
+      <Field label={isFirst ? firstImageLabel : "image (optional — adds a side-by-side layout)"}>
         <div className="flex items-start gap-4">
           <div className="h-24 w-20 shrink-0 bg-muted overflow-hidden">
             {draft.image_url ? (

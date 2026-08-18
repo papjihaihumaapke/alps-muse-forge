@@ -11,6 +11,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import bgWood from "@/assets/backgrounds/award-modal-wood.png";
+import { supabase } from "@/integrations/supabase/client";
+import { asArray, toParagraphs, type JourneyLink, type PageSection } from "@/lib/journey";
 
 const ARTICLES = [
   {
@@ -242,9 +244,81 @@ function AwardDialog({
   );
 }
 
+/**
+ * An admin-managed picture + text block on the milestones page. Rows live in
+ * page_sections with page = "milestones"; the image and copy alternate sides so
+ * a run of them reads as a timeline rather than a stack.
+ */
+function MilestoneSection({ section, flip }: { section: PageSection; flip: boolean }) {
+  const paragraphs = toParagraphs(section.body);
+  const copy = (
+    <div className={flip ? "md:order-1" : ""}>
+      {section.eyebrow && (
+        <span className="num text-[11px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
+      )}
+      {section.heading && <h3 className="text-2xl font-light mt-3">{section.heading}</h3>}
+      {section.subheading && (
+        <p className="mt-3 text-[11px] tracking-[0.25em] uppercase text-foreground/60">
+          {section.subheading}
+        </p>
+      )}
+      {paragraphs.length > 0 && (
+        <div className="mt-5 space-y-4 text-foreground/80 leading-relaxed text-[15px]">
+          {paragraphs.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </div>
+      )}
+      {section.links.length > 0 && (
+        <ul className="mt-6 space-y-2">
+          {section.links.map((l, i) => (
+            <li key={i}>
+              <a href={l.url} target="_blank" rel="noreferrer" className="link-red text-sm">
+                {l.label} →
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+
+  if (!section.image_url) {
+    return <article className="max-w-2xl">{copy}</article>;
+  }
+
+  return (
+    <article className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+      <img
+        src={section.image_url}
+        alt={section.heading ?? ""}
+        loading="lazy"
+        className={`w-full aspect-[4/3] object-cover bg-muted ${flip ? "md:order-2" : ""}`}
+      />
+      {copy}
+    </article>
+  );
+}
+
 function PressPage() {
   const [selected, setSelected] = useState<Award | null>(null);
+  const [sections, setSections] = useState<PageSection[]>([]);
   const hash = useRouterState({ select: (s) => s.location.hash });
+
+  useEffect(() => {
+    supabase
+      .from("page_sections")
+      .select("*")
+      .eq("page", "milestones")
+      .eq("active", true)
+      .order("sort_order")
+      .then(({ data, error }) => {
+        if (error) return;
+        setSections(
+          (data ?? []).map((r) => ({ ...r, links: asArray<JourneyLink>(r.links) })) as PageSection[],
+        );
+      });
+  }, []);
 
   useEffect(() => {
     if (!hash) return;
@@ -261,7 +335,7 @@ function PressPage() {
   return (
     <Shell>
       <section className="max-w-6xl mx-auto px-6 py-20">
-        <h1 className="text-4xl font-light">press</h1>
+        <h1 className="text-4xl font-light">milestones</h1>
         <p className="mt-4 text-sm text-foreground/60 max-w-xl">
           selected articles and editorial features written about the brand.
         </p>
@@ -294,6 +368,14 @@ function PressPage() {
             <AwardIconTile key={a.id} award={a} onClick={() => setSelected(a)} />
           ))}
         </div>
+
+        {sections.length > 0 && (
+          <div className="mt-24 space-y-20">
+            {sections.map((s, i) => (
+              <MilestoneSection key={s.id} section={s} flip={i % 2 === 1} />
+            ))}
+          </div>
+        )}
       </section>
 
       <AwardDialog
@@ -308,14 +390,14 @@ function PressPage() {
 export const Route = createFileRoute("/press")({
   head: () => ({
     meta: [
-      { title: "press — ALPS Annie Ling" },
+      { title: "milestones — ALPS Annie Ling" },
       {
         name: "description",
         content:
-          "press features, editorial coverage and design awards for ALPS Annie Ling — including New York Product Design Awards, International Design Awards and Hong Kong Most Outstanding Awards.",
+          "milestones for ALPS Annie Ling — editorial coverage and design recognition from the New York Product Design Awards, International Design Awards and Hong Kong Most Outstanding Awards.",
       },
-      { property: "og:title", content: "press — ALPS Annie Ling" },
-      { property: "og:description", content: "press features and awards for ALPS Annie Ling." },
+      { property: "og:title", content: "milestones — ALPS Annie Ling" },
+      { property: "og:description", content: "editorial coverage and design recognition for ALPS Annie Ling." },
     ],
   }),
   component: PressPage,

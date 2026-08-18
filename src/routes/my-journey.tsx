@@ -30,13 +30,13 @@ type JourneyItem = {
 export const Route = createFileRoute("/my-journey")({
   head: () => ({
     meta: [
-      { title: "my journey — annie ling" },
+      { title: "design path — annie ling" },
       {
         name: "description",
         content:
           "annie ling founded ALPS Annie Ling in 2015 — uniting fashion, technology and craftsmanship to design enduring clothing that supports wellbeing.",
       },
-      { property: "og:title", content: "my journey — annie ling" },
+      { property: "og:title", content: "design path — annie ling" },
       {
         property: "og:description",
         content: "the story behind ALPS Annie Ling — timeless with a twist, made to make a difference.",
@@ -51,7 +51,7 @@ const FALLBACK_BIO: PageSection = {
   id: "fallback",
   page: "my-journey",
   eyebrow: "designer",
-  heading: "my journey",
+  heading: "design path",
   subheading: "timeless with a twist · made to make a difference",
   body: [
     "designer annie ling views fashion as an expression of identity, confidence, and modern living. after studying fashion design and technology in canada and completing an MBA at the university of leicester in the united kingdom, she founded ALPS Annie Ling in 2015 — a contemporary fashion label where timeless elegance meets innovation.",
