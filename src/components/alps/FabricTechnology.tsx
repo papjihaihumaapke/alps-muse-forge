@@ -9,55 +9,6 @@ import { useInnovationId, openInnovation, closeInnovation } from "@/lib/innovati
 
 
 
-function InnovationCard({
-  item,
-  onOpen,
-}: {
-  item: Innovation;
-  onOpen: () => void;
-}) {
-  const icon = featureIcon(item.slug);
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      aria-label={`${item.title} — learn more`}
-      className="group flex flex-col text-left border border-border bg-background hover:border-primary focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors"
-    >
-      <div className="relative aspect-square w-full bg-muted flex items-center justify-center p-6 sm:p-8">
-        <span
-          aria-hidden
-          className="num absolute top-2 left-2 text-[10px] tracking-[0.2em] text-foreground/40"
-        >
-          {String(item.n).padStart(2, "0")}
-        </span>
-        {icon ? (
-          <img
-            src={icon}
-            alt={item.title}
-            loading="lazy"
-            className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
-            style={{ width: "70%", height: "70%", objectFit: "contain" }}
-          />
-        ) : (
-          <span className="text-xs text-foreground/40">{item.title}</span>
-        )}
-      </div>
-      <div className="border-t border-border p-4 flex flex-col gap-1.5 min-h-[6.5rem]">
-        <p className="text-[13px] font-medium leading-snug text-primary">
-          {item.title}
-        </p>
-        <p className="text-[11.5px] leading-snug text-foreground/70 line-clamp-3">
-          {item.intro}
-        </p>
-        <span className="mt-1 text-[10px] tracking-[0.2em] uppercase text-foreground/50 group-hover:text-primary">
-          learn more →
-        </span>
-      </div>
-    </button>
-  );
-}
-
 function InnovationDetail({
   item,
   onClose,
@@ -219,6 +170,18 @@ function InnovationDetail({
 
 
 export function InnovationModal() {
+  const hash = useRouterState({ select: (s) => s.location.hash });
+
+  // deep link: /innovation#air-slim opens the matching innovation modal
+  useEffect(() => {
+    if (!hash) return;
+    const target = hash.replace(/^#/, "");
+    const match =
+      INNOVATIONS.find((i) => i.slug === target) ??
+      INNOVATIONS.find((i) => i.filterKey === target);
+    if (match) openInnovation(match.slug);
+  }, [hash]);
+
   const id = useInnovationId();
   const item =
     (id && (INNOVATIONS.find((i) => i.slug === id) ?? INNOVATIONS.find((i) => i.filterKey === id))) ||
@@ -226,48 +189,4 @@ export function InnovationModal() {
   return <InnovationDetail item={item} onClose={closeInnovation} />;
 }
 
-export function FabricTechnology() {
-  const hash = useRouterState({ select: (s) => s.location.hash });
-
-  useEffect(() => {
-    if (!hash) return;
-    const id = hash.replace(/^#/, "");
-    const match =
-      INNOVATIONS.find((i) => i.slug === id) ??
-      INNOVATIONS.find((i) => i.filterKey === id);
-    if (match) {
-      openInnovation(match.slug);
-      requestAnimationFrame(() => {
-        document.getElementById("fabric-technology")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-    }
-  }, [hash]);
-
-
-  return (
-    <section id="fabric-technology" className="container mx-auto px-6 py-20">
-      <div className="mb-12 max-w-2xl">
-        <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
-          textile science
-        </p>
-        <h2 className="text-3xl md:text-4xl font-light tracking-tight text-primary">
-          engineered fabric technology
-        </h2>
-        <p className="text-sm text-muted-foreground mt-3">
-          twenty-four proprietary innovations engineered into every alps garment. tap any item to view the full technology.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {INNOVATIONS.map((item) => (
-          <InnovationCard
-            key={item.slug}
-            item={item}
-            onOpen={() => openInnovation(item.slug)}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
 

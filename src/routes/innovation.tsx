@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { CategoryView } from "@/components/alps/CategoryPage";
-import { FabricTechnology } from "@/components/alps/FabricTechnology";
 
 const searchSchema = z.object({
   feature: z.string().optional(),
@@ -28,11 +27,6 @@ function InnovationPage() {
       slug="innovation"
       featureFilter={feature}
       onClearFeature={() => navigate({ to: "/innovation", search: {} })}
-      afterContent={
-        <div className="border-t border-border bg-brand-light">
-          <FabricTechnology />
-        </div>
-      }
     />
   );
 }
