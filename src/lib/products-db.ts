@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Product, CategorySlug } from "@/lib/alps-data";
+import { localizeAssetUrl } from "@/lib/local-asset-images";
 
 export type DbProduct = {
   id: string;
@@ -38,8 +39,8 @@ export function dbProductToCatalog(d: DbProduct): Product & {
 } {
   // Filter out dev-only "/src/assets/..." paths that don't resolve on the published site.
   const isProdSafe = (u: string) => !!u && !u.startsWith("/src/");
-  const gallery = (d.gallery_urls ?? []).filter(isProdSafe);
-  const fallback = d.image_url && isProdSafe(d.image_url) ? [d.image_url] : [];
+  const gallery = (d.gallery_urls ?? []).filter(isProdSafe).map(localizeAssetUrl);
+  const fallback = d.image_url && isProdSafe(d.image_url) ? [localizeAssetUrl(d.image_url)] : [];
   return {
     id: d.slug,
     name: d.name,

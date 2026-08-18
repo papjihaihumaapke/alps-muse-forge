@@ -19,4 +19,17 @@ export default defineConfig({
     // requirement.
     prerender: { enabled: false },
   },
+  vite: {
+    server: {
+      proxy: {
+        // Lovable's asset host only exists on the deployed site. Without this,
+        // every /__l5e/assets-v1/... image (product photos, fonts, backgrounds)
+        // 404s locally and tiles render blank.
+        "/__l5e": {
+          target: "https://annie-ling.hilalmalik.tech",
+          changeOrigin: true,
+        },
+      },
+    },
+  },
 });
