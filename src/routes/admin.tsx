@@ -1868,6 +1868,7 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
   const [draft, setDraft] = useState<PageSection>(row);
   useEffect(() => { setDraft(row); }, [row]);
   const set = (patch: Partial<PageSection>) => setDraft({ ...draft, ...patch });
+  const previewUrl = useMediaUrl(draft.image_url);
 
   return (
     <div className="border border-border bg-card p-4 space-y-4">
