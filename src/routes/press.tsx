@@ -251,6 +251,7 @@ function AwardDialog({
  * a run of them reads as a timeline rather than a stack.
  */
 function MilestoneSection({ section, flip }: { section: PageSection; flip: boolean }) {
+  const imageUrl = useMediaUrl(section.image_url);
   const paragraphs = toParagraphs(section.body);
   const copy = (
     <div className={flip ? "md:order-1" : ""}>
