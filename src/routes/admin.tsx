@@ -31,6 +31,7 @@ import {
 } from "@/lib/journey";
 import type { Json } from "@/integrations/supabase/types";
 import { normalizeUrl } from "@/lib/utils";
+import { useMediaUrl } from "@/lib/storage-url";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
