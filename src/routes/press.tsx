@@ -14,6 +14,7 @@ import bgWood from "@/assets/backgrounds/award-modal-wood.png";
 import { supabase } from "@/integrations/supabase/client";
 import { asArray, toParagraphs, type JourneyLink, type PageSection } from "@/lib/journey";
 import { normalizeUrl } from "@/lib/utils";
+import { useMediaUrl } from "@/lib/storage-url";
 
 const ARTICLES = [
   {
