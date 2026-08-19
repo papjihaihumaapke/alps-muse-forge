@@ -293,11 +293,12 @@ function MilestoneSection({ section, flip }: { section: PageSection; flip: boole
   return (
     <article className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
       <img
-        src={normalizeUrl(section.image_url) ?? ""}
+        src={imageUrl ?? ""}
         alt={section.heading ?? ""}
         loading="lazy"
-        className={`w-full aspect-[4/3] object-cover bg-muted ${flip ? "md:order-2" : ""}`}
+        className={`w-full aspect-[4/3] object-contain bg-muted ${flip ? "md:order-2" : ""}`}
       />
+
       {copy}
     </article>
   );
