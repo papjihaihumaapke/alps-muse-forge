@@ -13,6 +13,7 @@ import {
 import bgWood from "@/assets/backgrounds/award-modal-wood.png";
 import { supabase } from "@/integrations/supabase/client";
 import { asArray, toParagraphs, type JourneyLink, type PageSection } from "@/lib/journey";
+import { normalizeUrl } from "@/lib/utils";
 
 const ARTICLES = [
   {
@@ -273,7 +274,7 @@ function MilestoneSection({ section, flip }: { section: PageSection; flip: boole
         <ul className="mt-6 space-y-2">
           {section.links.map((l, i) => (
             <li key={i}>
-              <a href={l.url} target="_blank" rel="noreferrer" className="link-red text-sm">
+              <a href={normalizeUrl(l.url) ?? "#"} target="_blank" rel="noreferrer" className="link-red text-sm">
                 {l.label} →
               </a>
             </li>
@@ -290,7 +291,7 @@ function MilestoneSection({ section, flip }: { section: PageSection; flip: boole
   return (
     <article className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
       <img
-        src={section.image_url}
+        src={normalizeUrl(section.image_url) ?? ""}
         alt={section.heading ?? ""}
         loading="lazy"
         className={`w-full aspect-[4/3] object-cover bg-muted ${flip ? "md:order-2" : ""}`}

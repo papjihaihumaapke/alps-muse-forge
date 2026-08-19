@@ -30,6 +30,7 @@ import {
   type PageSection,
 } from "@/lib/journey";
 import type { Json } from "@/integrations/supabase/types";
+import { normalizeUrl } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -1806,8 +1807,8 @@ function PageSectionsTab({
       heading: row.heading?.trim() || null,
       subheading: row.subheading?.trim() || null,
       body: row.body || null,
-      image_url: row.image_url || null,
-      links: row.links as unknown as Json,
+      image_url: normalizeUrl(row.image_url),
+      links: row.links.map((l) => ({ ...l, url: normalizeUrl(l.url) ?? "" })) as unknown as Json,
       sort_order: Number(row.sort_order) || 0,
       active: row.active,
     }).eq("id", row.id);
