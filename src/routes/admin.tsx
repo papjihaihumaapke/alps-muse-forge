@@ -774,39 +774,216 @@ function AdminsTab() {
    ============================================================ */
 function OrdersTab() {
   const [rows, setRows] = useState<any[]>([]);
+  const [selected, setSelected] = useState<any | null>(null);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
   const load = async () => {
     const { data } = await supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false });
     setRows(data ?? []);
+    setSelected((cur: any) => (cur ? (data ?? []).find((o) => o.id === cur.id) ?? null : null));
   };
   useEffect(() => { load(); }, []);
+
   const setStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("updated"); load();
   };
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return rows.filter((o) => {
+      if (statusFilter !== "all" && o.status !== statusFilter) return false;
+      if (!q) return true;
+      return [o.order_number, o.full_name, o.email, o.mobile, o.promo_code]
+        .some((v) => (v ?? "").toString().toLowerCase().includes(q));
+    });
+  }, [rows, query, statusFilter]);
+
   return (
-    <div className="py-6">
-      <table className="w-full text-sm">
-        <thead><tr className="text-left text-muted-foreground border-b border-border">
-          <th className="py-2">order #</th><th>date</th><th>customer</th><th>total</th><th>status</th><th></th>
-        </tr></thead>
-        <tbody>
-          {rows.map((o) => (
-            <tr key={o.id} className="border-b border-border align-top">
-              <td className="py-3 font-mono text-xs">{o.order_number}</td>
-              <td className="text-xs">{new Date(o.created_at).toLocaleDateString()}</td>
-              <td><div>{o.full_name}</div><div className="text-xs text-muted-foreground">{o.email}</div></td>
-              <td className="num">{o.currency} {Number(o.total).toFixed(2)}</td>
-              <td>
-                <select value={o.status} onChange={(e) => setStatus(o.id, e.target.value)} className="border border-input bg-background px-2 py-1 text-xs">
-                  {["pending", "paid", "shipped", "delivered", "cancelled"].map((s) => <option key={s}>{s}</option>)}
-                </select>
-              </td>
-              <td className="text-xs">{(o.order_items ?? []).length} items</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="py-6 space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Input
+          placeholder="search order #, name, email, phone"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="max-w-xs"
+        />
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="h-9 border border-input bg-background px-3 text-sm"
+        >
+          {["all", ...ORDER_STATUSES].map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <span className="text-xs text-muted-foreground">{filtered.length} of {rows.length} orders</span>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead><tr className="text-left text-muted-foreground border-b border-border">
+            <th className="py-2">order #</th><th>date</th><th>customer</th><th>items</th><th>total</th><th>status</th><th></th>
+          </tr></thead>
+          <tbody>
+            {filtered.map((o) => (
+              <tr key={o.id} className="border-b border-border align-top">
+                <td className="py-3 font-mono text-xs">{o.order_number}</td>
+                <td className="text-xs">{new Date(o.created_at).toLocaleDateString()}</td>
+                <td><div>{o.full_name}</div><div className="text-xs text-muted-foreground">{o.email}</div></td>
+                <td className="text-xs">{orderItemCount(o)}</td>
+                <td className="num">{o.currency} {Number(o.total).toFixed(2)}</td>
+                <td>
+                  <select value={o.status} onChange={(e) => setStatus(o.id, e.target.value)} className="border border-input bg-background px-2 py-1 text-xs">
+                    {ORDER_STATUSES.map((s) => <option key={s}>{s}</option>)}
+                  </select>
+                </td>
+                <td className="text-right">
+                  <Button variant="outline" size="sm" onClick={() => setSelected(o)}>view</Button>
+                </td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr><td colSpan={7} className="py-8 text-center text-xs text-muted-foreground">no orders match</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {selected && (
+        <OrderDetail
+          order={selected}
+          onClose={() => setSelected(null)}
+          onStatus={(status) => setStatus(selected.id, status)}
+        />
+      )}
+    </div>
+  );
+}
+
+const ORDER_STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"];
+
+function orderItemCount(o: any) {
+  const items = o.order_items ?? [];
+  const units = items.reduce((n: number, i: any) => n + (Number(i.qty) || 0), 0);
+  return `${items.length} line${items.length === 1 ? "" : "s"} / ${units} unit${units === 1 ? "" : "s"}`;
+}
+
+function OrderDetail({ order, onClose, onStatus }: { order: any; onClose: () => void; onStatus: (s: string) => void }) {
+  const items = order.order_items ?? [];
+  const money = (v: any) => `${order.currency} ${Number(v ?? 0).toFixed(2)}`;
+  const copy = () => {
+    navigator.clipboard.writeText(
+      [order.full_name, order.mobile, order.address, order.country].filter(Boolean).join("\n")
+    );
+    toast.success("address copied");
+  };
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto" onClick={onClose}>
+      <div className="max-w-3xl mx-auto my-8 bg-card border border-border shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4 flex items-center justify-between gap-4">
+          <div>
+            <div className="font-mono text-sm">{order.order_number}</div>
+            <div className="text-xs text-muted-foreground">
+              {new Date(order.created_at).toLocaleString()}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={order.status}
+              onChange={(e) => onStatus(e.target.value)}
+              className="border border-input bg-background px-2 py-1 text-xs"
+            >
+              {ORDER_STATUSES.map((s) => <option key={s}>{s}</option>)}
+            </select>
+            <button onClick={onClose} className="p-1 hover:bg-muted"><X className="h-4 w-4" /></button>
+          </div>
+        </div>
+
+        <div className="px-6 py-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">customer</div>
+              <div className="text-sm">{order.full_name}</div>
+              <div className="text-sm">
+                <a className="underline" href={`mailto:${order.email}`}>{order.email}</a>
+              </div>
+              {order.mobile && (
+                <div className="text-sm"><a className="underline" href={`tel:${order.mobile}`}>{order.mobile}</a></div>
+              )}
+              <div className="text-xs text-muted-foreground">
+                {order.user_id ? "registered account" : "guest checkout"}
+              </div>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-3">
+                shipping address
+                <button onClick={copy} className="underline normal-case tracking-normal">copy</button>
+              </div>
+              <div className="text-sm whitespace-pre-wrap">{order.address || "—"}</div>
+              <div className="text-sm">{order.country || ""}</div>
+            </div>
+          </div>
+
+          <div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">items</div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead><tr className="text-left text-muted-foreground border-b border-border">
+                  <th className="py-2">product</th><th>variant</th><th className="text-right">qty</th><th className="text-right">unit</th><th className="text-right">line</th>
+                </tr></thead>
+                <tbody>
+                  {items.map((i: any) => (
+                    <tr key={i.id} className="border-b border-border align-top">
+                      <td className="py-3">
+                        <div>{i.name}</div>
+                        {i.product_slug && <div className="text-xs text-muted-foreground font-mono">{i.product_slug}</div>}
+                      </td>
+                      <td className="text-xs">{[i.color, i.size].filter(Boolean).join(" / ") || "—"}</td>
+                      <td className="text-right num">{i.qty}</td>
+                      <td className="text-right num">{money(i.unit_price)}</td>
+                      <td className="text-right num">{money(Number(i.unit_price) * Number(i.qty))}</td>
+                    </tr>
+                  ))}
+                  {items.length === 0 && (
+                    <tr><td colSpan={5} className="py-6 text-center text-xs text-muted-foreground">no line items recorded</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <div className="w-full max-w-xs text-sm space-y-1">
+              <Row label="subtotal" value={money(order.subtotal)} />
+              <Row label="shipping" value={money(order.shipping)} />
+              <Row label="tax" value={money(order.tax)} />
+              {Number(order.discount) > 0 && (
+                <Row
+                  label={order.promo_code ? `discount (${order.promo_code})` : "discount"}
+                  value={`− ${money(order.discount)}`}
+                />
+              )}
+              <div className="border-t border-border pt-1 font-medium">
+                <Row label="total" value={money(order.total)} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="sticky bottom-0 bg-card border-t border-border px-6 py-4 flex justify-end">
+          <Button variant="outline" onClick={onClose}>close</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="num">{value}</span>
     </div>
   );
 }
