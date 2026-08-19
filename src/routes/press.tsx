@@ -14,6 +14,7 @@ import bgWood from "@/assets/backgrounds/award-modal-wood.png";
 import { supabase } from "@/integrations/supabase/client";
 import { asArray, toParagraphs, type JourneyLink, type PageSection } from "@/lib/journey";
 import { normalizeUrl } from "@/lib/utils";
+import { useMediaUrl } from "@/lib/storage-url";
 
 const ARTICLES = [
   {
@@ -251,6 +252,7 @@ function AwardDialog({
  * a run of them reads as a timeline rather than a stack.
  */
 function MilestoneSection({ section, flip }: { section: PageSection; flip: boolean }) {
+  const imageUrl = useMediaUrl(section.image_url);
   const paragraphs = toParagraphs(section.body);
   const copy = (
     <div className={flip ? "md:order-1" : ""}>
@@ -291,11 +293,12 @@ function MilestoneSection({ section, flip }: { section: PageSection; flip: boole
   return (
     <article className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
       <img
-        src={normalizeUrl(section.image_url) ?? ""}
+        src={imageUrl ?? ""}
         alt={section.heading ?? ""}
         loading="lazy"
-        className={`w-full aspect-[4/3] object-cover bg-muted ${flip ? "md:order-2" : ""}`}
+        className={`w-full aspect-[4/3] object-contain bg-muted ${flip ? "md:order-2" : ""}`}
       />
+
       {copy}
     </article>
   );

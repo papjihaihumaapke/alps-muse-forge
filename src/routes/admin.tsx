@@ -31,6 +31,7 @@ import {
 } from "@/lib/journey";
 import type { Json } from "@/integrations/supabase/types";
 import { normalizeUrl } from "@/lib/utils";
+import { useMediaUrl } from "@/lib/storage-url";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -1867,6 +1868,7 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
   const [draft, setDraft] = useState<PageSection>(row);
   useEffect(() => { setDraft(row); }, [row]);
   const set = (patch: Partial<PageSection>) => setDraft({ ...draft, ...patch });
+  const previewUrl = useMediaUrl(draft.image_url);
 
   return (
     <div className="border border-border bg-card p-4 space-y-4">
@@ -1900,8 +1902,8 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
       <Field label={isFirst ? firstImageLabel : "image (optional — adds a side-by-side layout)"}>
         <div className="flex items-start gap-4">
           <div className="h-24 w-20 shrink-0 bg-muted overflow-hidden">
-            {draft.image_url ? (
-              <img src={draft.image_url} alt="" className="h-full w-full object-cover" />
+            {previewUrl ? (
+              <img src={previewUrl} alt="" className="h-full w-full object-cover" />
             ) : (
               <div className="h-full w-full flex items-center justify-center">
                 <ImageIcon className="h-4 w-4 text-muted-foreground" />
