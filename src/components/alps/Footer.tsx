@@ -15,19 +15,18 @@ const SIZE_GROUPS: SizeKind[] = ["kids", "men", "women", "unisex"];
 export function Footer() {
   return (
     <footer className="bg-background text-foreground mt-24 border-t-2 border-foreground/40">
+      {/* Mobile: one column, separated by full-width rules only — no vertical
+          dividers, which is what made the 2-up layout look ragged when the
+          columns had wildly different heights. md/lg structure is unchanged. */}
       <div
-        className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 pt-0 pb-10 grid grid-cols-2 md:grid-cols-3 text-[11px] leading-[1.4]
+        className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 pt-0 pb-10 grid grid-cols-1 md:grid-cols-3 text-[11px] leading-[1.4]
           lg:[grid-template-columns:0.65fr_0.65fr_1.1fr_1.35fr_1.1fr_0.75fr]
-          [&>*]:border-l-2 [&>*]:border-t-2 [&>*]:border-foreground/40
-          [&>*:nth-child(odd)]:border-l-0
-          [&>*:nth-child(-n+2)]:border-t-0
-          md:[&>*]:border-l-2 md:[&>*]:border-t-2
-          md:[&>*:nth-child(odd)]:border-l-2 md:[&>*:nth-child(3n+1)]:border-l-0
-          md:[&>*:nth-child(-n+2)]:border-t-2 md:[&>*:nth-child(-n+3)]:border-t-0
-          lg:[&>*]:border-l-2 lg:[&>*:first-child]:border-l-0
-          lg:[&>*]:border-r-0 lg:[&>*]:border-t-0
-          [&>*:nth-child(4)]:border-l-2 md:[&>*:nth-child(4)]:border-l-2 lg:[&>*:nth-child(4)]:border-l-2
-          [&>*:first-child]:!border-l-0"
+          [&>*]:border-foreground/40 [&>*]:border-t-2
+          md:[&>*:nth-child(-n+3)]:border-t-0
+          md:[&>*]:border-l-2 md:[&>*:nth-child(3n+1)]:border-l-0
+          lg:[&>*]:border-t-0
+          lg:[&>*]:border-l-2 lg:[&>*:nth-child(3n+1)]:border-l-2
+          [&>*:first-child]:!border-t-0 lg:[&>*:first-child]:!border-l-0"
       >
 
 
@@ -43,6 +42,7 @@ export function Footer() {
         </Col>
 
         <Col title="size info">
+          <div className="flex flex-wrap gap-x-6 gap-y-1 md:flex-col md:gap-x-0 md:gap-y-1">
           {SIZE_GROUPS.map((s) => (
             <button
               key={s}
@@ -53,11 +53,12 @@ export function Footer() {
               {s}
             </button>
           ))}
+          </div>
         </Col>
 
 
         <Col title="features">
-          <div className="flex flex-col gap-1">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-1 md:flex md:flex-col">
             {FEATURES.map((f) => {
               const innovation = INNOVATIONS.find((i) => i.filterKey === f.key);
               return (
@@ -75,7 +76,7 @@ export function Footer() {
         </Col>
 
         <Col title="awards & accolades">
-          <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-2 md:flex md:flex-col">
             {AWARDS.map((a) => (
               <Link
                 key={a.id}
@@ -129,7 +130,7 @@ export function Footer() {
           </div>
         </Col>
 
-        <Col title="pre-order" className="col-span-2 md:col-span-1">
+        <Col title="pre-order">
           <Link to="/account" className="text-foreground/80 hover:text-primary">catch up new item</Link>
           <div className="mt-8">
             <p className="text-foreground font-medium mb-2">contact us</p>
@@ -163,17 +164,17 @@ function NewsletterBar() {
   return (
     <div className="bg-primary text-primary-foreground">
       <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px]">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
           <span className="tracking-[0.2em] uppercase">stay connected</span>
-          <form className="flex items-center" onSubmit={submit}>
+          <form className="flex items-center w-full sm:w-auto" onSubmit={submit}>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="hello@youremail.com"
-              className="bg-white/15 placeholder:text-white/70 text-white px-3 py-1.5 text-[11px] w-64 focus:outline-none"
+              className="bg-white/15 placeholder:text-white/70 text-white px-3 py-1.5 text-[11px] w-full sm:w-64 min-w-0 focus:outline-none"
             />
-            <button disabled={busy} className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 text-[11px] tracking-wide border-l border-white/20 disabled:opacity-60">
+            <button disabled={busy} className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 text-[11px] tracking-wide border-l border-white/20 disabled:opacity-60 shrink-0">
               {busy ? "…" : "subscribe"}
             </button>
           </form>
@@ -186,7 +187,7 @@ function NewsletterBar() {
 
 function Col({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`flex flex-col px-4 py-4 md:py-3 lg:py-0 ${className}`}>
+    <div className={`flex flex-col px-0 py-5 md:px-4 md:py-3 lg:py-0 ${className}`}>
       {title && <h4 className="text-[13px] tracking-wide text-foreground font-semibold mb-3">{title}</h4>}
       <div className="flex flex-col gap-1">{children}</div>
     </div>
