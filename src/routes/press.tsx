@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/dialog";
 import bgWood from "@/assets/backgrounds/award-modal-wood.png";
 import { supabase } from "@/integrations/supabase/client";
-import { asArray, toParagraphs, type JourneyLink, type PageSection } from "@/lib/journey";
+import { newestFirst, toPageSection, toParagraphs, type PageSection } from "@/lib/journey";
+import { MediaStrip } from "@/components/alps/MediaStrip";
 import { normalizeUrl } from "@/lib/utils";
-import { useMediaUrl } from "@/lib/storage-url";
 
 const ARTICLES = [
   {
@@ -251,13 +251,17 @@ function AwardDialog({
  * page_sections with page = "milestones"; the image and copy alternate sides so
  * a run of them reads as a timeline rather than a stack.
  */
-function MilestoneSection({ section, flip }: { section: PageSection; flip: boolean }) {
-  const imageUrl = useMediaUrl(section.image_url);
+function MilestoneSection({ section }: { section: PageSection }) {
   const paragraphs = toParagraphs(section.body);
-  const copy = (
-    <div className={flip ? "md:order-1" : ""}>
+  return (
+    <article className="max-w-3xl">
       {section.eyebrow && (
         <span className="num text-[11px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
+      )}
+      {section.entry_date && (
+        <span className="num block text-[11px] tracking-[0.25em] text-foreground/60 mt-2">
+          {new Date(`${section.entry_date}T00:00:00`).toLocaleDateString("en-GB", { month: "long", year: "numeric" }).toLowerCase()}
+        </span>
       )}
       {section.heading && <h3 className="text-2xl font-light mt-3">{section.heading}</h3>}
       {section.subheading && (
@@ -277,29 +281,18 @@ function MilestoneSection({ section, flip }: { section: PageSection; flip: boole
           {section.links.map((l, i) => (
             <li key={i}>
               <a href={normalizeUrl(l.url) ?? "#"} target="_blank" rel="noreferrer" className="link-red text-sm">
-                {l.label} →
+                {l.label || "read more"} →
               </a>
             </li>
           ))}
         </ul>
       )}
-    </div>
-  );
-
-  if (!section.image_url) {
-    return <article className="max-w-2xl">{copy}</article>;
-  }
-
-  return (
-    <article className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-      <img
-        src={imageUrl ?? ""}
-        alt={section.heading ?? ""}
-        loading="lazy"
-        className={`w-full aspect-[4/3] object-contain bg-muted ${flip ? "md:order-2" : ""}`}
+      <MediaStrip
+        images={section.images}
+        videos={section.video_urls}
+        alt={section.heading ?? "milestone"}
+        className="mt-6"
       />
-
-      {copy}
     </article>
   );
 }
@@ -318,9 +311,8 @@ function PressPage() {
       .order("sort_order")
       .then(({ data, error }) => {
         if (error) return;
-        setSections(
-          (data ?? []).map((r) => ({ ...r, links: asArray<JourneyLink>(r.links) })) as PageSection[],
-        );
+        // Newest first, so new milestones are seen without scrolling.
+        setSections((data ?? []).map((r) => toPageSection(r)).sort(newestFirst));
       });
   }, []);
 
@@ -363,7 +355,7 @@ function PressPage() {
           ))}
         </ul>
 
-        <h2 id="awards" className="mt-24 text-2xl font-light">awards &amp; accolades</h2>
+        <h2 id="awards" className="mt-24 text-2xl font-light">recognitions</h2>
         <p className="mt-3 text-sm text-foreground/60 max-w-xl">
           tap any award to view the full details and certificate.
         </p>
@@ -375,8 +367,8 @@ function PressPage() {
 
         {sections.length > 0 && (
           <div className="mt-24 space-y-20">
-            {sections.map((s, i) => (
-              <MilestoneSection key={s.id} section={s} flip={i % 2 === 1} />
+            {sections.map((s) => (
+              <MilestoneSection key={s.id} section={s} />
             ))}
           </div>
         )}

@@ -16,7 +16,10 @@ import {
   type JourneyLink,
   type JourneyPost,
   type PageSection,
+  newestFirst,
+  toPageSection,
 } from "@/lib/journey";
+import { MediaStrip } from "@/components/alps/MediaStrip";
 
 type JourneyItem = {
   id: string;
@@ -61,6 +64,9 @@ const FALLBACK_BIO: PageSection = {
     "named after annie ling's initials and inspired by the enduring spirit of the alps, the brand reflects resilience, innovation, and exploration. ALPS Annie Ling seamlessly combines timeless aesthetics with sports-inspired functionality and textile innovation, creating versatile, enduring garments designed for contemporary life.",
   ].join("\n\n"),
   image_url: null,
+  images: [],
+  video_urls: [],
+  entry_date: null,
   links: [
     { label: "design incubation programme (dip) alumni", url: SOCIALS.dipAlumni },
     { label: "fashion incubation programme (fip) alumni", url: SOCIALS.fipAlumni },
@@ -90,9 +96,7 @@ function MyJourney() {
       .order("sort_order")
       .then(({ data, error }) => {
         if (error) return setSections([]);
-        setSections(
-          (data ?? []).map((r) => ({ ...r, links: asArray<JourneyLink>(r.links) })) as PageSection[],
-        );
+        setSections((data ?? []).map((r) => toPageSection(r)));
       });
 
     supabase
@@ -121,7 +125,9 @@ function MyJourney() {
 
   // sections === null means "still loading" — show the fallback bio so the page is never bare
   const resolved = sections === null ? [FALLBACK_BIO] : sections.length > 0 ? sections : [FALLBACK_BIO];
-  const [bio, ...extraSections] = resolved;
+  // The bio (lowest sort order) stays pinned at the top; write-ups below it run newest first.
+  const [bio, ...rest] = resolved;
+  const extraSections = [...rest].sort(newestFirst);
 
   // group posts by year, preserving the query's ordering
   const years: number[] = [];
@@ -233,13 +239,16 @@ function MyJourney() {
  */
 function BioSection({ section, isPrimary = false }: { section: PageSection; isPrimary?: boolean }) {
   const paragraphs = toParagraphs(section.body);
-  const resolvedImage = useMediaUrl(section.image_url);
-  const image = isPrimary ? resolvedImage ?? designer : resolvedImage;
-  const hasImage = isPrimary || Boolean(section.image_url);
+  const portrait = useMediaUrl(isPrimary ? section.images[0]?.url ?? section.image_url : null);
   const copy = (
     <div>
       {section.eyebrow && (
         <span className="num text-[11px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
+      )}
+      {!isPrimary && section.entry_date && (
+        <span className="num block text-[11px] tracking-[0.25em] text-foreground/60 mt-2">
+          {eventDateLabel({ event_year: Number(section.entry_date.slice(0, 4)), event_date: section.entry_date, event_label: null })}
+        </span>
       )}
       {section.heading &&
         (isPrimary ? (
@@ -265,7 +274,7 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
             {section.links.map((l, i) => (
               <li key={i}>
                 <a href={l.url} target="_blank" rel="noreferrer" className="link-red">
-                  {l.label} →
+                  {l.label || "read more"} →
                 </a>
               </li>
             ))}
@@ -275,28 +284,32 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
     </div>
   );
 
-  if (!hasImage) {
+  if (isPrimary) {
     return (
-      <section className={`max-w-3xl mx-auto px-6 ${isPrimary ? "py-20" : "pb-20"}`}>{copy}</section>
+      <section className="max-w-5xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <img
+          src={portrait ?? designer}
+          alt="annie ling — atelier portrait"
+          className="aspect-[4/5] object-cover bg-muted"
+          onError={(event) => {
+            if (event.currentTarget.src !== designer) event.currentTarget.src = designer;
+          }}
+        />
+        {copy}
+      </section>
     );
   }
 
+  // Write-ups: copy first, then every image and video in one scrolling gallery.
   return (
-    <section
-      className={`max-w-5xl mx-auto px-6 ${isPrimary ? "py-20" : "pb-20"} grid grid-cols-1 md:grid-cols-2 gap-12`}
-    >
-      <img
-        src={image ?? ""}
-        alt={isPrimary ? "annie ling — atelier portrait" : section.heading ?? ""}
-        className="aspect-[4/5] object-cover bg-muted"
-        loading={isPrimary ? undefined : "lazy"}
-        onError={(event) => {
-          if (isPrimary && event.currentTarget.src !== designer) {
-            event.currentTarget.src = designer;
-          }
-        }}
-      />
+    <section className="max-w-3xl mx-auto px-6 pb-20">
       {copy}
+      <MediaStrip
+        images={section.images}
+        videos={section.video_urls}
+        alt={section.heading ?? "design path"}
+        className="mt-8"
+      />
     </section>
   );
 }

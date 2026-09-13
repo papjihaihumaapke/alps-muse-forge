@@ -28,6 +28,8 @@ import {
   type JourneyLink,
   type JourneyPost,
   type PageSection,
+  newestFirst,
+  toPageSection,
 } from "@/lib/journey";
 import type { Json } from "@/integrations/supabase/types";
 import { normalizeUrl } from "@/lib/utils";
@@ -130,6 +132,7 @@ function AdminPage() {
           <TabsContent value="milestones">
             <PageSectionsTab
               page="milestones"
+              pinFirst={false}
               title="milestones — pictures & text"
               subtitle="picture-and-text blocks shown below the awards on the milestones page. each block takes an image, a heading and as much copy as you like; they alternate sides down the page."
               firstLabel="milestone block"
@@ -1928,6 +1931,102 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
    PAGE CONTENT — editable prose sections (designer bio, etc.)
    ============================================================ */
 
+async function uploadSectionMedia(file: File, kind: "image" | "video"): Promise<string | null> {
+  const ext = file.name.split(".").pop() ?? (kind === "video" ? "mp4" : "jpg");
+  const path = `sections/${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+  const { error } = await supabase.storage.from("product-media").upload(path, file, {
+    upsert: false,
+    contentType: file.type || undefined,
+  });
+  if (error) { toast.error(error.message); return null; }
+  return supabase.storage.from("product-media").getPublicUrl(path).data.publicUrl;
+}
+
+/** Ordered list of image or video URLs with multi-file upload, reorder and remove. */
+function MediaListEditor({ kind, items, onChange, single = false }: {
+  kind: "image" | "video";
+  items: string[];
+  onChange: (urls: string[]) => void;
+  /** Only one item allowed (e.g. the bio portrait). */
+  single?: boolean;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const move = (i: number, d: number) => {
+    const j = i + d;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  const onFiles = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setUploading(true);
+    const added: string[] = [];
+    for (const f of Array.from(single ? [files[0]] : files)) {
+      const url = await uploadSectionMedia(f, kind);
+      if (url) added.push(url);
+    }
+    setUploading(false);
+    if (!added.length) return;
+    onChange(single ? added : [...items.filter(Boolean), ...added]);
+    toast.success(`${added.length} ${kind}${added.length === 1 ? "" : "s"} uploaded — remember to save the section`);
+  };
+
+  return (
+    <div className="space-y-2">
+      {items.map((url, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <MediaThumb kind={kind} url={url} />
+          <Input
+            value={url}
+            placeholder={kind === "video" ? "YouTube / Vimeo link or video file url" : "image url"}
+            onChange={(e) => onChange(items.map((u, j) => (j === i ? e.target.value : u)))}
+          />
+          {!single && (
+            <>
+              <button type="button" className="text-xs link-red disabled:opacity-30" disabled={i === 0} onClick={() => move(i, -1)}>up</button>
+              <button type="button" className="text-xs link-red disabled:opacity-30" disabled={i === items.length - 1} onClick={() => move(i, 1)}>down</button>
+            </>
+          )}
+          <button type="button" className="text-xs link-red shrink-0" onClick={() => onChange(items.filter((_, j) => j !== i))}>remove</button>
+        </div>
+      ))}
+      <div className="flex flex-wrap items-center gap-4">
+        <label className={`text-xs cursor-pointer link-red ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+          {uploading ? "uploading…" : single ? `upload ${kind}` : `+ upload ${kind}s`}
+          <input
+            type="file"
+            accept={`${kind}/*`}
+            multiple={!single}
+            className="hidden"
+            onChange={(e) => { onFiles(e.target.files); e.target.value = ""; }}
+          />
+        </label>
+        {!(single && items.length) && (
+          <button type="button" className="text-xs link-red" onClick={() => onChange([...items, ""])}>
+            {kind === "video" ? "+ paste a YouTube / Vimeo link" : "+ paste an image url"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MediaThumb({ kind, url }: { kind: "image" | "video"; url: string }) {
+  const src = useMediaUrl(kind === "image" ? url : null);
+  return (
+    <div className="h-12 w-12 shrink-0 bg-muted overflow-hidden flex items-center justify-center">
+      {kind === "image" && src ? (
+        <img src={src} alt="" className="h-full w-full object-cover" />
+      ) : kind === "video" ? (
+        <span className="text-[10px] text-muted-foreground">▶</span>
+      ) : (
+        <ImageIcon className="h-4 w-4 text-muted-foreground" />
+      )}
+    </div>
+  );
+}
+
 type SectionDraft = Omit<PageSection, "id"> & { id?: string };
 
 function PageSectionsTab({
@@ -1938,6 +2037,7 @@ function PageSectionsTab({
   restLabel = "additional section",
   firstImageLabel = "portrait image (leave blank to keep the current portrait)",
   emptyHint = 'no sections yet — the page is showing its built-in bio. click "add section" to take over the copy.',
+  pinFirst = true,
 }: {
   page?: string;
   title?: string;
@@ -1946,6 +2046,8 @@ function PageSectionsTab({
   restLabel?: string;
   firstImageLabel?: string;
   emptyHint?: string;
+  /** Keep the first section (by sort order) at the top, e.g. the designer bio. */
+  pinFirst?: boolean;
 } = {}) {
   const [rows, setRows] = useState<PageSection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1958,24 +2060,37 @@ function PageSectionsTab({
       .order("sort_order");
     setLoading(false);
     if (error) return toast.error(error.message);
-    setRows((data ?? []).map((r) => ({ ...r, links: asArray<JourneyLink>(r.links) })) as PageSection[]);
+    const all = (data ?? []).map((r) => toPageSection(r));
+    // Same order as the live page: pinned first section (design path bio), then newest first.
+    setRows(pinFirst ? [...all.slice(0, 1), ...all.slice(1).sort(newestFirst)] : all.sort(newestFirst));
   };
   useEffect(() => { load(); }, [page]);
 
+  // Scroll to a section that was just added so it can be filled in straight away.
+  const [focusId, setFocusId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!focusId) return;
+    document.getElementById(`section-${focusId}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [focusId, rows]);
+
   const add = async () => {
-    const { error } = await supabase.from("page_sections").insert({
+    const { data, error } = await supabase.from("page_sections").insert({
       page,
       eyebrow: null,
       heading: "new section",
       subheading: null,
       body: null,
       image_url: null,
+      images: [] as unknown as Json,
+      video_urls: [],
+      entry_date: new Date().toISOString().slice(0, 10),
       links: [] as unknown as Json,
       sort_order: rows.length,
       active: true,
-    });
+    }).select("id").single();
     if (error) return toast.error(error.message);
-    load();
+    await load();
+    setFocusId(data.id);
   };
 
   const save = async (row: SectionDraft) => {
@@ -1985,7 +2100,13 @@ function PageSectionsTab({
       heading: row.heading?.trim() || null,
       subheading: row.subheading?.trim() || null,
       body: row.body || null,
-      image_url: normalizeUrl(row.image_url),
+      images: row.images
+        .map((i) => ({ ...i, url: normalizeUrl(i.url) ?? "" }))
+        .filter((i) => i.url) as unknown as Json,
+      // Legacy single-image column mirrors the first gallery image.
+      image_url: normalizeUrl(row.images[0]?.url) ?? null,
+      video_urls: row.video_urls.map((v) => v.trim()).filter(Boolean),
+      entry_date: row.entry_date || null,
       links: row.links.map((l) => ({ ...l, url: normalizeUrl(l.url) ?? "" })) as unknown as Json,
       sort_order: Number(row.sort_order) || 0,
       active: row.active,
@@ -2019,7 +2140,7 @@ function PageSectionsTab({
             <SectionEditor
               key={row.id}
               row={row}
-              isFirst={idx === 0}
+              isFirst={pinFirst && idx === 0}
               firstLabel={firstLabel}
               restLabel={restLabel}
               firstImageLabel={firstImageLabel}
@@ -2045,10 +2166,8 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
   const [draft, setDraft] = useState<PageSection>(row);
   useEffect(() => { setDraft(row); }, [row]);
   const set = (patch: Partial<PageSection>) => setDraft({ ...draft, ...patch });
-  const previewUrl = useMediaUrl(draft.image_url);
-
   return (
-    <div className="border border-border bg-card p-4 space-y-4">
+    <div id={`section-${row.id}`} className="border border-border bg-card p-4 space-y-4 scroll-mt-24">
       <div className="flex items-center gap-3">
         <span className="text-[10px] tracking-[0.2em] uppercase text-primary">
           {isFirst ? firstLabel : restLabel}
@@ -2076,34 +2195,20 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
         <Textarea rows={10} value={draft.body ?? ""} onChange={(e) => set({ body: e.target.value })} />
       </Field>
 
-      <Field label={isFirst ? firstImageLabel : "image (optional — adds a side-by-side layout)"}>
-        <div className="flex items-start gap-4">
-          <div className="h-24 w-20 shrink-0 bg-muted overflow-hidden">
-            {previewUrl ? (
-              <img src={previewUrl} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center">
-                <ImageIcon className="h-4 w-4 text-muted-foreground" />
-              </div>
-            )}
-          </div>
-          <div className="space-y-2 flex-1">
-            <label className="text-xs block cursor-pointer link-red">
-              upload image
-              <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
-                const f = e.target.files?.[0]; if (!f) return;
-                const url = await uploadJournalImage(f);
-                if (url) set({ image_url: url });
-              }} />
-            </label>
-            <Input
-              value={draft.image_url ?? ""}
-              placeholder="…or paste an image url"
-              onChange={(e) => set({ image_url: e.target.value || null })}
-            />
-          </div>
-        </div>
+      <Field label={isFirst ? firstImageLabel : "pictures — upload as many as you like; they scroll sideways on the page"}>
+        <MediaListEditor
+          kind="image"
+          items={draft.images.map((i) => i.url)}
+          single={isFirst}
+          onChange={(urls) => set({ images: urls.map((url) => ({ url, caption: draft.images.find((i) => i.url === url)?.caption ?? null })) })}
+        />
       </Field>
+
+      {!isFirst && (
+        <Field label="videos — upload a video file or paste a YouTube / Vimeo link">
+          <MediaListEditor kind="video" items={draft.video_urls} onChange={(urls) => set({ video_urls: urls })} />
+        </Field>
+      )}
 
       <Field label="links">
         <div className="space-y-2">
@@ -2124,14 +2229,21 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
         </div>
       </Field>
 
-      <div className="flex items-end gap-4">
-        <div className="w-40">
-          <Field label="sort order">
-            <Input type="number" value={draft.sort_order}
-              onChange={(e) => set({ sort_order: Number(e.target.value) })} />
-          </Field>
-        </div>
+      <div className="flex flex-wrap items-end gap-4">
+        {!isFirst && (
+          <div className="w-48">
+            <Field label="date (newest shows first)">
+              <Input type="date" value={draft.entry_date ?? ""}
+                onChange={(e) => set({ entry_date: e.target.value || null })} />
+            </Field>
+          </div>
+        )}
         <Button size="sm" onClick={() => onSave(draft)}>save section</Button>
+        {!isFirst && (
+          <p className="text-[11px] text-muted-foreground basis-full">
+            write-ups are ordered by this date, newest at the top. for older stories (e.g. school days) just pick the old date — newer posts will appear above them automatically.
+          </p>
+        )}
       </div>
     </div>
   );

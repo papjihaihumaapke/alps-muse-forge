@@ -28,11 +28,36 @@ export type PageSection = {
   heading: string | null;
   subheading: string | null;
   body: string | null;
+  /** Legacy single image; new sections use `images`. */
   image_url: string | null;
+  images: JourneyImage[];
+  video_urls: string[];
+  entry_date: string | null;
+  created_at?: string;
   links: JourneyLink[];
   sort_order: number;
   active: boolean;
 };
+
+/** Coerce a raw page_sections row (jsonb + legacy image_url) into a PageSection. */
+export function toPageSection(r: Record<string, unknown>): PageSection {
+  const images = asArray<JourneyImage>(r.images).filter((i) => i?.url);
+  const legacy = typeof r.image_url === "string" && r.image_url ? r.image_url : null;
+  return {
+    ...(r as unknown as PageSection),
+    links: asArray<JourneyLink>(r.links),
+    images: images.length ? images : legacy ? [{ url: legacy }] : [],
+    video_urls: Array.isArray(r.video_urls) ? (r.video_urls as string[]).filter(Boolean) : [],
+  };
+}
+
+/** Newest write-up first: by entry date, then by when it was added. */
+export function newestFirst(a: PageSection, b: PageSection): number {
+  const da = a.entry_date ?? a.created_at?.slice(0, 10) ?? "";
+  const db = b.entry_date ?? b.created_at?.slice(0, 10) ?? "";
+  if (da !== db) return da < db ? 1 : -1;
+  return (b.created_at ?? "").localeCompare(a.created_at ?? "");
+}
 
 export const JOURNEY_POST_KINDS = [
   { key: "journal", label: "journal entry" },

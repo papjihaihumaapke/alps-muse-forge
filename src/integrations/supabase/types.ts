@@ -348,43 +348,52 @@ export type Database = {
           active: boolean
           body: string | null
           created_at: string
+          entry_date: string | null
           eyebrow: string | null
           heading: string | null
           id: string
           image_url: string | null
+          images: Json
           links: Json
           page: string
           sort_order: number
           subheading: string | null
           updated_at: string
+          video_urls: string[]
         }
         Insert: {
           active?: boolean
           body?: string | null
           created_at?: string
+          entry_date?: string | null
           eyebrow?: string | null
           heading?: string | null
           id?: string
           image_url?: string | null
+          images?: Json
           links?: Json
           page?: string
           sort_order?: number
           subheading?: string | null
           updated_at?: string
+          video_urls?: string[]
         }
         Update: {
           active?: boolean
           body?: string | null
           created_at?: string
+          entry_date?: string | null
           eyebrow?: string | null
           heading?: string | null
           id?: string
           image_url?: string | null
+          images?: Json
           links?: Json
           page?: string
           sort_order?: number
           subheading?: string | null
           updated_at?: string
+          video_urls?: string[]
         }
         Relationships: []
       }
