@@ -52,6 +52,9 @@ export const Route = createFileRoute("/my-journey")({
   component: MyJourney,
 });
 
+/** page_sections.page value for the designer bio, kept apart from the write-ups. */
+const BIO_PAGE = "my-journey-bio";
+
 /** Fallback bio, used only until the admin-managed page_sections row loads (or if none exists). */
 const FALLBACK_BIO: PageSection = {
   id: "fallback",
@@ -94,7 +97,7 @@ function MyJourney() {
     supabase
       .from("page_sections")
       .select("*")
-      .eq("page", "my-journey")
+      .in("page", [BIO_PAGE, "my-journey"])
       .eq("active", true)
       .order("sort_order")
       .then(({ data, error }) => {
@@ -126,11 +129,11 @@ function MyJourney() {
   const awards = byKind("award");
   const shops = byKind("shop");
 
-  // sections === null means "still loading" — show the fallback bio so the page is never bare
-  const resolved = sections === null ? [FALLBACK_BIO] : sections.length > 0 ? sections : [FALLBACK_BIO];
-  // The bio (lowest sort order) stays pinned at the top; write-ups below it follow the sort control.
-  const [bio, ...rest] = resolved;
-  const extraSections = sortSections(rest, sortOrder);
+    // The bio is its own section (page "my-journey-bio"), separate from the write-ups,
+  // which always follow the sort control — a new write-up lands on top by default.
+  const bio = sections?.find((s) => s.page === BIO_PAGE) ?? FALLBACK_BIO;
+  const writeUps = (sections ?? []).filter((s) => s.page !== BIO_PAGE);
+  const extraSections = sortSections(writeUps, sortOrder);
 
   // group posts by year, preserving the query's ordering
   const years: number[] = [];

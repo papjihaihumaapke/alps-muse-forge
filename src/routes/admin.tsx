@@ -128,7 +128,24 @@ function AdminPage() {
           <TabsContent value="orders"><OrdersTab /></TabsContent>
           <TabsContent value="customers"><CustomersTab /></TabsContent>
           <TabsContent value="journal"><JourneyPostsTab /></TabsContent>
-          <TabsContent value="page-content"><PageSectionsTab /></TabsContent>
+          <TabsContent value="page-content">
+            <PageSectionsTab
+              page="my-journey-bio"
+              pinFirst={false}
+              single
+              title="design path — designer bio"
+              subtitle="the bio at the top of the design path page. it is separate from the write-ups below and always stays at the top."
+              firstLabel="designer bio (top of page)"
+              emptyHint='no bio yet — the page is showing its built-in bio. click "add section" to take over the copy.'
+            />
+            <PageSectionsTab
+              pinFirst={false}
+              title="design path — write-ups"
+              subtitle="write-ups shown below the bio. the newest one is always on top."
+              restLabel="write-up"
+              emptyHint='no write-ups yet — click "add section" to post one.'
+            />
+          </TabsContent>
           <TabsContent value="milestones">
             <PageSectionsTab
               page="milestones"
@@ -2038,6 +2055,7 @@ function PageSectionsTab({
   firstImageLabel = "portrait image (leave blank to keep the current portrait)",
   emptyHint = 'no sections yet — the page is showing its built-in bio. click "add section" to take over the copy.',
   pinFirst = true,
+  single = false,
 }: {
   page?: string;
   title?: string;
@@ -2048,6 +2066,8 @@ function PageSectionsTab({
   emptyHint?: string;
   /** Keep the first section (by sort order) at the top, e.g. the designer bio. */
   pinFirst?: boolean;
+  /** Only one section allowed (e.g. the bio): hide "add section" once it exists. */
+  single?: boolean;
 } = {}) {
   const [rows, setRows] = useState<PageSection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -2127,7 +2147,7 @@ function PageSectionsTab({
     <div className="py-6 space-y-6">
       <Section title={title} subtitle={subtitle}>
         <div className="flex justify-end mb-4">
-          <Button size="sm" onClick={add}><Plus className="h-3 w-3 mr-1" />add section</Button>
+          {!(single && rows.length > 0) && <Button size="sm" onClick={add}><Plus className="h-3 w-3 mr-1" />add section</Button>}
         </div>
 
         {loading && <p className="text-xs text-muted-foreground">loading…</p>}
@@ -2140,7 +2160,7 @@ function PageSectionsTab({
             <SectionEditor
               key={row.id}
               row={row}
-              isFirst={pinFirst && idx === 0}
+              isFirst={single || (pinFirst && idx === 0)}
               firstLabel={firstLabel}
               restLabel={restLabel}
               firstImageLabel={firstImageLabel}
