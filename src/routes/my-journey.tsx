@@ -4,6 +4,7 @@ import { Shell } from "@/components/alps/Shell";
 import { SOCIALS } from "@/lib/alps-data";
 import { supabase } from "@/integrations/supabase/client";
 import designer from "@/assets/brand/annie-designer-portrait.png";
+import { useMediaUrl } from "@/lib/storage-url";
 import {
   asArray,
   eventDateLabel,
@@ -232,7 +233,9 @@ function MyJourney() {
  */
 function BioSection({ section, isPrimary = false }: { section: PageSection; isPrimary?: boolean }) {
   const paragraphs = toParagraphs(section.body);
-  const image = isPrimary ? section.image_url ?? designer : section.image_url;
+  const resolvedImage = useMediaUrl(section.image_url);
+  const image = isPrimary ? resolvedImage ?? designer : resolvedImage;
+  const hasImage = isPrimary || Boolean(section.image_url);
   const copy = (
     <div>
       {section.eyebrow && (
@@ -272,7 +275,7 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
     </div>
   );
 
-  if (!image) {
+  if (!hasImage) {
     return (
       <section className={`max-w-3xl mx-auto px-6 ${isPrimary ? "py-20" : "pb-20"}`}>{copy}</section>
     );
@@ -283,10 +286,15 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
       className={`max-w-5xl mx-auto px-6 ${isPrimary ? "py-20" : "pb-20"} grid grid-cols-1 md:grid-cols-2 gap-12`}
     >
       <img
-        src={image}
+        src={image ?? ""}
         alt={isPrimary ? "annie ling — atelier portrait" : section.heading ?? ""}
         className="aspect-[4/5] object-cover bg-muted"
         loading={isPrimary ? undefined : "lazy"}
+        onError={(event) => {
+          if (isPrimary && event.currentTarget.src !== designer) {
+            event.currentTarget.src = designer;
+          }
+        }}
       />
       {copy}
     </section>
@@ -297,6 +305,7 @@ function PostEntry({ post }: { post: JourneyPost }) {
   const paragraphs = toParagraphs(post.content);
   const embed = toEmbedUrl(post.video_url);
   const anchor = post.slug ?? slugify(post.title);
+  const coverImage = useMediaUrl(post.cover_image_url);
 
   return (
     <article id={anchor} className="scroll-mt-24">
@@ -317,7 +326,7 @@ function PostEntry({ post }: { post: JourneyPost }) {
 
       {post.cover_image_url && (
         <img
-          src={post.cover_image_url}
+          src={coverImage ?? ""}
           alt={post.title}
           loading="lazy"
           className="mt-6 w-full object-cover bg-muted"
@@ -336,12 +345,7 @@ function PostEntry({ post }: { post: JourneyPost }) {
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {post.images.map((img, i) => (
             <figure key={i}>
-              <img
-                src={img.url}
-                alt={img.caption || post.title}
-                loading="lazy"
-                className="w-full object-cover bg-muted"
-              />
+              <JourneyPostImage image={img} title={post.title} />
               {img.caption && (
                 <figcaption className="mt-2 text-[11px] text-foreground/60">{img.caption}</figcaption>
               )}
@@ -383,6 +387,18 @@ function PostEntry({ post }: { post: JourneyPost }) {
         </ul>
       )}
     </article>
+  );
+}
+
+function JourneyPostImage({ image, title }: { image: JourneyImage; title: string }) {
+  const imageUrl = useMediaUrl(image.url);
+  return (
+    <img
+      src={imageUrl ?? ""}
+      alt={image.caption || title}
+      loading="lazy"
+      className="w-full object-cover bg-muted"
+    />
   );
 }
 
