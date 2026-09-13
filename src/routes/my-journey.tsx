@@ -16,9 +16,11 @@ import {
   type JourneyLink,
   type JourneyPost,
   type PageSection,
-  newestFirst,
+  sortSections,
   toPageSection,
+  type SortOrder,
 } from "@/lib/journey";
+import { SortSelect } from "@/components/alps/SortSelect";
 import { MediaStrip } from "@/components/alps/MediaStrip";
 
 type JourneyItem = {
@@ -79,6 +81,7 @@ function MyJourney() {
   const [items, setItems] = useState<JourneyItem[]>([]);
   const [posts, setPosts] = useState<JourneyPost[]>([]);
   const [sections, setSections] = useState<PageSection[] | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
 
   useEffect(() => {
     supabase
@@ -125,9 +128,9 @@ function MyJourney() {
 
   // sections === null means "still loading" — show the fallback bio so the page is never bare
   const resolved = sections === null ? [FALLBACK_BIO] : sections.length > 0 ? sections : [FALLBACK_BIO];
-  // The bio (lowest sort order) stays pinned at the top; write-ups below it run newest first.
+  // The bio (lowest sort order) stays pinned at the top; write-ups below it follow the sort control.
   const [bio, ...rest] = resolved;
-  const extraSections = [...rest].sort(newestFirst);
+  const extraSections = sortSections(rest, sortOrder);
 
   // group posts by year, preserving the query's ordering
   const years: number[] = [];
@@ -143,6 +146,12 @@ function MyJourney() {
   return (
     <Shell>
       <BioSection section={bio} isPrimary />
+
+      {extraSections.length > 1 && (
+        <div className="max-w-4xl mx-auto px-6 flex justify-end">
+          <SortSelect value={sortOrder} onChange={setSortOrder} />
+        </div>
+      )}
 
       {extraSections.map((s) => (
         <BioSection key={s.id} section={s} />

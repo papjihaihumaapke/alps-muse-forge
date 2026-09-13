@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import bgWood from "@/assets/backgrounds/award-modal-wood.png";
 import { supabase } from "@/integrations/supabase/client";
-import { newestFirst, toPageSection, toParagraphs, type PageSection } from "@/lib/journey";
+import { sortSections, toPageSection, toParagraphs, type PageSection, type SortOrder } from "@/lib/journey";
+import { SortSelect } from "@/components/alps/SortSelect";
 import { MediaStrip } from "@/components/alps/MediaStrip";
 import { normalizeUrl } from "@/lib/utils";
 
@@ -311,6 +312,7 @@ function MilestoneSection({ section }: { section: PageSection }) {
 function PressPage() {
   const [selected, setSelected] = useState<Award | null>(null);
   const [sections, setSections] = useState<PageSection[]>([]);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
   const hash = useRouterState({ select: (s) => s.location.hash });
 
   useEffect(() => {
@@ -322,8 +324,7 @@ function PressPage() {
       .order("sort_order")
       .then(({ data, error }) => {
         if (error) return;
-        // Newest first, so new milestones are seen without scrolling.
-        setSections((data ?? []).map((r) => toPageSection(r)).sort(newestFirst));
+        setSections((data ?? []).map((r) => toPageSection(r)));
       });
   }, []);
 
@@ -377,11 +378,16 @@ function PressPage() {
         </div>
 
         {sections.length > 0 && (
-          <div className="mt-24 space-y-20">
-            {sections.map((s) => (
-              <MilestoneSection key={s.id} section={s} />
-            ))}
-          </div>
+          <>
+            <div className="mt-24 flex justify-end">
+              <SortSelect value={sortOrder} onChange={setSortOrder} />
+            </div>
+            <div className="mt-8 space-y-20">
+              {sortSections(sections, sortOrder).map((s) => (
+                <MilestoneSection key={s.id} section={s} />
+              ))}
+            </div>
+          </>
         )}
       </section>
 

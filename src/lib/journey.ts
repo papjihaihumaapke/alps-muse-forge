@@ -51,12 +51,23 @@ export function toPageSection(r: Record<string, unknown>): PageSection {
   };
 }
 
-/** Newest write-up first: by entry date, then by when it was added. */
+export type SortOrder = "newest" | "oldest";
+
+/**
+ * Newest write-up first, by when it was added. Ordering on the entry date used
+ * to push a freshly published write-up below older ones whenever its date was
+ * earlier, so insertion order is the rule: a new write-up is always on top.
+ */
 export function newestFirst(a: PageSection, b: PageSection): number {
-  const da = a.entry_date ?? a.created_at?.slice(0, 10) ?? "";
-  const db = b.entry_date ?? b.created_at?.slice(0, 10) ?? "";
-  if (da !== db) return da < db ? 1 : -1;
-  return (b.created_at ?? "").localeCompare(a.created_at ?? "");
+  const ka = a.created_at ?? a.entry_date ?? "";
+  const kb = b.created_at ?? b.entry_date ?? "";
+  return kb.localeCompare(ka);
+}
+
+/** Write-ups in the reader's chosen order; `newest` is the default everywhere. */
+export function sortSections(list: PageSection[], order: SortOrder): PageSection[] {
+  const sorted = [...list].sort(newestFirst);
+  return order === "newest" ? sorted : sorted.reverse();
 }
 
 export const JOURNEY_POST_KINDS = [
