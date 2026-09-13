@@ -131,8 +131,10 @@ function MyJourney() {
 
     // The bio is its own section (page "my-journey-bio"), separate from the write-ups,
   // which always follow the sort control — a new write-up lands on top by default.
-  const bio = sections?.find((s) => s.page === BIO_PAGE) ?? FALLBACK_BIO;
-  const writeUps = (sections ?? []).filter((s) => s.page !== BIO_PAGE);
+  // Until the bio has been moved to its own page, the first section by sort order is the bio.
+  const all = sections ?? [];
+  const bio = all.find((s) => s.page === BIO_PAGE) ?? all[0] ?? FALLBACK_BIO;
+  const writeUps = all.filter((s) => s !== bio);
   const extraSections = sortSections(writeUps, sortOrder);
 
   // group posts by year, preserving the query's ordering

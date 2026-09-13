@@ -130,7 +130,7 @@ function AdminPage() {
           <TabsContent value="journal"><JourneyPostsTab /></TabsContent>
           <TabsContent value="page-content">
             <PageSectionsTab
-              page="my-journey-bio"
+              page={DESIGN_PATH_BIO_PAGE}
               pinFirst={false}
               single
               title="design path — designer bio"
@@ -2044,6 +2044,33 @@ function MediaThumb({ kind, url }: { kind: "image" | "video"; url: string }) {
   );
 }
 
+/** page_sections.page value for the design path bio, kept apart from the write-ups. */
+const DESIGN_PATH_BIO_PAGE = "my-journey-bio";
+
+let bioMove: Promise<void> | null = null;
+/**
+ * The bio used to be the first "my-journey" section. Move it to its own page once,
+ * so it never shows up as a write-up (shared by the bio and write-ups editors).
+ */
+function ensureBioSection() {
+  bioMove ??= (async () => {
+    const { count } = await supabase
+      .from("page_sections")
+      .select("id", { count: "exact", head: true })
+      .eq("page", DESIGN_PATH_BIO_PAGE);
+    if (count) return;
+    const { data } = await supabase
+      .from("page_sections")
+      .select("id")
+      .eq("page", "my-journey")
+      .order("sort_order")
+      .order("created_at")
+      .limit(1);
+    if (data?.[0]) await supabase.from("page_sections").update({ page: DESIGN_PATH_BIO_PAGE }).eq("id", data[0].id);
+  })();
+  return bioMove;
+}
+
 type SectionDraft = Omit<PageSection, "id"> & { id?: string };
 
 function PageSectionsTab({
@@ -2073,6 +2100,7 @@ function PageSectionsTab({
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
+    if (page === "my-journey" || page === DESIGN_PATH_BIO_PAGE) await ensureBioSection();
     const { data, error } = await supabase
       .from("page_sections")
       .select("*")
