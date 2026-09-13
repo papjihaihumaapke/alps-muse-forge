@@ -300,16 +300,21 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
     );
   }
 
-  // Write-ups: copy first, then every image and video in one scrolling gallery.
+  const hasMedia = section.images.length + section.video_urls.length > 0;
+  if (!hasMedia) {
+    return <section className="max-w-3xl mx-auto px-6 pb-20">{copy}</section>;
+  }
+
+  // Write-ups: picture/video carousel on the left, text on the right (stacked on phones).
   return (
-    <section className="max-w-3xl mx-auto px-6 pb-20">
-      {copy}
+    <section className="max-w-5xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
       <MediaStrip
         images={section.images}
         videos={section.video_urls}
         alt={section.heading ?? "design path"}
-        className="mt-8"
+        className="md:sticky md:top-24"
       />
+      {copy}
     </section>
   );
 }

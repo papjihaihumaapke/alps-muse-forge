@@ -253,8 +253,8 @@ function AwardDialog({
  */
 function MilestoneSection({ section }: { section: PageSection }) {
   const paragraphs = toParagraphs(section.body);
-  return (
-    <article className="max-w-3xl">
+  const copy = (
+    <div>
       {section.eyebrow && (
         <span className="num text-[11px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
       )}
@@ -287,12 +287,23 @@ function MilestoneSection({ section }: { section: PageSection }) {
           ))}
         </ul>
       )}
+    </div>
+  );
+
+  if (section.images.length + section.video_urls.length === 0) {
+    return <article className="max-w-3xl">{copy}</article>;
+  }
+
+  // Picture/video carousel on the left, text on the right (stacked on phones).
+  return (
+    <article className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
       <MediaStrip
         images={section.images}
         videos={section.video_urls}
         alt={section.heading ?? "milestone"}
-        className="mt-6"
+        className="md:sticky md:top-24"
       />
+      {copy}
     </article>
   );
 }

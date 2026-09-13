@@ -1,9 +1,12 @@
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import { useMediaUrl } from "@/lib/storage-url";
 import { toEmbedUrl, type JourneyImage } from "@/lib/journey";
 
 /**
- * Horizontally scrolling gallery of a write-up's images and videos — same
- * scroll behaviour as the product gallery. A single item renders full width.
+ * One-at-a-time carousel of a write-up's images and videos, with arrows,
+ * dots and swipe. Renders nothing when empty.
  */
 export function MediaStrip({
   images,
@@ -16,60 +19,118 @@ export function MediaStrip({
   alt: string;
   className?: string;
 }) {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
   const total = images.length + videos.length;
-  if (!total) return null;
 
-  const single = total === 1;
-  const size = single ? "w-full aspect-[4/3]" : "w-[80%] sm:w-[22rem] aspect-[4/3]";
+  useEffect(() => {
+    if (!api) return;
+    const update = () => setCurrent(api.selectedScrollSnap());
+    update();
+    api.on("select", update);
+    api.on("reInit", update);
+    return () => {
+      api.off("select", update);
+      api.off("reInit", update);
+    };
+  }, [api]);
+
+  if (!total) return null;
+  const multiple = total > 1;
 
   return (
-    <div
-      className={`flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory ${className}`}
-      role="group"
-      aria-label={`${alt} — ${total} item${single ? "" : "s"}`}
-    >
-      {images.map((img, i) => (
-        <StripImage key={"i" + img.url + i} image={img} alt={single ? alt : `${alt} — image ${i + 1}`} size={size} />
-      ))}
-      {videos.map((url, i) => (
-        <StripVideo key={"v" + url + i} url={url} title={`${alt} — video ${i + 1}`} size={size} />
-      ))}
+    <div className={className} role="group" aria-roledescription="carousel" aria-label={alt}>
+      <div className="relative">
+        <Carousel setApi={setApi} opts={{ loop: multiple }}>
+          <CarouselContent className="ml-0">
+            {images.map((img, i) => (
+              <CarouselItem key={"i" + img.url + i} className="pl-0">
+                <SlideImage image={img} alt={multiple ? `${alt} — image ${i + 1}` : alt} />
+              </CarouselItem>
+            ))}
+            {videos.map((url, i) => (
+              <CarouselItem key={"v" + url + i} className="pl-0">
+                <SlideVideo url={url} title={`${alt} — video ${i + 1}`} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+
+        {multiple && (
+          <>
+            <button
+              type="button"
+              onClick={() => api?.scrollPrev()}
+              aria-label="previous"
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center bg-background/80 hover:bg-background border border-border"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => api?.scrollNext()}
+              aria-label="next"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center bg-background/80 hover:bg-background border border-border"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </>
+        )}
+      </div>
+
+      {multiple && (
+        <div className="mt-3 flex items-center justify-center gap-2">
+          {Array.from({ length: total }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => api?.scrollTo(i)}
+              aria-label={`go to slide ${i + 1}`}
+              aria-current={i === current}
+              className={`h-1.5 transition-all ${i === current ? "w-6 bg-primary" : "w-1.5 bg-foreground/25"}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {images[current]?.caption && (
+        <p className="mt-2 text-[11px] text-foreground/60 text-center">{images[current].caption}</p>
+      )}
     </div>
   );
 }
 
-function StripImage({ image, alt, size }: { image: JourneyImage; alt: string; size: string }) {
+function SlideImage({ image, alt }: { image: JourneyImage; alt: string }) {
   const src = useMediaUrl(image.url);
   return (
-    <figure className={`snap-start shrink-0 ${size.replace(/aspect-\S+/, "")}`}>
-      <img src={src ?? ""} alt={image.caption || alt} loading="lazy" className={`w-full object-contain bg-muted ${size.match(/aspect-\S+/)?.[0] ?? ""}`} />
-      {image.caption && <figcaption className="mt-2 text-[11px] text-foreground/60">{image.caption}</figcaption>}
-    </figure>
+    <img
+      src={src ?? ""}
+      alt={image.caption || alt}
+      loading="lazy"
+      className="w-full aspect-[4/3] object-contain bg-muted"
+    />
   );
 }
 
-function StripVideo({ url, title, size }: { url: string; title: string; size: string }) {
+function SlideVideo({ url, title }: { url: string; title: string }) {
   const embed = toEmbedUrl(url);
   const fileUrl = useMediaUrl(embed ? null : url);
-  if (embed) {
-    return (
-      <iframe
-        src={embed}
-        title={title}
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-        allowFullScreen
-        className={`snap-start shrink-0 bg-black ${size}`}
-      />
-    );
-  }
-  return (
+  return embed ? (
+    <iframe
+      src={embed}
+      title={title}
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+      allowFullScreen
+      className="w-full aspect-[4/3] bg-black"
+    />
+  ) : (
     <video
       src={fileUrl ?? undefined}
       controls
       preload="metadata"
       playsInline
-      className={`snap-start shrink-0 bg-black object-contain ${size}`}
+      className="w-full aspect-[4/3] bg-black object-contain"
     />
   );
 }
