@@ -1,7 +1,7 @@
 import { createFileRoute, notFound, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import { useEffect, useMemo, useState } from "react";
-import { Minus, Plus, ChevronDown, Heart } from "lucide-react";
+import { Minus, Plus, ChevronDown, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { useWishlist, useToggleWishlist } from "@/lib/wishlist";
 import { Shell } from "@/components/alps/Shell";
 import { PRODUCTS, PRODUCT_COLORS, FEATURES, type Product } from "@/lib/alps-data";
@@ -16,6 +16,8 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { toast } from "sonner";
 import { useDbProductBySlug, dbProductToCatalog } from "@/lib/products-db";
 import { SizeChartDialog, inferSizeChartKinds } from "@/components/alps/SizeChart";
+import { ProductVideos } from "@/components/alps/ProductVideos";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/product/$productId")({
   head: ({ params }) => {
@@ -51,6 +53,10 @@ function ProductPage() {
   const dbExtras = (product ?? {}) as Product & {
     description?: string | null;
     techInfo?: string | null;
+    designFeatures?: string | null;
+    composition?: string | null;
+    careInstructions?: string | null;
+    videoUrls?: string[];
     galleryUrls?: string[];
     swatches?: Array<{ name: string; hex?: string; swatch_url?: string; image_url?: string }>;
   };
@@ -76,13 +82,18 @@ function ProductPage() {
   }, [product, dbExtras.galleryUrls, dbExtras.swatches]);
 
   const [activeImage, setActiveImage] = useState<string | undefined>(undefined);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const zoomIndex = Math.max(0, activeImage ? gallery.indexOf(activeImage) : 0);
+  const stepImage = (dir: 1 | -1) => {
+    if (gallery.length < 2) return;
+    setActiveImage(gallery[(zoomIndex + dir + gallery.length) % gallery.length]);
+  };
 
   // Initialize / sync active image when product resolves or colour changes.
   useEffect(() => {
     if (!product) return;
     const dbMatch = dbExtras.swatches?.find((s) => s.name === color);
     if (dbMatch?.image_url) { setActiveImage(dbMatch.image_url); return; }
-    if (dbMatch?.swatch_url) { setActiveImage(dbMatch.swatch_url); return; }
     const next = productImageForColor(product.id, color);
     if (next) { setActiveImage(next); return; }
     if (gallery[0]) setActiveImage(gallery[0]);
@@ -169,34 +180,25 @@ function ProductPage() {
               })}
             </div>
 
-            <div className="mt-8 divide-y divide-border border-y border-border">
-              {isPersonalCare ? (
-                <>
-                  <Accordion title="description" defaultOpen>
-                    formulated with plant-based actives and clean preservation. vegan, cruelty-free, made in small batches.
+            {(dbExtras.designFeatures || dbExtras.composition || dbExtras.careInstructions) && (
+              <div className="mt-8 divide-y divide-border border-y border-border">
+                {dbExtras.designFeatures && (
+                  <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
+                    <span className="whitespace-pre-line">{dbExtras.designFeatures}</span>
                   </Accordion>
-                  <Accordion title="benefits">
-                    gentle daily care that respects skin barrier function — hydrating, balancing, and free from animal-derived ingredients.
+                )}
+                {dbExtras.composition && (
+                  <Accordion title={isPersonalCare ? "ingredients" : "composition"}>
+                    <span className="whitespace-pre-line">{dbExtras.composition}</span>
                   </Accordion>
-                  <Accordion title="how to use">
-                    apply to clean skin morning and evening. follow with serum and moisturiser. avoid direct contact with eyes.
+                )}
+                {dbExtras.careInstructions && (
+                  <Accordion title={isPersonalCare ? "how to use" : "care"}>
+                    <span className="whitespace-pre-line">{dbExtras.careInstructions}</span>
                   </Accordion>
-                </>
-              ) : (
-                <>
-                  <Accordion title="description" defaultOpen>
-                    precision-constructed in our hong kong atelier from performance textiles selected for their behaviour
-                    as much as their look. cut for movement, finished for longevity.
-                  </Accordion>
-                  <Accordion title="care">
-                    cold machine wash inside out. do not bleach. line dry away from direct sunlight. cool iron if needed.
-                  </Accordion>
-                  <Accordion title="size guide">
-                    standard hong kong sizing. unisex sizing runs true to size. contact us for a personal fitting consultation.
-                  </Accordion>
-                </>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </aside>
 
           {/* CENTER — main image + thumbnail strip */}
@@ -206,12 +208,19 @@ function ProductPage() {
               style={!activeImage ? { background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] } : undefined}
             >
               {activeImage ? (
-                <img
-                  key={activeImage}
-                  src={activeImage}
-                  alt={`${product.name} — ${color}`}
-                  className="h-full w-full object-cover transition-opacity duration-300"
-                />
+                <button
+                  type="button"
+                  onClick={() => setZoomOpen(true)}
+                  className="h-full w-full cursor-zoom-in"
+                  aria-label="enlarge image"
+                >
+                  <img
+                    key={activeImage}
+                    src={activeImage}
+                    alt={`${product.name} — ${color}`}
+                    className="h-full w-full object-cover transition-opacity duration-300"
+                  />
+                </button>
               ) : (
                 <span className={`text-sm tracking-wide px-6 text-center ${isPersonalCare ? "text-foreground/60" : "text-white/80 mix-blend-difference"}`}>
                   {product.name}
@@ -238,6 +247,52 @@ function ProductPage() {
                 })}
               </div>
             )}
+
+            <ProductVideos urls={dbExtras.videoUrls ?? []} title={product.name} />
+
+            <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
+              <DialogContent
+                className="max-w-[min(96vw,1400px)] w-full p-2 sm:p-4 bg-background"
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowRight") stepImage(1);
+                  if (e.key === "ArrowLeft") stepImage(-1);
+                }}
+              >
+                <DialogTitle className="sr-only">{product.name}</DialogTitle>
+                <div className="relative flex items-center justify-center">
+                  {activeImage && (
+                    <img
+                      src={activeImage}
+                      alt={`${product.name} — enlarged`}
+                      className="max-h-[88vh] w-auto max-w-full object-contain"
+                    />
+                  )}
+                  {gallery.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => stepImage(-1)}
+                        aria-label="previous image"
+                        className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => stepImage(1)}
+                        aria-label="next image"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                      <span className="num absolute bottom-2 left-1/2 -translate-x-1/2 bg-background/80 px-2 py-0.5 text-[11px]">
+                        {zoomIndex + 1} / {gallery.length}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {/* RIGHT — colour / size / qty / add to bag */}

@@ -19,6 +19,40 @@ import { productAvailableInRegion } from "@/lib/region";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
+const SEASON_OPTIONS = [
+  { key: "all", label: "all seasons" },
+  { key: "spring", label: "spring" },
+  { key: "summer", label: "summer" },
+  { key: "fall", label: "fall" },
+  { key: "winter", label: "winter" },
+] as const;
+
+const LINE_OPTIONS = [
+  { key: "all", label: "all lines" },
+  { key: "women", label: "women" },
+  { key: "men", label: "men" },
+  { key: "kids", label: "kids" },
+  { key: "unisex", label: "unisex" },
+] as const;
+
+/** "all-season" pieces show under every season; a "fall-winter" tag counts for both. */
+function matchesSeason(season: string | undefined, tags: readonly string[] | undefined, active: string) {
+  if (active === "all") return true;
+  const s = season ?? "all-season";
+  if (s === "all-season" || s === active) return true;
+  return (active === "fall" || active === "winter") && (tags ?? []).includes("fall-winter");
+}
+
+/** Unisex pieces also show under women and men. */
+function matchesLine(tags: readonly string[] | undefined, active: string) {
+  if (active === "all") return true;
+  const t = tags ?? [];
+  return t.includes(active) || ((active === "women" || active === "men") && t.includes("unisex"));
+}
+
+// Clothing and accessory lines get season / line filters; vegan care lines don't.
+const SEASONAL_CATEGORIES = new Set(["innovation", "contemporary", "accessories", "collaborations"]);
+
 export function CategoryView({ slug, featureFilter, onClearFeature, afterContent }: { slug: CategorySlug; featureFilter?: string; onClearFeature?: () => void; afterContent?: React.ReactNode }) {
   const cat = CATEGORIES.find((c) => c.slug === slug);
   if (!cat) throw notFound();
@@ -29,6 +63,8 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
   const [colorFilter, setColorFilter] = useState<string>("all");
   const [sizeFilter, setSizeFilter] = useState<string>("all");
   const [featureFilterLocal, setFeatureFilterLocal] = useState<string>("all");
+  const [seasonFilter, setSeasonFilter] = useState<string>("all");
+  const [lineFilter, setLineFilter] = useState<string>("all");
 
   const { data: dbRows = [] } = useDbProductsByCategory(slug);
   const { currency } = useCart();
@@ -83,6 +119,12 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
     if (slug === "innovation" && activeSub !== "all") {
       list = list.filter((p) => (subBySlug.get(p.id) ?? inferSubcategory(p.id)) === activeSub);
     }
+    if (seasonFilter !== "all") {
+      list = list.filter((p) => matchesSeason((p as Product & { season?: string }).season, p.tags, seasonFilter));
+    }
+    if (lineFilter !== "all") {
+      list = list.filter((p) => matchesLine(p.tags, lineFilter));
+    }
     if (featureFilter) {
       list = list.filter((p) => p.features?.includes(featureFilter));
     }
@@ -105,7 +147,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
       default:
         return list;
     }
-  }, [slug, activeTag, activeSub, sort, dbRows, stockBySlug, subBySlug, currency, featureFilter, featureFilterLocal, colorFilter, sizeFilter]);
+  }, [slug, activeTag, activeSub, sort, dbRows, stockBySlug, subBySlug, currency, featureFilter, featureFilterLocal, colorFilter, sizeFilter, seasonFilter, lineFilter]);
 
   // Build filter options from currently-scoped catalog (category + region).
   const scopedItems = useMemo(() => {
@@ -135,6 +177,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
 
 
   const showTagBar = slug === "accessories";
+  const showSeasonBar = SEASONAL_CATEGORIES.has(slug);
   const showSubBar = slug === "innovation";
   const SUB_OPTIONS: { key: string; label: string }[] = [
     { key: "all", label: "all" },
@@ -197,10 +240,10 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                   options={featureOptions.map((f) => ({ value: f.key, label: f.name }))}
                 />
               )}
-              {(colorFilter !== "all" || sizeFilter !== "all" || featureFilterLocal !== "all") && (
+              {(colorFilter !== "all" || sizeFilter !== "all" || featureFilterLocal !== "all" || seasonFilter !== "all" || lineFilter !== "all") && (
                 <button
                   type="button"
-                  onClick={() => { setColorFilter("all"); setSizeFilter("all"); setFeatureFilterLocal("all"); }}
+                  onClick={() => { setColorFilter("all"); setSizeFilter("all"); setFeatureFilterLocal("all"); setSeasonFilter("all"); setLineFilter("all"); }}
                   className="text-[11px] tracking-wide text-primary hover:underline"
                 >
                   clear filters
@@ -221,6 +264,13 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
               </div>
             </div>
 
+
+            {showSeasonBar && (
+              <>
+                <ChipBar options={SEASON_OPTIONS} active={seasonFilter} onChange={setSeasonFilter} label="season" />
+                <ChipBar options={LINE_OPTIONS} active={lineFilter} onChange={setLineFilter} label="line" />
+              </>
+            )}
 
             {showTagBar && (
               <div className="flex flex-wrap justify-end gap-1.5 max-w-[760px]">
@@ -270,7 +320,11 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
       </section>
 
       <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pb-20">
-        {items.length === 0 ? (
+        {items.length === 0 && scopedItems.length > 0 ? (
+          <div className="py-20 text-center">
+            <p className="text-foreground/70 text-sm">no products match these filters.</p>
+          </div>
+        ) : items.length === 0 ? (
           <div className="py-20 text-center">
             <p className="text-foreground/70 text-sm">
               no products in <span className="text-primary">{cat.name}</span> yet.
@@ -406,3 +460,34 @@ function FilterSelect({
   );
 }
 
+
+function ChipBar({ options, active, onChange, label }: {
+  options: readonly { key: string; label: string }[];
+  active: string;
+  onChange: (key: string) => void;
+  label: string;
+}) {
+  return (
+    <div className="flex flex-wrap justify-end items-center gap-1.5 max-w-[760px]" role="group" aria-label={label}>
+      {options.map((t) => {
+        const on = active === t.key;
+        return (
+          <button
+            key={t.key}
+            type="button"
+            onClick={() => onChange(t.key)}
+            aria-pressed={on}
+            className={
+              "px-3 py-1 text-[11px] tracking-wide transition-colors border " +
+              (on
+                ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
+                : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
+            }
+          >
+            {t.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}

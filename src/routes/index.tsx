@@ -157,14 +157,17 @@ function EditorialHero() {
 
       {/* Full-bleed category row — 5 evenly spaced tiles edge-to-edge */}
       <div className="w-full pt-10 pb-16">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-0">
-          {cards.map((c) => (
+        {/* 2 columns on mobile; the odd last tile spans the row so there's no empty cell. */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-0">
+          {cards.map((c, i) => {
+            const spanLast = i === cards.length - 1 && cards.length % 2 === 1;
+            return (
             <Link
               key={c.slug}
               to={`/${c.slug}`}
-              className="group flex flex-col items-center text-center"
+              className={`group flex flex-col items-center text-center ${spanLast ? "col-span-2 md:col-span-1" : ""}`}
             >
-              <div className="w-full aspect-square overflow-hidden bg-muted">
+              <div className={`w-full overflow-hidden bg-muted ${spanLast ? "aspect-[2/1] md:aspect-square" : "aspect-square"}`}>
                 <img
                   src={c.img}
                   alt={c.label}
@@ -177,7 +180,8 @@ function EditorialHero() {
               </div>
               <span className="link-red text-[11px] mt-2 inline-block">view all</span>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

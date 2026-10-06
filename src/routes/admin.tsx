@@ -14,6 +14,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { listAdmins, grantAdminByEmail, revokeAdmin } from "@/lib/admin.functions";
 import { PRODUCTS, FEATURES, PRODUCT_COLORS } from "@/lib/alps-data";
 import { productImage } from "@/lib/accessory-images";
+import { localizeAssetUrl } from "@/lib/local-asset-images";
 import { featureIcon } from "@/lib/feature-icons";
 import { ChevronDown, ChevronRight, X, Plus, Image as ImageIcon, Palette } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
@@ -199,6 +200,8 @@ type ProductRow = {
   external_url: string | null;
   image_url: string | null;
   gallery_urls: string[];
+  // Optional until the video_urls migration is applied, so saves keep working without it.
+  video_urls?: string[];
   color_swatches: Swatch[];
   season: "spring" | "summer" | "fall" | "winter" | "all-season";
   display_order: number;
@@ -235,10 +238,7 @@ function ProductsTab() {
   const [rows, setRows] = useState<ProductRow[]>([]);
   const [editing, setEditing] = useState<ProductRow | null>(null);
   const [search, setSearch] = useState("");
-  const [openCats, setOpenCats] = useState<Record<string, boolean>>({
-    "vegan-skincare": true, "vegan-personal-care": true, "vegan-makeup": true,
-    "vegan-supplement": true, "vegan-tech": true,
-  });
+  const [openCats, setOpenCats] = useState<Record<string, boolean>>({});
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -318,7 +318,7 @@ function ProductsTab() {
       <div className="flex flex-wrap gap-3 items-center justify-between">
         <div>
           <h2 className="text-lg">{rows.length} products in database</h2>
-          <p className="text-xs text-muted-foreground">grouped by category. click a category to expand.</p>
+          <p className="text-xs text-muted-foreground">grouped by category. click a category to collapse it.</p>
         </div>
         <div className="flex gap-2">
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="search name / slug…" className="w-64" />
@@ -334,7 +334,7 @@ function ProductsTab() {
       <div className="space-y-3">
         {CATEGORY_GROUPS.map((cat) => {
           const items = grouped.get(cat.slug) ?? [];
-          const open = openCats[cat.slug] ?? items.length < 8;
+          const open = openCats[cat.slug] ?? items.length > 0;
           return (
             <div key={cat.slug} className="border border-border bg-card">
               <button
@@ -359,9 +359,7 @@ function ProductsTab() {
                     return (
                       <div key={p.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30">
                         <div className="h-14 w-14 shrink-0 bg-muted overflow-hidden flex items-center justify-center">
-                          {thumb
-                            ? <img src={thumb} alt="" className="h-full w-full object-cover" />
-                            : <ImageIcon className="h-5 w-5 text-muted-foreground" />}
+                          <ProductThumb url={thumb} slug={p.slug} className="h-full w-full object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm truncate">{p.name || <em className="text-muted-foreground">untitled</em>}</div>
@@ -394,6 +392,7 @@ function ProductsTab() {
 
       {editing && (
         <ProductEditor
+          key={editing.id ?? "new"}
           product={editing}
           onChange={setEditing}
           onSave={() => save(editing)}
@@ -402,6 +401,18 @@ function ProductsTab() {
       )}
     </div>
   );
+}
+
+/* ---------- Product image preview ---------- */
+// Stored product urls are often dev-only "/src/assets/..." paths (the static
+// catalog import) or Lovable-hosted "/__l5e/..." paths, neither of which load
+// on the published site. Resolve them the same way the storefront does.
+function ProductThumb({ url, slug, className }: { url: string | null | undefined; slug: string; className?: string }) {
+  const base = !url ? undefined : url.startsWith("/src/") ? productImage(slug) : localizeAssetUrl(url);
+  const src = useMediaUrl(base);
+  return src
+    ? <img src={src} alt="" className={className} />
+    : <ImageIcon className="h-5 w-5 text-muted-foreground" />;
 }
 
 /* ---------- Upload helper ---------- */
@@ -440,6 +451,33 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
 
   const removeGalleryUrl = (url: string) => {
     set("gallery_urls", (product.gallery_urls ?? []).filter((u) => u !== url));
+  };
+
+  const moveGalleryUrl = (idx: number, dir: -1 | 1) => {
+    const next = [...(product.gallery_urls ?? [])];
+    const to = idx + dir;
+    if (to < 0 || to >= next.length) return;
+    [next[idx], next[to]] = [next[to], next[idx]];
+    onChange({ ...product, gallery_urls: next });
+  };
+
+  // Raw textarea text, so a trailing newline survives while typing the next link.
+  const [videoText, setVideoText] = useState(() => (product.video_urls ?? []).join("\n"));
+  const setVideos = (text: string) => {
+    setVideoText(text);
+    set("video_urls", text.split("\n").map((x) => x.trim()).filter(Boolean));
+  };
+  const [videoUploading, setVideoUploading] = useState(false);
+  const handleVideoUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setVideoUploading(true);
+    const urls: string[] = [];
+    for (const f of Array.from(files)) {
+      const u = await uploadProductImage(f, `${product.slug}-video`);
+      if (u) urls.push(u);
+    }
+    setVideoUploading(false);
+    if (urls.length) setVideos([...(product.video_urls ?? []), ...urls].join("\n"));
   };
 
   const swatchUpload = async (idx: number, file: File) => {
@@ -649,20 +687,50 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
               className="text-xs"
             />
             {uploading && <p className="text-xs text-muted-foreground mt-2">uploading…</p>}
+            {(product.gallery_urls ?? []).length === 0 && product.image_url && (
+              <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-3">
+                <div className="relative aspect-square border border-border">
+                  <ProductThumb url={product.image_url} slug={product.slug} className="h-full w-full object-cover" />
+                  <span className="absolute bottom-0 left-0 text-[9px] bg-primary text-primary-foreground px-1">current cover</span>
+                </div>
+              </div>
+            )}
             {(product.gallery_urls ?? []).length > 0 && (
               <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-3">
                 {product.gallery_urls.map((url, idx) => (
                   <div key={url} className="relative group aspect-square border border-border">
-                    <img src={url} alt="" className="h-full w-full object-cover" />
+                    <ProductThumb url={url} slug={product.slug} className="h-full w-full object-cover" />
                     {idx === 0 && <span className="absolute bottom-0 left-0 text-[9px] bg-primary text-primary-foreground px-1">cover</span>}
                     <button
                       onClick={() => removeGalleryUrl(url)}
                       className="absolute top-1 right-1 bg-background/90 text-[10px] px-1.5 py-0.5 opacity-0 group-hover:opacity-100"
                     >remove</button>
+                    <div className="absolute bottom-0 right-0 flex opacity-0 group-hover:opacity-100">
+                      <button type="button" disabled={idx === 0} onClick={() => moveGalleryUrl(idx, -1)}
+                        aria-label="move earlier" className="bg-background/90 px-1.5 text-[11px] disabled:opacity-30">←</button>
+                      <button type="button" disabled={idx === product.gallery_urls.length - 1} onClick={() => moveGalleryUrl(idx, 1)}
+                        aria-label="move later" className="bg-background/90 px-1.5 text-[11px] disabled:opacity-30">→</button>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
+          </Section>
+
+          {/* SECTION: Videos */}
+          <Section title="videos" subtitle="youtube / vimeo links, one per line — or upload video files. shown under the product images.">
+            <Textarea
+              rows={3}
+              value={videoText}
+              onChange={(e) => setVideos(e.target.value)}
+              placeholder="https://www.youtube.com/watch?v=…"
+            />
+            <input
+              type="file" multiple accept="video/*"
+              onChange={(e) => handleVideoUpload(e.target.files)}
+              className="text-xs mt-2"
+            />
+            {videoUploading && <p className="text-xs text-muted-foreground mt-2">uploading…</p>}
           </Section>
 
           {/* SECTION: Packaging */}
@@ -679,6 +747,22 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
 
           {/* SECTION: Tags / hashtags */}
           <Section title="tags & hashtags">
+            <Field label="line (women / men / kids / unisex filter on the shop pages)">
+              <div className="flex flex-wrap gap-2">
+                {["women", "men", "kids", "unisex"].map((line) => {
+                  const on = product.tags.includes(line);
+                  return (
+                    <button
+                      key={line}
+                      type="button"
+                      onClick={() => set("tags", on ? product.tags.filter((t) => t !== line) : [...product.tags, line])}
+                      className={`px-3 py-1 text-xs border ${on ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-foreground"}`}
+                      aria-pressed={on}
+                    >{line}</button>
+                  );
+                })}
+              </div>
+            </Field>
             <Field label="filter tags (comma-sep — used by accessories filter)">
               <Input value={product.tags.join(", ")} onChange={(e) => set("tags", csv(e.target.value))} placeholder="e.g. all-season, women, unisex, wearable" />
             </Field>

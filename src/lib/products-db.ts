@@ -11,6 +11,10 @@ export type DbProduct = {
   subcategory: string | null;
   description: string | null;
   tech_info: string | null;
+  design_features?: string | null;
+  composition?: string | null;
+  care_instructions?: string | null;
+  video_urls?: string[];
   price_cad: number;
   price_hkd: number;
   colors: string[];
@@ -31,6 +35,10 @@ export type DbProduct = {
 export function dbProductToCatalog(d: DbProduct): Product & {
   description?: string | null;
   techInfo?: string | null;
+  designFeatures?: string | null;
+  composition?: string | null;
+  careInstructions?: string | null;
+  videoUrls?: string[];
   galleryUrls?: string[];
   swatches?: DbProduct["color_swatches"];
   season?: string;
@@ -56,6 +64,10 @@ export function dbProductToCatalog(d: DbProduct): Product & {
     tags: d.tags as Product["tags"],
     description: d.description,
     techInfo: d.tech_info,
+    designFeatures: d.design_features ?? null,
+    composition: d.composition ?? null,
+    careInstructions: d.care_instructions ?? null,
+    videoUrls: (d.video_urls ?? []).filter(Boolean),
     galleryUrls: gallery.length ? gallery : fallback,
     swatches: d.color_swatches ?? [],
     season: d.season,
