@@ -9,142 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WishlistRouteImport } from './routes/wishlist'
-import { Route as VeganTechRouteImport } from './routes/vegan-tech'
-import { Route as VeganSupplementRouteImport } from './routes/vegan-supplement'
-import { Route as VeganSkincareRouteImport } from './routes/vegan-skincare'
-import { Route as VeganPersonalCareRouteImport } from './routes/vegan-personal-care'
-import { Route as VeganMakeupRouteImport } from './routes/vegan-makeup'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ShippingRouteImport } from './routes/shipping'
-import { Route as ReturnsRouteImport } from './routes/returns'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PressRouteImport } from './routes/press'
-import { Route as PersonalCareRouteImport } from './routes/personal-care'
-import { Route as MyJourneyRouteImport } from './routes/my-journey'
-import { Route as InnovationRouteImport } from './routes/innovation'
-import { Route as ContemporaryRouteImport } from './routes/contemporary'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CollaborationsRouteImport } from './routes/collaborations'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as CartRouteImport } from './routes/cart'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AccountRouteImport } from './routes/account'
-import { Route as AccessoriesRouteImport } from './routes/accessories'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProductProductIdRouteImport } from './routes/product.$productId'
-import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
+import { Route as AccessoriesRouteImport } from './routes/accessories'
+import { Route as AccountRouteImport } from './routes/account'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as CartRouteImport } from './routes/cart'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CollaborationsRouteImport } from './routes/collaborations'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ContemporaryRouteImport } from './routes/contemporary'
+import { Route as InnovationRouteImport } from './routes/innovation'
+import { Route as MyJourneyRouteImport } from './routes/my-journey'
+import { Route as PersonalCareRouteImport } from './routes/personal-care'
+import { Route as PressRouteImport } from './routes/press'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ReturnsRouteImport } from './routes/returns'
+import { Route as ShippingRouteImport } from './routes/shipping'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as VeganMakeupRouteImport } from './routes/vegan-makeup'
+import { Route as VeganPersonalCareRouteImport } from './routes/vegan-personal-care'
+import { Route as VeganSkincareRouteImport } from './routes/vegan-skincare'
+import { Route as VeganSupplementRouteImport } from './routes/vegan-supplement'
+import { Route as VeganTechRouteImport } from './routes/vegan-tech'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as CheckoutCancelRouteImport } from './routes/checkout.cancel'
+import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
+import { Route as ProductProductIdRouteImport } from './routes/product.$productId'
 
-const WishlistRoute = WishlistRouteImport.update({
-  id: '/wishlist',
-  path: '/wishlist',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VeganTechRoute = VeganTechRouteImport.update({
-  id: '/vegan-tech',
-  path: '/vegan-tech',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VeganSupplementRoute = VeganSupplementRouteImport.update({
-  id: '/vegan-supplement',
-  path: '/vegan-supplement',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VeganSkincareRoute = VeganSkincareRouteImport.update({
-  id: '/vegan-skincare',
-  path: '/vegan-skincare',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VeganPersonalCareRoute = VeganPersonalCareRouteImport.update({
-  id: '/vegan-personal-care',
-  path: '/vegan-personal-care',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VeganMakeupRoute = VeganMakeupRouteImport.update({
-  id: '/vegan-makeup',
-  path: '/vegan-makeup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ShippingRoute = ShippingRouteImport.update({
-  id: '/shipping',
-  path: '/shipping',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReturnsRoute = ReturnsRouteImport.update({
-  id: '/returns',
-  path: '/returns',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PressRoute = PressRouteImport.update({
-  id: '/press',
-  path: '/press',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PersonalCareRoute = PersonalCareRouteImport.update({
-  id: '/personal-care',
-  path: '/personal-care',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyJourneyRoute = MyJourneyRouteImport.update({
-  id: '/my-journey',
-  path: '/my-journey',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InnovationRoute = InnovationRouteImport.update({
-  id: '/innovation',
-  path: '/innovation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContemporaryRoute = ContemporaryRouteImport.update({
-  id: '/contemporary',
-  path: '/contemporary',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CollaborationsRoute = CollaborationsRouteImport.update({
-  id: '/collaborations',
-  path: '/collaborations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CartRoute = CartRouteImport.update({
-  id: '/cart',
-  path: '/cart',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountRoute = AccountRouteImport.update({
-  id: '/account',
-  path: '/account',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccessoriesRoute = AccessoriesRouteImport.update({
@@ -152,25 +47,130 @@ const AccessoriesRoute = AccessoriesRouteImport.update({
   path: '/accessories',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductProductIdRoute = ProductProductIdRouteImport.update({
-  id: '/product/$productId',
-  path: '/product/$productId',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollaborationsRoute = CollaborationsRouteImport.update({
+  id: '/collaborations',
+  path: '/collaborations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContemporaryRoute = ContemporaryRouteImport.update({
+  id: '/contemporary',
+  path: '/contemporary',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InnovationRoute = InnovationRouteImport.update({
+  id: '/innovation',
+  path: '/innovation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyJourneyRoute = MyJourneyRouteImport.update({
+  id: '/my-journey',
+  path: '/my-journey',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PersonalCareRoute = PersonalCareRouteImport.update({
+  id: '/personal-care',
+  path: '/personal-care',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PressRoute = PressRouteImport.update({
+  id: '/press',
+  path: '/press',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReturnsRoute = ReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShippingRoute = ShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeganMakeupRoute = VeganMakeupRouteImport.update({
+  id: '/vegan-makeup',
+  path: '/vegan-makeup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeganPersonalCareRoute = VeganPersonalCareRouteImport.update({
+  id: '/vegan-personal-care',
+  path: '/vegan-personal-care',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeganSkincareRoute = VeganSkincareRouteImport.update({
+  id: '/vegan-skincare',
+  path: '/vegan-skincare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeganSupplementRoute = VeganSupplementRouteImport.update({
+  id: '/vegan-supplement',
+  path: '/vegan-supplement',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeganTechRoute = VeganTechRouteImport.update({
+  id: '/vegan-tech',
+  path: '/vegan-tech',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutCancelRoute = CheckoutCancelRouteImport.update({
+  id: '/cancel',
+  path: '/cancel',
+  getParentRoute: () => CheckoutRoute,
 } as any)
 const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
   id: '/success',
   path: '/success',
   getParentRoute: () => CheckoutRoute,
 } as any)
-const CheckoutCancelRoute = CheckoutCancelRouteImport.update({
-  id: '/cancel',
-  path: '/cancel',
-  getParentRoute: () => CheckoutRoute,
+const ProductProductIdRoute = ProductProductIdRouteImport.update({
+  id: '/product/$productId',
+  path: '/product/$productId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -381,158 +381,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/wishlist': {
-      id: '/wishlist'
-      path: '/wishlist'
-      fullPath: '/wishlist'
-      preLoaderRoute: typeof WishlistRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vegan-tech': {
-      id: '/vegan-tech'
-      path: '/vegan-tech'
-      fullPath: '/vegan-tech'
-      preLoaderRoute: typeof VeganTechRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vegan-supplement': {
-      id: '/vegan-supplement'
-      path: '/vegan-supplement'
-      fullPath: '/vegan-supplement'
-      preLoaderRoute: typeof VeganSupplementRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vegan-skincare': {
-      id: '/vegan-skincare'
-      path: '/vegan-skincare'
-      fullPath: '/vegan-skincare'
-      preLoaderRoute: typeof VeganSkincareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vegan-personal-care': {
-      id: '/vegan-personal-care'
-      path: '/vegan-personal-care'
-      fullPath: '/vegan-personal-care'
-      preLoaderRoute: typeof VeganPersonalCareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vegan-makeup': {
-      id: '/vegan-makeup'
-      path: '/vegan-makeup'
-      fullPath: '/vegan-makeup'
-      preLoaderRoute: typeof VeganMakeupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/shipping': {
-      id: '/shipping'
-      path: '/shipping'
-      fullPath: '/shipping'
-      preLoaderRoute: typeof ShippingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/returns': {
-      id: '/returns'
-      path: '/returns'
-      fullPath: '/returns'
-      preLoaderRoute: typeof ReturnsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/press': {
-      id: '/press'
-      path: '/press'
-      fullPath: '/press'
-      preLoaderRoute: typeof PressRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/personal-care': {
-      id: '/personal-care'
-      path: '/personal-care'
-      fullPath: '/personal-care'
-      preLoaderRoute: typeof PersonalCareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/my-journey': {
-      id: '/my-journey'
-      path: '/my-journey'
-      fullPath: '/my-journey'
-      preLoaderRoute: typeof MyJourneyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/innovation': {
-      id: '/innovation'
-      path: '/innovation'
-      fullPath: '/innovation'
-      preLoaderRoute: typeof InnovationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contemporary': {
-      id: '/contemporary'
-      path: '/contemporary'
-      fullPath: '/contemporary'
-      preLoaderRoute: typeof ContemporaryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/collaborations': {
-      id: '/collaborations'
-      path: '/collaborations'
-      fullPath: '/collaborations'
-      preLoaderRoute: typeof CollaborationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cart': {
-      id: '/cart'
-      path: '/cart'
-      fullPath: '/cart'
-      preLoaderRoute: typeof CartRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/account': {
-      id: '/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AccountRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accessories': {
@@ -542,19 +395,166 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccessoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/product/$productId': {
-      id: '/product/$productId'
-      path: '/product/$productId'
-      fullPath: '/product/$productId'
-      preLoaderRoute: typeof ProductProductIdRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collaborations': {
+      id: '/collaborations'
+      path: '/collaborations'
+      fullPath: '/collaborations'
+      preLoaderRoute: typeof CollaborationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contemporary': {
+      id: '/contemporary'
+      path: '/contemporary'
+      fullPath: '/contemporary'
+      preLoaderRoute: typeof ContemporaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/innovation': {
+      id: '/innovation'
+      path: '/innovation'
+      fullPath: '/innovation'
+      preLoaderRoute: typeof InnovationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-journey': {
+      id: '/my-journey'
+      path: '/my-journey'
+      fullPath: '/my-journey'
+      preLoaderRoute: typeof MyJourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/personal-care': {
+      id: '/personal-care'
+      path: '/personal-care'
+      fullPath: '/personal-care'
+      preLoaderRoute: typeof PersonalCareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/press': {
+      id: '/press'
+      path: '/press'
+      fullPath: '/press'
+      preLoaderRoute: typeof PressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/returns': {
+      id: '/returns'
+      path: '/returns'
+      fullPath: '/returns'
+      preLoaderRoute: typeof ReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shipping': {
+      id: '/shipping'
+      path: '/shipping'
+      fullPath: '/shipping'
+      preLoaderRoute: typeof ShippingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vegan-makeup': {
+      id: '/vegan-makeup'
+      path: '/vegan-makeup'
+      fullPath: '/vegan-makeup'
+      preLoaderRoute: typeof VeganMakeupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vegan-personal-care': {
+      id: '/vegan-personal-care'
+      path: '/vegan-personal-care'
+      fullPath: '/vegan-personal-care'
+      preLoaderRoute: typeof VeganPersonalCareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vegan-skincare': {
+      id: '/vegan-skincare'
+      path: '/vegan-skincare'
+      fullPath: '/vegan-skincare'
+      preLoaderRoute: typeof VeganSkincareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vegan-supplement': {
+      id: '/vegan-supplement'
+      path: '/vegan-supplement'
+      fullPath: '/vegan-supplement'
+      preLoaderRoute: typeof VeganSupplementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vegan-tech': {
+      id: '/vegan-tech'
+      path: '/vegan-tech'
+      fullPath: '/vegan-tech'
+      preLoaderRoute: typeof VeganTechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/cancel': {
+      id: '/checkout/cancel'
+      path: '/cancel'
+      fullPath: '/checkout/cancel'
+      preLoaderRoute: typeof CheckoutCancelRouteImport
+      parentRoute: typeof CheckoutRoute
     }
     '/checkout/success': {
       id: '/checkout/success'
@@ -563,12 +563,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutSuccessRouteImport
       parentRoute: typeof CheckoutRoute
     }
-    '/checkout/cancel': {
-      id: '/checkout/cancel'
-      path: '/cancel'
-      fullPath: '/checkout/cancel'
-      preLoaderRoute: typeof CheckoutCancelRouteImport
-      parentRoute: typeof CheckoutRoute
+    '/product/$productId': {
+      id: '/product/$productId'
+      path: '/product/$productId'
+      fullPath: '/product/$productId'
+      preLoaderRoute: typeof ProductProductIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }

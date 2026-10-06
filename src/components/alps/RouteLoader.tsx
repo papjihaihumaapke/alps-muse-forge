@@ -7,7 +7,7 @@ import { useRouterState } from "@tanstack/react-router";
  */
 export function RouteLoader() {
   const isLoading = useRouterState({
-    select: (s) => s.isLoading || s.isTransitioning,
+    select: (s) => s.isLoading || s.status === "pending",
   });
 
   if (!isLoading) return null;
