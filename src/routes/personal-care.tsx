@@ -46,7 +46,7 @@ function PersonalCareHub() {
             <Link
               key={t.to}
               to={t.to}
-              className={`group relative block aspect-[4/3] overflow-hidden border border-border bg-brand-light ${
+              className={`group relative block aspect-[1600/939] overflow-hidden border border-border bg-brand-light ${
                 i === TILES.length - 1 && TILES.length % 2 === 1 ? "sm:col-span-2 aspect-[8/3]" : ""
               }`}
             >
