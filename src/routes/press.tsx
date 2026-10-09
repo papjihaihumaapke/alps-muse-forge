@@ -347,6 +347,19 @@ function PressPage() {
         <p className="mt-4 text-sm text-foreground/60 max-w-xl">
           selected articles and editorial features written about the brand.
         </p>
+
+        {sections.length > 0 && (
+          <>
+            <div className="mt-10 flex justify-end">
+              <SortSelect value={sortOrder} onChange={setSortOrder} />
+            </div>
+            <div className="mt-8 mb-24 space-y-20">
+              {sortSections(sections, sortOrder).map((s) => (
+                <MilestoneSection key={s.id} section={s} />
+              ))}
+            </div>
+          </>
+        )}
         <ul className="mt-10 divide-y divide-border border-y border-border">
           {ARTICLES.map((p, i) => (
             <li key={i}>
@@ -377,18 +390,6 @@ function PressPage() {
           ))}
         </div>
 
-        {sections.length > 0 && (
-          <>
-            <div className="mt-24 flex justify-end">
-              <SortSelect value={sortOrder} onChange={setSortOrder} />
-            </div>
-            <div className="mt-8 space-y-20">
-              {sortSections(sections, sortOrder).map((s) => (
-                <MilestoneSection key={s.id} section={s} />
-              ))}
-            </div>
-          </>
-        )}
       </section>
 
       <AwardDialog
