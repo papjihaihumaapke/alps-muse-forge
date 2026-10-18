@@ -20,7 +20,7 @@ function WishlistPage() {
     return (
       <Shell>
         <div className="max-w-2xl mx-auto text-center py-24 px-6">
-          <h1 className="text-3xl font-light">wishlist</h1>
+          <h1 className="text-3xl font-normal">wishlist</h1>
           <p className="mt-4 text-foreground/70">sign in to view and save your favourite items.</p>
           <Link to="/account" className="link-red mt-6 inline-block">sign in →</Link>
         </div>
@@ -33,8 +33,8 @@ function WishlistPage() {
   return (
     <Shell>
       <section className="max-w-6xl mx-auto px-6 py-16">
-        <span className="num text-[11px] tracking-[0.3em] text-primary">saved</span>
-        <h1 className="text-4xl font-light mt-3 mb-10">wishlist</h1>
+        <span className="num text-[12px] tracking-[0.3em] text-primary">saved</span>
+        <h1 className="text-4xl font-normal mt-3 mb-10">wishlist</h1>
         {isLoading ? (
           <p className="text-foreground/60">loading…</p>
         ) : items.length === 0 ? (

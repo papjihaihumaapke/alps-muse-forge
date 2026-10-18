@@ -30,8 +30,8 @@ function Success() {
   return (
     <Shell>
       <div className="max-w-xl mx-auto px-6 py-24 text-center">
-        <span className="num text-[11px] tracking-[0.3em] text-primary uppercase">order confirmed</span>
-        <h1 className="text-3xl md:text-4xl font-light mt-4">
+        <span className="num text-[12px] tracking-[0.3em] text-primary uppercase">order confirmed</span>
+        <h1 className="text-3xl md:text-4xl font-normal mt-4">
           {status === "loading" ? "confirming your payment…" : status === "paid" ? "thank you." : status === "pending" ? "payment processing" : "we couldn't verify your payment"}
         </h1>
         <p className="mt-6 text-foreground/70 leading-relaxed">

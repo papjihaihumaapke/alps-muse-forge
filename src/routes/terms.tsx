@@ -11,8 +11,8 @@ export const Route = createFileRoute("/terms")({
   component: () => (
     <Shell>
       <article className="max-w-3xl mx-auto px-6 py-20">
-        <span className="num text-[11px] tracking-[0.3em] text-primary">legal</span>
-        <h1 className="text-4xl font-light mt-3 mb-8">terms of service</h1>
+        <span className="num text-[12px] tracking-[0.3em] text-primary">legal</span>
+        <h1 className="text-4xl font-normal mt-3 mb-8">terms of service</h1>
         <div className="space-y-5 text-foreground/80 leading-relaxed text-sm">
           <p>by accessing or purchasing from ALPS Annie Ling, you agree to the following terms.</p>
           <h2 className="text-primary text-lg font-medium mt-8">orders & pricing</h2>

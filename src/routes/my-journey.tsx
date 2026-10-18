@@ -153,7 +153,7 @@ function MyJourney() {
       <BioSection section={bio} isPrimary />
 
       {extraSections.length > 1 && (
-        <div className="max-w-4xl mx-auto px-6 flex justify-end">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-10 flex justify-end">
           <SortSelect value={sortOrder} onChange={setSortOrder} />
         </div>
       )}
@@ -164,15 +164,15 @@ function MyJourney() {
 
       {years.length > 0 && (
         <section className="border-t border-border py-16 bg-brand-light">
-          <div className="max-w-4xl mx-auto px-6">
-            <h2 className="text-2xl font-light mb-2">journal</h2>
-            <p className="text-[11px] tracking-[0.25em] uppercase text-foreground/60">
+          <div className="max-w-6xl mx-auto px-6">
+            <h2 className="text-2xl font-normal mb-2">journal</h2>
+            <p className="text-[12px] tracking-[0.25em] uppercase text-foreground/60">
               shows · events · press · collaborations
             </p>
 
             <nav className="mt-8 flex flex-wrap gap-x-4 gap-y-2">
               {years.map((y) => (
-                <a key={y} href={`#year-${y}`} className="num text-[11px] tracking-[0.2em] link-red">
+                <a key={y} href={`#year-${y}`} className="num text-[12px] tracking-[0.2em] link-red">
                   {y}
                 </a>
               ))}
@@ -181,7 +181,7 @@ function MyJourney() {
             <div className="mt-12 space-y-16">
               {years.map((year) => (
                 <div key={year} id={`year-${year}`} className="scroll-mt-24">
-                  <h3 className="num text-[13px] tracking-[0.3em] text-primary border-b border-border pb-3">
+                  <h3 className="num text-[14px] tracking-[0.3em] text-primary border-b border-border pb-3">
                     {year}
                   </h3>
                   <div className="mt-8 space-y-14">
@@ -221,7 +221,7 @@ function MyJourney() {
                 <div className="min-w-0">
                   <p className="text-sm">{a.title}</p>
                   {a.subtitle && <p className="text-xs text-foreground/60 mt-1">{a.subtitle}</p>}
-                  {a.url && <a href={a.url} target="_blank" rel="noreferrer" className="link-red text-[11px] mt-2 inline-block">read more →</a>}
+                  {a.url && <a href={a.url} target="_blank" rel="noreferrer" className="link-red text-[12px] mt-2 inline-block">read more →</a>}
                 </div>
               </div>
             ))}
@@ -257,26 +257,26 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
   const copy = (
     <div>
       {section.eyebrow && (
-        <span className="num text-[11px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
+        <span className="num text-[12px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
       )}
       {!isPrimary && section.entry_date && (
-        <span className="num block text-[11px] tracking-[0.25em] text-foreground/60 mt-2">
+        <span className="num block text-[12px] tracking-[0.25em] text-foreground/60 mt-2">
           {eventDateLabel({ event_year: Number(section.entry_date.slice(0, 4)), event_date: section.entry_date, event_label: null })}
         </span>
       )}
       {section.heading &&
         (isPrimary ? (
-          <h1 className="text-4xl font-light mt-3">{section.heading}</h1>
+          <h1 className="text-4xl font-normal mt-3">{section.heading}</h1>
         ) : (
-          <h2 className="text-3xl font-light mt-3">{section.heading}</h2>
+          <h2 className="text-3xl font-normal mt-3">{section.heading}</h2>
         ))}
       {section.subheading && (
-        <p className="mt-4 text-[11px] tracking-[0.25em] uppercase text-foreground/60">
+        <p className="mt-4 text-[12px] tracking-[0.25em] uppercase text-foreground/60">
           {section.subheading}
         </p>
       )}
       {paragraphs.length > 0 && (
-        <div className="mt-8 space-y-5 text-foreground/80 leading-relaxed text-[15px]">
+        <div className="mt-8 space-y-5 text-foreground/80 leading-relaxed text-[16px]">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
@@ -300,7 +300,7 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
 
   if (isPrimary) {
     return (
-      <section className="max-w-5xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-12">
+      <section className="max-w-[1600px] mx-auto px-6 lg:px-10 py-20 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-12">
         <img
           src={portrait ?? designer}
           alt="annie ling — atelier portrait"
@@ -316,12 +316,12 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
 
   const hasMedia = section.images.length + section.video_urls.length > 0;
   if (!hasMedia) {
-    return <section className="max-w-3xl mx-auto px-6 pb-20">{copy}</section>;
+    return <section className="max-w-5xl mx-auto px-6 pb-20">{copy}</section>;
   }
 
   // Write-ups: picture/video carousel on the left, text on the right (stacked on phones).
   return (
-    <section className="max-w-5xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+    <section className="max-w-[1600px] mx-auto px-6 lg:px-10 pb-20 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-8 md:gap-12 items-start">
       <MediaStrip
         images={section.images}
         videos={section.video_urls}
@@ -343,17 +343,17 @@ function PostEntry({ post }: { post: JourneyPost }) {
     <article id={anchor} className="scroll-mt-24">
       <header>
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span className="num text-[11px] tracking-[0.25em] text-foreground/60">
+          <span className="num text-[12px] tracking-[0.25em] text-foreground/60">
             {eventDateLabel(post)}
           </span>
           {post.kind !== "journal" && (
-            <span className="text-[10px] tracking-[0.2em] uppercase text-primary">
+            <span className="text-[11px] tracking-[0.2em] uppercase text-primary">
               {kindLabel(post.kind)}
             </span>
           )}
         </div>
-        <h4 className="text-2xl font-light mt-2">{post.title}</h4>
-        {post.excerpt && <p className="mt-3 text-[15px] text-foreground/70 italic">{post.excerpt}</p>}
+        <h4 className="text-2xl font-normal mt-2">{post.title}</h4>
+        {post.excerpt && <p className="mt-3 text-[16px] text-foreground/70 italic">{post.excerpt}</p>}
       </header>
 
       {post.cover_image_url && (
@@ -366,7 +366,7 @@ function PostEntry({ post }: { post: JourneyPost }) {
       )}
 
       {paragraphs.length > 0 && (
-        <div className="mt-6 space-y-4 text-foreground/80 leading-relaxed text-[15px]">
+        <div className="mt-6 space-y-4 text-foreground/80 leading-relaxed text-[16px]">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
@@ -379,7 +379,7 @@ function PostEntry({ post }: { post: JourneyPost }) {
             <figure key={i}>
               <JourneyPostImage image={img} title={post.title} />
               {img.caption && (
-                <figcaption className="mt-2 text-[11px] text-foreground/60">{img.caption}</figcaption>
+                <figcaption className="mt-2 text-[12px] text-foreground/60">{img.caption}</figcaption>
               )}
             </figure>
           ))}
@@ -437,8 +437,8 @@ function JourneyPostImage({ image, title }: { image: JourneyImage; title: string
 function Section({ title, bg, children }: { title: string; bg?: string; children: React.ReactNode }) {
   return (
     <section className={`${bg ?? ""} border-t border-border py-16`}>
-      <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-2xl font-light mb-8">{title}</h2>
+      <div className="max-w-[1600px] mx-auto px-6 lg:px-10">
+        <h2 className="text-2xl font-normal mb-8">{title}</h2>
         {children}
       </div>
     </section>

@@ -58,7 +58,7 @@ export function Header() {
                       <Link
                         key={s.to}
                         to={s.to}
-                        className="block px-4 py-2 text-[12px] text-foreground/80 hover:text-primary hover:bg-muted whitespace-nowrap"
+                        className="block px-4 py-2 text-[13px] text-foreground/80 hover:text-primary hover:bg-muted whitespace-nowrap"
                       >
                         {s.label}
                       </Link>
@@ -97,19 +97,19 @@ export function Header() {
             aria-label="region"
             title="switch region — filters inventory to items stocked in the selected country"
             onClick={() => setCurrency(currency === "HKD" ? "CAD" : "HKD")}
-            className="hidden md:flex items-center gap-1 text-[11px] hover:text-primary transition-colors num"
+            className="hidden md:flex items-center gap-1 text-[12px] hover:text-primary transition-colors num"
           >
             <Globe className="h-4 w-4" /> {currency === "CAD" ? "CA · CAD" : "HK · HKD"}
           </button>
 
           {isAdmin && (
-            <Link to="/admin" className="hidden lg:inline text-[11px] link-red">admin</Link>
+            <Link to="/admin" className="hidden lg:inline text-[12px] link-red">admin</Link>
           )}
 
           <Link to="/cart" aria-label="cart" className="relative hover:text-primary transition-colors">
             <ShoppingBag className="h-4 w-4" />
             {count > 0 && (
-              <span className="num absolute -top-2 -right-3 text-[10px] bg-primary text-primary-foreground px-1">{count}</span>
+              <span className="num absolute -top-2 -right-3 text-[11px] bg-primary text-primary-foreground px-1">{count}</span>
             )}
           </Link>
 
@@ -127,7 +127,7 @@ export function Header() {
               <div className="flex flex-col h-full">
                 {/* Mobile nav header */}
                 <div className="flex items-center justify-between px-6 h-16 border-b border-border">
-                  <span className="text-[12px] tracking-wide text-muted-foreground">menu</span>
+                  <span className="text-[13px] tracking-wide text-muted-foreground">menu</span>
                   <button
                     onClick={() => setOpen(false)}
                     aria-label="close menu"
@@ -156,7 +156,7 @@ export function Header() {
                               key={s.to}
                               to={s.to}
                               onClick={() => setOpen(false)}
-                              className="block text-[12px] py-2 text-foreground/60 hover:text-primary"
+                              className="block text-[13px] py-2 text-foreground/60 hover:text-primary"
                             >
                               {s.label}
                             </Link>
@@ -169,7 +169,7 @@ export function Header() {
 
                 {/* Mobile nav footer */}
                 <div className="mt-auto px-6 py-6 border-t border-border">
-                  <div className="flex items-center gap-6 text-[12px] text-muted-foreground">
+                  <div className="flex items-center gap-6 text-[13px] text-muted-foreground">
                     <Link to="/account" onClick={() => setOpen(false)} className="hover:text-foreground transition-colors">
                       account
                     </Link>

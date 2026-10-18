@@ -45,8 +45,8 @@ function AuthForms() {
 
   return (
     <section className="max-w-md mx-auto px-6 py-20">
-      <span className="num text-[11px] tracking-[0.3em] text-primary">members</span>
-      <h1 className="text-3xl font-light mt-3">{mode === "signin" ? "sign in" : "create account"}</h1>
+      <span className="num text-[12px] tracking-[0.3em] text-primary">members</span>
+      <h1 className="text-3xl font-normal mt-3">{mode === "signin" ? "sign in" : "create account"}</h1>
 
       <button
         onClick={async () => { const r = await signInGoogle(); if (r.error) toast.error(r.error); }}
@@ -54,7 +54,7 @@ function AuthForms() {
       >
         continue with google
       </button>
-      <div className="my-6 flex items-center gap-3 text-[10px] tracking-wide text-foreground/40">
+      <div className="my-6 flex items-center gap-3 text-[11px] tracking-wide text-foreground/40">
         <div className="flex-1 h-px bg-border" /> or <div className="flex-1 h-px bg-border" />
       </div>
 
@@ -102,8 +102,8 @@ function Dashboard() {
     <section className="max-w-4xl mx-auto px-6 py-16">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <span className="num text-[11px] tracking-[0.3em] text-primary">my account</span>
-          <h1 className="text-3xl font-light mt-2">{user?.email}</h1>
+          <span className="num text-[12px] tracking-[0.3em] text-primary">my account</span>
+          <h1 className="text-3xl font-normal mt-2">{user?.email}</h1>
         </div>
         <div className="flex gap-3">
           {isAdmin && <Link to="/admin" className="text-xs uppercase tracking-[0.2em] border border-border px-4 py-2 hover:border-foreground">admin</Link>}
@@ -111,7 +111,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <h2 className="text-[11px] tracking-[0.25em] uppercase mt-12 mb-4 text-foreground/60">order history</h2>
+      <h2 className="text-[12px] tracking-[0.25em] uppercase mt-12 mb-4 text-foreground/60">order history</h2>
       {(!orders || orders.length === 0) ? (
         <p className="text-sm text-foreground/60">no orders yet.</p>
       ) : (
@@ -137,7 +137,7 @@ function Dashboard() {
 function Field({ label, type = "text", value, onChange, required }: { label: string; type?: string; value: string; onChange: (v: string) => void; required?: boolean }) {
   return (
     <label className="block">
-      <span className="text-[11px] tracking-wide text-foreground/60">{label}</span>
+      <span className="text-[12px] tracking-wide text-foreground/60">{label}</span>
       <input
         type={type} value={value} required={required}
         onChange={(e) => onChange(e.target.value)}

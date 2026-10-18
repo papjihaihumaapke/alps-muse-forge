@@ -60,13 +60,13 @@ function BannerOverlay({ banner, align = "left", theme = "light" }: { banner?: B
     <div className={`absolute inset-0 flex flex-col justify-center ${alignCls} p-6 md:p-10 ${textCls} pointer-events-none`}>
       <div className="max-w-md" style={{ textShadow: "0 1px 20px rgba(0,0,0,0.35)" }}>
         {banner.title && (
-          <h3 className="text-xl md:text-3xl font-light leading-tight">{banner.title}</h3>
+          <h3 className="text-xl md:text-3xl font-normal leading-tight">{banner.title}</h3>
         )}
         {banner.subtitle && (
           <p className="mt-2 text-xs md:text-sm opacity-90">{banner.subtitle}</p>
         )}
         {banner.cta_label && (
-          <span className="mt-3 inline-block text-[11px] tracking-[0.25em] uppercase border-b border-white/80 pb-0.5">
+          <span className="mt-3 inline-block text-[12px] tracking-[0.25em] uppercase border-b border-white/80 pb-0.5">
             {banner.cta_label}
           </span>
         )}
@@ -175,10 +175,10 @@ function EditorialHero() {
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
-              <div className="mt-4 text-[12px] tracking-[0.15em] text-foreground/80 px-2">
+              <div className="mt-4 text-[13px] tracking-[0.15em] text-foreground/80 px-2">
                 {c.label}
               </div>
-              <span className="link-red text-[11px] mt-2 inline-block">view all</span>
+              <span className="link-red text-[12px] mt-2 inline-block">view all</span>
             </Link>
             );
           })}
@@ -244,8 +244,8 @@ function BrandVideo() {
     <section className="bg-brand-black text-white py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <div className="mb-6 flex items-end justify-between gap-4">
-          <h2 className="text-3xl md:text-4xl font-light">ALPS fashion shows</h2>
-          <span className="num text-[11px] tracking-[0.25em] text-white/60">
+          <h2 className="text-3xl md:text-4xl font-normal">ALPS fashion shows</h2>
+          <span className="num text-[12px] tracking-[0.25em] text-white/60">
             {String(index + 1).padStart(2, "0")} / {String(FASHION_SHOW_VIDEOS.length).padStart(2, "0")}
           </span>
         </div>
@@ -265,13 +265,13 @@ function BrandVideo() {
           <div className="flex items-center gap-2">
             <button
               onClick={prev}
-              className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase border border-white/30 hover:border-white transition"
+              className="px-4 py-2 text-[12px] tracking-[0.2em] uppercase border border-white/30 hover:border-white transition"
             >
               prev
             </button>
             <button
               onClick={next}
-              className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase border border-white/30 hover:border-white transition"
+              className="px-4 py-2 text-[12px] tracking-[0.2em] uppercase border border-white/30 hover:border-white transition"
             >
               next
             </button>
@@ -286,7 +286,7 @@ function BrandVideo() {
                 i === index ? "border-primary bg-primary/10" : "border-white/20 hover:border-white/60"
               }`}
             >
-              <span className="num text-[10px] tracking-[0.25em] text-white/50 block">
+              <span className="num text-[11px] tracking-[0.25em] text-white/50 block">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span className="text-xs mt-1 block">{v.title}</span>
@@ -305,8 +305,8 @@ function Innovation() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
         <img src={textile} alt="performance textile" loading="lazy" className="aspect-square object-cover" />
         <div>
-          <span className="num text-[11px] tracking-[0.3em] text-primary">03 / innovation</span>
-          <h2 className="text-3xl md:text-5xl mt-3 font-light text-primary">alps fashion innovation</h2>
+          <span className="num text-[12px] tracking-[0.3em] text-primary">03 / innovation</span>
+          <h2 className="text-3xl md:text-5xl mt-3 font-normal text-primary">alps fashion innovation</h2>
           <p className="mt-6 text-foreground/80 leading-relaxed">
             we build garments around performance science — far-infrared yarns, silver-ion antimicrobial knits,
             photocatalytic self-cleaning finishes and bluesign-approved recycled fibres. each piece is engineered
@@ -315,7 +315,7 @@ function Innovation() {
           <p className="mt-4 text-foreground/80 leading-relaxed">
             the result is clothing made to make a difference — quietly, precisely, every day.
           </p>
-          <Link to="/innovation" className="link-red text-[12px] tracking-wide mt-8 inline-block">
+          <Link to="/innovation" className="link-red text-[13px] tracking-wide mt-8 inline-block">
             explore the innovation collection →
           </Link>
         </div>
@@ -330,8 +330,8 @@ function BrandIntro() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <img src={logoBlack} alt="ALPS annie ling logo" className="w-full max-w-md" />
         <div>
-          <span className="num text-[11px] tracking-[0.3em] opacity-80">brand introduction</span>
-          <h2 className="text-3xl md:text-4xl mt-3 font-light leading-tight">
+          <span className="num text-[12px] tracking-[0.3em] opacity-80">brand introduction</span>
+          <h2 className="text-3xl md:text-4xl mt-3 font-normal leading-tight">
             timeless with a twist — <br />made to make a difference.
           </h2>
           <p className="mt-8 leading-relaxed opacity-90">
@@ -355,8 +355,8 @@ function Designer() {
     <section className="bg-background py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div>
-          <span className="num text-[11px] tracking-[0.3em] text-primary">04 / designer</span>
-          <h2 className="text-3xl md:text-4xl mt-3 font-light">annie ling</h2>
+          <span className="num text-[12px] tracking-[0.3em] text-primary">04 / designer</span>
+          <h2 className="text-3xl md:text-4xl mt-3 font-normal">annie ling</h2>
           <div className="mt-6 space-y-4 text-foreground/80 leading-relaxed">
             <p>
               designer annie ling views fashion as an expression of identity, confidence, and modern living.
@@ -370,7 +370,7 @@ function Designer() {
               aesthetics with sports-inspired functionality and textile innovation, creating versatile, enduring
               garments designed for contemporary life.
             </p>
-            <Link to="/my-journey" className="link-red text-[12px] tracking-wide inline-block mt-4">
+            <Link to="/my-journey" className="link-red text-[13px] tracking-wide inline-block mt-4">
               read the design path →
             </Link>
           </div>

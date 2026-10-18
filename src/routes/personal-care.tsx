@@ -36,7 +36,7 @@ function PersonalCareHub() {
   return (
     <Shell>
       <section className="px-3 md:px-6 pt-8 pb-4">
-        <h1 className="text-primary text-[15px] tracking-wide">alps vegan skin & personal care</h1>
+        <h1 className="text-primary text-[16px] tracking-wide">alps vegan skin & personal care</h1>
         <p className="text-foreground/70 text-sm mt-2">made to make a difference.</p>
       </section>
 
@@ -57,7 +57,7 @@ function PersonalCareHub() {
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="absolute bottom-4 left-4 num text-[10px] tracking-[0.3em] uppercase text-white opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="absolute bottom-4 left-4 num text-[11px] tracking-[0.3em] uppercase text-white opacity-0 group-hover:opacity-100 transition-opacity">
                 {t.title} →
               </span>
             </Link>

@@ -133,14 +133,14 @@ function Checkout() {
             <Field label="mobile" value={mobile} onChange={setMobile} />
             <Field label="shipping address" value={address} onChange={setAddress} />
             <label className="block">
-              <span className="text-[11px] tracking-wide text-foreground/60">country / region</span>
+              <span className="text-[12px] tracking-wide text-foreground/60">country / region</span>
               <select value={country} onChange={(e) => setCountry(e.target.value)} className="mt-1 w-full bg-card border border-border px-3 py-2 text-sm">
                 {COUNTRIES.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
               </select>
             </label>
             {country === "CA" && (
               <label className="block">
-                <span className="text-[11px] tracking-wide text-foreground/60">province</span>
+                <span className="text-[12px] tracking-wide text-foreground/60">province</span>
                 <select value={province} onChange={(e) => setProvince(e.target.value)} className="mt-1 w-full bg-card border border-border px-3 py-2 text-sm">
                   {CA_PROVINCES.map((p) => <option key={p.code} value={p.code}>{p.name} — {(p.rate * 100).toFixed(2)}%</option>)}
                 </select>
@@ -165,7 +165,7 @@ function Checkout() {
         </div>
 
         <aside className="bg-card border border-border p-6 h-fit">
-          <h3 className="text-[11px] tracking-[0.25em] uppercase">order summary</h3>
+          <h3 className="text-[12px] tracking-[0.25em] uppercase">order summary</h3>
           <div className="num text-sm mt-6 space-y-2">
             <Row k="items" v={String(items.reduce((s, i) => s + i.qty, 0))} />
             <Row k="subtotal" v={formatMoney(subtotal, currency)} />
@@ -190,7 +190,7 @@ function Step({ n, title, children }: { n: string; title: string; children: Reac
     <section>
       <div className="flex items-baseline gap-4 mb-5">
         <span className="num text-primary text-sm tracking-[0.2em]">{n}</span>
-        <h2 className="text-xl font-light">{title}</h2>
+        <h2 className="text-xl font-normal">{title}</h2>
       </div>
       <div className="space-y-3">{children}</div>
     </section>
@@ -199,7 +199,7 @@ function Step({ n, title, children }: { n: string; title: string; children: Reac
 function Field({ label, type = "text", value, onChange }: { label: string; type?: string; value: string; onChange: (v: string) => void }) {
   return (
     <label className="block">
-      <span className="text-[11px] tracking-wide text-foreground/60">{label}</span>
+      <span className="text-[12px] tracking-wide text-foreground/60">{label}</span>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full bg-card border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
     </label>
   );

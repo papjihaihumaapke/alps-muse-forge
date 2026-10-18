@@ -125,7 +125,7 @@ export function SizeChartDialog({ kinds }: { kinds: SizeChartKind[] }) {
         <button
           type="button"
           onClick={() => setActive(kinds[0])}
-          className="mt-3 inline-flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase text-primary hover:underline underline-offset-4"
+          className="mt-3 inline-flex items-center gap-2 text-[12px] tracking-[0.2em] uppercase text-primary hover:underline underline-offset-4"
         >
           <Ruler className="h-3.5 w-3.5" />
           view size & measurement chart
@@ -152,7 +152,7 @@ export function SizeChartDialog({ kinds }: { kinds: SizeChartKind[] }) {
                   <button
                     key={k}
                     onClick={() => setActive(k)}
-                    className={`px-4 py-2 text-[11px] tracking-[0.25em] uppercase transition ${
+                    className={`px-4 py-2 text-[12px] tracking-[0.25em] uppercase transition ${
                       active === k
                         ? "bg-primary text-primary-foreground"
                         : "bg-background/90 text-foreground hover:bg-background"
@@ -165,7 +165,7 @@ export function SizeChartDialog({ kinds }: { kinds: SizeChartKind[] }) {
 
             {active && <ChartPanel chart={CHARTS[active]} />}
 
-            <p className="text-[11px] text-white/85 max-w-2xl text-center leading-relaxed">
+            <p className="text-[12px] text-white/85 max-w-2xl text-center leading-relaxed">
               measurements are approximate body measurements — not garment dimensions.
               for a personal fitting consultation, please contact us.
             </p>
@@ -198,7 +198,7 @@ export function SizeChartPicker() {
             <button
               key={k}
               onClick={() => setActive(k)}
-              className={`px-5 py-2 text-[11px] tracking-[0.25em] uppercase transition ${
+              className={`px-5 py-2 text-[12px] tracking-[0.25em] uppercase transition ${
                 active === k
                   ? "bg-primary text-primary-foreground"
                   : "bg-background/90 text-foreground hover:bg-background"

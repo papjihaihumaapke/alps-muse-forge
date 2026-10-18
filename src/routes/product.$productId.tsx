@@ -11,6 +11,9 @@ import {
 } from "@/lib/accessory-images";
 import { colorSwatch } from "@/lib/color-swatches";
 import { featureIcon } from "@/lib/feature-icons";
+import { INNOVATIONS } from "@/lib/innovations";
+import { openInnovation } from "@/lib/innovation-store";
+import { isSizeless, variantQty, type VariantStock } from "@/lib/product-fields";
 import { useCart, buildCartItem } from "@/lib/cart";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
@@ -33,7 +36,7 @@ export const Route = createFileRoute("/product/$productId")({
   notFoundComponent: () => (
     <Shell>
       <div className="max-w-3xl mx-auto py-32 px-6 text-center">
-        <h1 className="text-3xl font-light">product not found</h1>
+        <h1 className="text-3xl font-normal">product not found</h1>
         <Link to="/" className="link-red mt-6 inline-block">return home</Link>
       </div>
     </Shell>
@@ -58,6 +61,7 @@ function ProductPage() {
     careInstructions?: string | null;
     videoUrls?: string[];
     galleryUrls?: string[];
+    variantStock?: VariantStock;
     swatches?: Array<{ name: string; hex?: string; swatch_url?: string; image_url?: string }>;
   };
 
@@ -68,7 +72,6 @@ function ProductPage() {
   const [color, setColor] = useState(product?.colors[0] ?? "default");
   const [size, setSize] = useState(product?.sizes[0] ?? "one size");
   const [qty, setQty] = useState(1);
-  const [openFeature, setOpenFeature] = useState<string | null>(null);
 
   const gallery = useMemo(() => {
     if (!product) return [] as string[];
@@ -110,11 +113,15 @@ function ProductPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product]);
 
-  const { add } = useCart();
+  const { add, currency } = useCart();
   const onAdd = () => {
     if (!product) return;
-    const it = buildCartItem(product.id, color, size, qty);
-    if (it) { add(it); toast.success("added to bag"); }
+    // DB-only products aren't in the static catalog, so build from the resolved product.
+    const it = buildCartItem(product.id, color, size, qty) ?? {
+      productId: product.id, name: product.name, color, size, qty,
+      priceCAD: product.priceCAD, priceHKD: product.priceHKD,
+    };
+    add(it); toast.success("added to bag");
   };
 
   // Early returns AFTER all hooks so hook order stays stable.
@@ -124,87 +131,27 @@ function ProductPage() {
   }
 
 
+  const sizeless = isSizeless(product.category) && product.sizes.every((s) => s === "one size");
+  const region = currency === "CAD" ? "ca" : "hk";
+  const variantLeft = variantQty(dbExtras.variantStock, color, size, region);
+  const soldOut = variantLeft !== null && variantLeft <= 0;
+
   return (
     <Shell>
-      <div className="max-w-[1760px] mx-auto px-4 lg:px-10 py-10">
-        {/* 3-column: description LEFT · image CENTER · controls RIGHT */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] gap-8 lg:gap-10">
-          {/* LEFT — description */}
-          <aside className="order-3 lg:order-1">
-            <span className="num text-[11px] tracking-[0.3em] text-primary uppercase">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {/* LEFT: heading, price, pictures · RIGHT: buying controls + every detail section */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-8 lg:gap-14">
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <span className="num text-xs tracking-[0.3em] text-primary uppercase">
               {product.category.replace(/-/g, " ")}
             </span>
-            <h1 className="text-2xl md:text-3xl font-light mt-2 leading-tight">{product.name}</h1>
-            <p className="num text-base mt-3 text-primary font-medium">
+            <h1 className="text-3xl md:text-4xl mt-2 leading-tight">{product.name}</h1>
+            <p className="num text-lg mt-3 text-primary font-medium">
               CAD {product.priceCAD} <span className="text-foreground/40">·</span> HKD {product.priceHKD}
             </p>
-            {dbExtras.description && (
-              <p className="mt-4 text-sm text-foreground/75 leading-relaxed whitespace-pre-line">
-                {dbExtras.description}
-              </p>
-            )}
-            {dbExtras.techInfo && (
-              <div className="mt-4 p-3 border-l-2 border-primary/40 bg-muted/40">
-                <p className="text-[10px] tracking-[0.25em] uppercase text-primary mb-1">technology</p>
-                <p className="text-xs text-foreground/75 leading-relaxed whitespace-pre-line">{dbExtras.techInfo}</p>
-              </div>
-            )}
 
-            <div className="mt-6 flex flex-wrap gap-2">
-              {product.features.map((fk) => {
-                const f = FEATURES.find((x) => x.key === fk);
-                if (!f) return null;
-                const icon = featureIcon(fk);
-                const isOpen = openFeature === fk;
-                return (
-                  <Popover key={fk} open={isOpen} onOpenChange={(o) => setOpenFeature(o ? fk : null)}>
-                    <PopoverTrigger asChild>
-                      <button
-                        type="button"
-                        className="flex items-center gap-1.5 text-[10px] tracking-wide px-2 py-1 border border-border hover:bg-muted transition-colors cursor-pointer"
-                        aria-label={`${f.name} — details`}
-                      >
-                        {icon && <img src={icon} alt="" className="w-4 h-4 object-contain" />}
-                        {f.name}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent side="top" className="w-72 text-xs leading-relaxed">
-                      <div className="flex items-center gap-2 mb-2">
-                        {icon && <img src={icon} alt="" className="w-5 h-5 object-contain" />}
-                        <span className="font-medium tracking-wide uppercase text-[11px]">{f.name}</span>
-                      </div>
-                      <p className="text-foreground/80">{f.desc}</p>
-                    </PopoverContent>
-                  </Popover>
-                );
-              })}
-            </div>
-
-            {(dbExtras.designFeatures || dbExtras.composition || dbExtras.careInstructions) && (
-              <div className="mt-8 divide-y divide-border border-y border-border">
-                {dbExtras.designFeatures && (
-                  <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
-                    <span className="whitespace-pre-line">{dbExtras.designFeatures}</span>
-                  </Accordion>
-                )}
-                {dbExtras.composition && (
-                  <Accordion title={isPersonalCare ? "ingredients" : "composition"}>
-                    <span className="whitespace-pre-line">{dbExtras.composition}</span>
-                  </Accordion>
-                )}
-                {dbExtras.careInstructions && (
-                  <Accordion title={isPersonalCare ? "how to use" : "care"}>
-                    <span className="whitespace-pre-line">{dbExtras.careInstructions}</span>
-                  </Accordion>
-                )}
-              </div>
-            )}
-          </aside>
-
-          {/* CENTER — main image + thumbnail strip */}
-          <div className="order-1 lg:order-2">
             <div
-              className="aspect-square flex items-center justify-center overflow-hidden bg-brand-light"
+              className="mt-6 aspect-square flex items-center justify-center overflow-hidden bg-brand-light"
               style={!activeImage ? { background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] } : undefined}
             >
               {activeImage ? (
@@ -259,12 +206,13 @@ function ProductPage() {
                 }}
               >
                 <DialogTitle className="sr-only">{product.name}</DialogTitle>
-                <div className="relative flex items-center justify-center">
+                {/* Fixed-size stage so the window doesn't jump between photos of different dimensions. */}
+                <div className="relative flex items-center justify-center h-[82vh] w-full">
                   {activeImage && (
                     <img
                       src={activeImage}
                       alt={`${product.name} — enlarged`}
-                      className="max-h-[88vh] w-auto max-w-full object-contain"
+                      className="h-full w-full object-contain"
                     />
                   )}
                   {gallery.length > 1 && (
@@ -285,7 +233,7 @@ function ProductPage() {
                       >
                         <ChevronRight className="h-5 w-5" />
                       </button>
-                      <span className="num absolute bottom-2 left-1/2 -translate-x-1/2 bg-background/80 px-2 py-0.5 text-[11px]">
+                      <span className="num absolute bottom-2 left-1/2 -translate-x-1/2 bg-background/80 px-2 py-0.5 text-xs">
                         {zoomIndex + 1} / {gallery.length}
                       </span>
                     </>
@@ -295,12 +243,11 @@ function ProductPage() {
             </Dialog>
           </div>
 
-          {/* RIGHT — colour / size / qty / add to bag */}
-          <div className="order-2 lg:order-3">
+          <div>
             {!isPersonalCare && product.colors.length > 0 && (
               <div>
-                <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">
-                  colour — <span className="text-foreground/90">{color}</span>
+                <h3 className="text-xs tracking-[0.25em] uppercase text-foreground/70 mb-3">
+                  colour — <span className="text-foreground">{color}</span>
                 </h3>
                 <div className="flex flex-wrap gap-3">
                   {product.colors.map((c) => {
@@ -325,7 +272,7 @@ function ProductPage() {
                         >
                           {sw && <img src={sw} alt="" className="h-full w-full object-cover" />}
                         </span>
-                        <span className={`text-[10px] tracking-wide ${selected ? "text-foreground" : "text-foreground/55"}`}>{c}</span>
+                        <span className={`text-xs tracking-wide ${selected ? "text-foreground" : "text-foreground/60"}`}>{c}</span>
                       </button>
                     );
                   })}
@@ -333,47 +280,143 @@ function ProductPage() {
               </div>
             )}
 
-            <div className="mt-6">
-              <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">size</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSize(s)}
-                    className={`px-4 py-2 text-xs border ${
-                      size === s ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
+            {!sizeless && (
+              <div className="mt-6">
+                <h3 className="text-xs tracking-[0.25em] uppercase text-foreground/70 mb-3">size</h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.sizes.map((s) => {
+                    const left = variantQty(dbExtras.variantStock, color, s, region);
+                    const out = left !== null && left <= 0;
+                    return (
+                      <button
+                        key={s}
+                        onClick={() => setSize(s)}
+                        title={out ? "sold out in this colour" : undefined}
+                        className={`min-w-11 px-4 py-2 text-sm border ${
+                          size === s ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
+                        } ${out ? "line-through opacity-50" : ""}`}
+                      >
+                        {s}
+                      </button>
+                    );
+                  })}
+                </div>
+                <SizeChartDialog kinds={inferSizeChartKinds(product.tags as string[], product.category)} />
               </div>
-              <SizeChartDialog kinds={inferSizeChartKinds(product.tags as string[], product.category)} />
-            </div>
-
+            )}
+            {sizeless && product.category === "accessories" && (
+              <p className="mt-6 text-sm text-foreground/70">one size</p>
+            )}
 
             <div className="mt-6">
-              <h3 className="text-[11px] tracking-[0.25em] uppercase text-foreground/60 mb-3">quantity</h3>
+              <h3 className="text-xs tracking-[0.25em] uppercase text-foreground/70 mb-3">quantity</h3>
               <div className="inline-flex items-center border border-border">
                 <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-2 hover:bg-muted"><Minus className="h-3 w-3" /></button>
                 <span className="num w-10 text-center">{qty}</span>
-                <button onClick={() => setQty(qty + 1)} className="p-2 hover:bg-muted"><Plus className="h-3 w-3" /></button>
+                <button onClick={() => setQty(variantLeft !== null ? Math.min(variantLeft, qty + 1) : qty + 1)} className="p-2 hover:bg-muted"><Plus className="h-3 w-3" /></button>
               </div>
+              {variantLeft !== null && variantLeft > 0 && variantLeft <= 3 && (
+                <p className="mt-2 text-xs text-primary">only {variantLeft} left</p>
+              )}
             </div>
 
             <div className="mt-8 flex gap-2">
               <button
                 onClick={onAdd}
-                className="flex-1 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition"
+                disabled={soldOut}
+                className="flex-1 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                add to bag
+                {soldOut ? "sold out" : "add to bag"}
               </button>
               <WishlistButton slug={product.id} />
             </div>
+
+            {dbExtras.description && (
+              <p className="mt-10 text-base text-foreground/85 leading-relaxed whitespace-pre-line">
+                {dbExtras.description}
+              </p>
+            )}
+
+            {(dbExtras.techInfo || product.features.length > 0) && (
+              <div className="mt-8">
+                <h3 className="text-xs tracking-[0.25em] uppercase text-primary mb-3">technology benefits</h3>
+                {dbExtras.techInfo && <ListText text={dbExtras.techInfo} />}
+                {product.features.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {product.features.map((fk) => (
+                      <FeatureChip key={fk} featureKey={fk} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {(dbExtras.designFeatures || dbExtras.composition || dbExtras.careInstructions) && (
+              <div className="mt-8 divide-y divide-border border-y border-border">
+                {dbExtras.designFeatures && (
+                  <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
+                    <ListText text={dbExtras.designFeatures} />
+                  </Accordion>
+                )}
+                {dbExtras.composition && (
+                  <Accordion title={isPersonalCare ? "ingredients" : "composition"} defaultOpen>
+                    <ListText text={dbExtras.composition} />
+                  </Accordion>
+                )}
+                {dbExtras.careInstructions && (
+                  <Accordion title={isPersonalCare ? "how to use" : "care"} defaultOpen>
+                    <ListText text={dbExtras.careInstructions} />
+                  </Accordion>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
     </Shell>
+  );
+}
+
+/** One line per point with a little air between them; blank lines in the pasted text are ignored. */
+function ListText({ text }: { text: string }) {
+  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  return (
+    <div className="space-y-2 text-sm text-foreground/80 leading-relaxed">
+      {lines.map((l, i) => <p key={i}>{l}</p>)}
+    </div>
+  );
+}
+
+/** Technology icon: opens the full innovation page when there is one, otherwise a short popover. */
+function FeatureChip({ featureKey }: { featureKey: string }) {
+  const [open, setOpen] = useState(false);
+  const f = FEATURES.find((x) => x.key === featureKey);
+  if (!f) return null;
+  const icon = featureIcon(featureKey);
+  const innovation = INNOVATIONS.find((i) => i.filterKey === featureKey || i.slug === featureKey);
+  const chip = (
+    <button
+      type="button"
+      onClick={innovation ? () => openInnovation(innovation.slug) : undefined}
+      className="flex items-center gap-2 text-xs tracking-wide px-3 py-1.5 border border-border hover:bg-muted transition-colors cursor-pointer"
+      aria-label={`${f.name} — details`}
+    >
+      {icon && <img src={icon} alt="" className="w-5 h-5 object-contain" />}
+      {f.name}
+    </button>
+  );
+  if (innovation) return chip;
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>{chip}</PopoverTrigger>
+      <PopoverContent side="top" className="w-72 text-sm leading-relaxed">
+        <div className="flex items-center gap-2 mb-2">
+          {icon && <img src={icon} alt="" className="w-5 h-5 object-contain" />}
+          <span className="font-medium tracking-wide uppercase text-xs">{f.name}</span>
+        </div>
+        <p className="text-foreground/80">{f.desc}</p>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -383,12 +426,12 @@ function Accordion({ title, children, defaultOpen = false }: { title: string; ch
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-4 text-sm hover:text-primary"
+        className="w-full flex items-center justify-between py-4 text-base hover:text-primary"
       >
         {title}
         <ChevronDown className={`h-4 w-4 transition ${open ? "rotate-180" : ""}`} />
       </button>
-      {open && <div className="pb-4 text-sm text-foreground/70 leading-relaxed">{children}</div>}
+      {open && <div className="pb-5">{children}</div>}
     </div>
   );
 }

@@ -78,10 +78,10 @@ function InnovationDetail({
                 </div>
               )}
               <div className="min-w-0">
-                <p className="num text-[10px] tracking-[0.3em] text-foreground/40 uppercase">
+                <p className="num text-[11px] tracking-[0.3em] text-foreground/40 uppercase">
                   innovation {String(item.n).padStart(2, "0")}
                 </p>
-                <h3 className="text-2xl font-light text-primary mt-1">
+                <h3 className="text-2xl font-normal text-primary mt-1">
                   {item.title}
                 </h3>
               </div>
@@ -92,14 +92,14 @@ function InnovationDetail({
 
             <div className="mt-4 space-y-6 text-sm">
               <section>
-                <h4 className="text-[11px] tracking-[0.25em] uppercase text-primary mb-2">
+                <h4 className="text-[12px] tracking-[0.25em] uppercase text-primary mb-2">
                   how does it work
                 </h4>
                 <p className="text-foreground/80 leading-relaxed">{item.how}</p>
               </section>
 
               <section>
-                <h4 className="text-[11px] tracking-[0.25em] uppercase text-primary mb-2">
+                <h4 className="text-[12px] tracking-[0.25em] uppercase text-primary mb-2">
                   key features
                 </h4>
                 <ul className="space-y-1.5 text-foreground/80">
@@ -113,7 +113,7 @@ function InnovationDetail({
               </section>
 
               <section>
-                <h4 className="text-[11px] tracking-[0.25em] uppercase text-primary mb-2">
+                <h4 className="text-[12px] tracking-[0.25em] uppercase text-primary mb-2">
                   benefits
                 </h4>
                 <ul className="space-y-1.5 text-foreground/80">
@@ -127,14 +127,14 @@ function InnovationDetail({
               </section>
 
               <section>
-                <h4 className="text-[11px] tracking-[0.25em] uppercase text-primary mb-2">
+                <h4 className="text-[12px] tracking-[0.25em] uppercase text-primary mb-2">
                   features at a glance
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {item.glance.map((g, i) => (
                     <span
                       key={i}
-                      className="px-2.5 py-1 text-[11px] tracking-wide border border-border bg-muted/50"
+                      className="px-2.5 py-1 text-[12px] tracking-wide border border-border bg-muted/50"
                     >
                       {g}
                     </span>

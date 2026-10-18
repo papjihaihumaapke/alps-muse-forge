@@ -35,6 +35,7 @@ import {
 import type { Json } from "@/integrations/supabase/types";
 import { normalizeUrl } from "@/lib/utils";
 import { useMediaUrl } from "@/lib/storage-url";
+import { splitList, joinList, variantKey, isSizeless, SEASON_LABELS, type VariantStock } from "@/lib/product-fields";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -203,11 +204,16 @@ type ProductRow = {
   // Optional until the video_urls migration is applied, so saves keep working without it.
   video_urls?: string[];
   color_swatches: Swatch[];
-  season: "spring" | "summer" | "fall" | "winter" | "all-season";
+  season: "spring-summer" | "fall-winter" | "all-season" | "spring" | "summer" | "fall" | "winter";
+  // Optional until the variant_stock / collection migration is applied.
+  collection?: string | null;
+  variant_stock?: VariantStock;
   display_order: number;
 };
 
-const SEASONS: ProductRow["season"][] = ["spring", "summer", "fall", "winter", "all-season"];
+// Annie sells by spring-summer / fall-winter / all-season; the single seasons stay for older rows.
+const SEASONS: ProductRow["season"][] = ["spring-summer", "fall-winter", "all-season"];
+const LEGACY_SEASONS: ProductRow["season"][] = ["spring", "summer", "fall", "winter"];
 
 const CATEGORY_GROUPS: { slug: string; label: string }[] = [
   { slug: "innovation", label: "alps innovation" },
@@ -238,6 +244,8 @@ function ProductsTab() {
   const [rows, setRows] = useState<ProductRow[]>([]);
   const [editing, setEditing] = useState<ProductRow | null>(null);
   const [search, setSearch] = useState("");
+  const [seasonFilter, setSeasonFilter] = useState("all");
+  const [collectionFilter, setCollectionFilter] = useState("all");
   const [openCats, setOpenCats] = useState<Record<string, boolean>>({});
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -254,11 +262,21 @@ function ProductsTab() {
   };
   useEffect(() => { load(); }, []);
 
+  const collections = useMemo(
+    () => Array.from(new Set(rows.map((p) => p.collection?.trim()).filter((c): c is string => !!c))).sort(),
+    [rows],
+  );
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    if (!q) return rows;
-    return rows.filter((p) => `${p.name} ${p.slug} ${p.subcategory ?? ""}`.toLowerCase().includes(q));
-  }, [rows, search]);
+    return rows.filter((p) => {
+      if (seasonFilter !== "all" && p.season !== seasonFilter) return false;
+      if (collectionFilter === "none" && p.collection?.trim()) return false;
+      if (collectionFilter !== "all" && collectionFilter !== "none" && p.collection?.trim() !== collectionFilter) return false;
+      return !q || `${p.name} ${p.slug} ${p.subcategory ?? ""} ${p.collection ?? ""}`.toLowerCase().includes(q);
+    });
+  }, [rows, search, seasonFilter, collectionFilter]);
+  const filtering = !!search.trim() || seasonFilter !== "all" || collectionFilter !== "all";
 
   const grouped = useMemo(() => {
     const map = new Map<string, ProductRow[]>();
@@ -275,6 +293,17 @@ function ProductsTab() {
     payload.color_swatches = payload.color_swatches ?? [];
     payload.gallery_urls = payload.gallery_urls ?? [];
     payload.hashtags = payload.hashtags ?? [];
+    if (payload.variant_stock) {
+      // Drop grid entries for colours / sizes that were renamed or removed.
+      const colors = new Set([...payload.colors, ...payload.color_swatches.map((c: Swatch) => c.name.trim())]);
+      const sizes = new Set(payload.sizes.length ? payload.sizes : ["one size"]);
+      payload.variant_stock = Object.fromEntries(
+        Object.entries(payload.variant_stock as VariantStock).filter(([k]) => {
+          const [c, sz] = k.split("|");
+          return colors.has(c) && sizes.has(sz);
+        }),
+      );
+    }
     if (!payload.slug) return toast.error("slug is required");
     if (!payload.name) return toast.error("name is required");
     const { error } = payload.id
@@ -318,9 +347,31 @@ function ProductsTab() {
       <div className="flex flex-wrap gap-3 items-center justify-between">
         <div>
           <h2 className="text-lg">{rows.length} products in database</h2>
-          <p className="text-xs text-muted-foreground">grouped by category. click a category to collapse it.</p>
+          <p className="text-xs text-muted-foreground">
+            grouped by category. click a category to collapse it.
+            {filtering && <> showing {filtered.length} matching.</>}
+          </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <select
+            aria-label="filter by season"
+            className="h-9 border border-input bg-background px-3 text-sm"
+            value={seasonFilter}
+            onChange={(e) => setSeasonFilter(e.target.value)}
+          >
+            <option value="all">all seasons</option>
+            {[...SEASONS, ...LEGACY_SEASONS].map((s) => <option key={s} value={s}>{SEASON_LABELS[s] ?? s}</option>)}
+          </select>
+          <select
+            aria-label="filter by collection"
+            className="h-9 border border-input bg-background px-3 text-sm"
+            value={collectionFilter}
+            onChange={(e) => setCollectionFilter(e.target.value)}
+          >
+            <option value="all">all collections</option>
+            {collections.map((c) => <option key={c} value={c}>{c}</option>)}
+            <option value="none">no collection set</option>
+          </select>
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="search name / slug…" className="w-64" />
           <Button variant="outline" onClick={syncCatalog} disabled={syncing}>{syncing ? "syncing…" : "sync static catalog"}</Button>
           <Button onClick={() => setEditing(blankProduct())}><Plus className="h-4 w-4 mr-1" />new product</Button>
@@ -334,6 +385,7 @@ function ProductsTab() {
       <div className="space-y-3">
         {CATEGORY_GROUPS.map((cat) => {
           const items = grouped.get(cat.slug) ?? [];
+          if (filtering && items.length === 0) return null;
           const open = openCats[cat.slug] ?? items.length > 0;
           return (
             <div key={cat.slug} className="border border-border bg-card">
@@ -365,7 +417,10 @@ function ProductsTab() {
                           <div className="text-sm truncate">{p.name || <em className="text-muted-foreground">untitled</em>}</div>
                           <div className="text-xs text-muted-foreground font-mono truncate">{p.slug}</div>
                         </div>
-                        <div className="text-xs text-muted-foreground hidden md:block w-24">{p.season}</div>
+                        <div className="text-xs text-muted-foreground hidden md:block w-32">
+                          {SEASON_LABELS[p.season] ?? p.season}
+                          {p.collection && <div className="text-foreground/70">{p.collection}</div>}
+                        </div>
                         <div className="text-xs num text-primary w-28 text-right">CAD {p.price_cad} · HKD {p.price_hkd}</div>
                         <div className="text-xs w-16 text-center">
                           {(p.gallery_urls ?? []).length || (p.image_url ? 1 : 0)} img
@@ -425,12 +480,115 @@ async function uploadProductImage(file: File, slug: string): Promise<string | nu
   return data.publicUrl;
 }
 
+const MAX_PRODUCT_VIDEOS = 2;
+// Supabase's default per-file upload cap.
+const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
+
+/** List input that accepts "/" or "," separators and keeps the raw text while typing. */
+function ListInput({ value, onChange, placeholder, className }: {
+  value: string[]; onChange: (v: string[]) => void; placeholder?: string; className?: string;
+}) {
+  const [text, setText] = useState(() => joinList(value));
+  // Pick up changes made elsewhere (presets, swatch names) without clobbering what's being typed.
+  useEffect(() => {
+    if (splitList(text).join("\u0000") !== value.join("\u0000")) setText(joinList(value));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+  return (
+    <Input
+      className={className}
+      value={text}
+      placeholder={placeholder}
+      onChange={(e) => { setText(e.target.value); onChange(splitList(e.target.value)); }}
+    />
+  );
+}
+
+/** Units per colour × size, for Hong Kong and Canada. */
+function VariantStockGrid({ colors, sizes, stock, onChange }: {
+  colors: string[]; sizes: string[]; stock: VariantStock; onChange: (s: VariantStock) => void;
+}) {
+  const setCell = (c: string, sz: string, region: "hk" | "ca", raw: string) => {
+    const k = variantKey(c, sz);
+    const cell = { ...(stock[k] ?? {}) };
+    if (raw === "") delete cell[region];
+    else cell[region] = Math.max(0, Math.floor(Number(raw) || 0));
+    const next = { ...stock };
+    if (cell.hk == null && cell.ca == null) delete next[k];
+    else next[k] = cell;
+    onChange(next);
+  };
+  if (!colors.length || !sizes.length) {
+    return <p className="text-xs text-muted-foreground">add the colours and sizes first — a box for each combination will appear here.</p>;
+  }
+  return (
+    <div className="overflow-x-auto">
+      <table className="text-xs border-collapse">
+        <thead>
+          <tr>
+            <th className="text-left font-normal text-muted-foreground p-1 pr-3">colour \ size</th>
+            {sizes.map((sz) => <th key={sz} className="font-medium p-1 min-w-[7.5rem]">{sz}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {colors.map((c) => (
+            <tr key={c} className="border-t border-border">
+              <td className="p-1 pr-3 whitespace-nowrap">{c}</td>
+              {sizes.map((sz) => {
+                const cell = stock[variantKey(c, sz)] ?? {};
+                return (
+                  <td key={sz} className="p-1">
+                    <div className="flex gap-1">
+                      {(["hk", "ca"] as const).map((r) => (
+                        <label key={r} className="flex items-center gap-0.5">
+                          <span className="text-[10px] uppercase text-muted-foreground">{r}</span>
+                          <Input
+                            type="number" min={0} className="h-8 w-14 px-1.5"
+                            value={cell[r] ?? ""}
+                            onChange={(e) => setCell(c, sz, r, e.target.value)}
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/** Pick one of the product's already-uploaded gallery photos for a colour dot. */
+function GalleryImagePicker({ urls, slug, onPick }: { urls: string[]; slug: string; onPick: (url: string) => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button type="button" variant="outline" size="sm" disabled={!urls.length} title={urls.length ? undefined : "upload gallery images first"}>
+          choose from gallery
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80">
+        <div className="grid grid-cols-4 gap-1.5 max-h-72 overflow-y-auto">
+          {urls.map((u) => (
+            <button key={u} type="button" onClick={() => { onPick(u); setOpen(false); }} className="aspect-square border border-border hover:border-primary">
+              <ProductThumb url={u} slug={slug} className="h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 /* ---------- Editor modal ---------- */
 function ProductEditor({ product, onChange, onSave, onCancel }: {
   product: ProductRow; onChange: (p: ProductRow) => void; onSave: () => void; onCancel: () => void;
 }) {
   const set = <K extends keyof ProductRow>(k: K, v: ProductRow[K]) => onChange({ ...product, [k]: v });
-  const csv = (s: string) => s.split(",").map((x) => x.trim()).filter(Boolean);
   const [uploading, setUploading] = useState(false);
 
   const handleGalleryUpload = async (files: FileList | null) => {
@@ -468,11 +626,18 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
     set("video_urls", text.split("\n").map((x) => x.trim()).filter(Boolean));
   };
   const [videoUploading, setVideoUploading] = useState(false);
+  const videoCount = (product.video_urls ?? []).length;
   const handleVideoUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
+    const room = MAX_PRODUCT_VIDEOS - videoCount;
+    if (room <= 0) return toast.error(`up to ${MAX_PRODUCT_VIDEOS} videos per product — remove one first`);
+    const picked = Array.from(files).slice(0, room);
+    if (files.length > room) toast.error(`only ${room} more video${room === 1 ? "" : "s"} fit — uploading the first ${room}`);
+    const tooBig = picked.find((f) => f.size > MAX_VIDEO_BYTES);
+    if (tooBig) return toast.error(`"${tooBig.name}" is over ${MAX_VIDEO_BYTES / 1024 / 1024} MB — please compress it first`);
     setVideoUploading(true);
     const urls: string[] = [];
-    for (const f of Array.from(files)) {
+    for (const f of picked) {
       const u = await uploadProductImage(f, `${product.slug}-video`);
       if (u) urls.push(u);
     }
@@ -498,6 +663,23 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
 
   const addColorRow = () => {
     set("color_swatches", [...(product.color_swatches ?? []), { name: "" }]);
+  };
+
+  const variantColors = Array.from(new Set([
+    ...(product.color_swatches ?? []).map((s) => s.name.trim()).filter(Boolean),
+    ...product.colors,
+  ]));
+  const hasVariantStock = Object.keys(product.variant_stock ?? {}).length > 0;
+  const setVariantStock = (vs: VariantStock) => {
+    const cells = Object.values(vs);
+    onChange({
+      ...product,
+      variant_stock: vs,
+      ...(cells.length ? {
+        stock: cells.reduce((n, c) => n + (c.hk ?? 0), 0),
+        stock_ca: cells.reduce((n, c) => n + (c.ca ?? 0), 0),
+      } : {}),
+    });
   };
 
   const toggleFeature = (key: string) => {
@@ -532,21 +714,29 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                   {CATEGORY_GROUPS.map((c) => <option key={c.slug} value={c.slug}>{c.label}</option>)}
                 </select>
               </Field>
-              <Field label="subcategory (free text)">
-                <Input value={product.subcategory ?? ""} onChange={(e) => set("subcategory", e.target.value)} placeholder="e.g. botalab" />
+              <Field label={product.category === "collaborations" ? "collaboration partner (shows as a clickable icon)" : "subcategory (free text)"}>
+                <Input value={product.subcategory ?? ""} onChange={(e) => set("subcategory", e.target.value)} placeholder={product.category === "collaborations" ? "e.g. little prince" : "e.g. botalab"} />
               </Field>
               <Field label="season">
                 <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={product.season} onChange={(e) => set("season", e.target.value as ProductRow["season"])}>
-                  {SEASONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                  {SEASONS.map((s) => <option key={s} value={s}>{SEASON_LABELS[s]}</option>)}
+                  {LEGACY_SEASONS.includes(product.season) && <option value={product.season}>{product.season} (old — please change)</option>}
                 </select>
+              </Field>
+              <Field label="collection (e.g. summer 1, summer 2 — matches your drive folders)">
+                <Input value={product.collection ?? ""} onChange={(e) => set("collection", e.target.value)} placeholder="e.g. summer 1" />
               </Field>
               <Field label="display order">
                 <Input type="number" value={product.display_order} onChange={(e) => set("display_order", Number(e.target.value))} />
               </Field>
               <Field label="price CAD"><Input type="number" value={product.price_cad} onChange={(e) => set("price_cad", Number(e.target.value))} /></Field>
               <Field label="price HKD"><Input type="number" value={product.price_hkd} onChange={(e) => set("price_hkd", Number(e.target.value))} /></Field>
-              <Field label="stock (HK)"><Input type="number" value={product.stock} onChange={(e) => set("stock", Number(e.target.value))} /></Field>
-              <Field label="stock (Canada)"><Input type="number" value={product.stock_ca} onChange={(e) => set("stock_ca", Number(e.target.value))} /></Field>
+              <Field label={hasVariantStock ? "stock (HK) — total from the colour × size grid" : "stock (HK)"}>
+                <Input type="number" value={product.stock} disabled={hasVariantStock} onChange={(e) => set("stock", Number(e.target.value))} />
+              </Field>
+              <Field label={hasVariantStock ? "stock (Canada) — total from the colour × size grid" : "stock (Canada)"}>
+                <Input type="number" value={product.stock_ca} disabled={hasVariantStock} onChange={(e) => set("stock_ca", Number(e.target.value))} />
+              </Field>
               <Field label="hidden from site">
                 <div className="flex items-center h-9"><Switch checked={product.hidden} onCheckedChange={(v) => set("hidden", v)} /></div>
               </Field>
@@ -602,10 +792,26 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
           </Section>
 
           {/* SECTION: Sizes */}
-          <Section title="sizes">
-            <Field label="sizes (comma-separated)">
-              <Input value={product.sizes.join(", ")} onChange={(e) => set("sizes", csv(e.target.value))} placeholder="e.g. XS, S, M, L, XL  or  30ml, 50ml, 100ml" />
+          <Section title="sizes" subtitle={isSizeless(product.category) ? "accessories are one size and personal care has no sizing — leave this empty." : "separate with / (or commas)."}>
+            <Field label="sizes">
+              <ListInput value={product.sizes} onChange={(v) => set("sizes", v)} placeholder="e.g. 0 / 1 / 2 / 3" />
             </Field>
+            <div className="flex flex-wrap gap-2">
+              {[["0", "1", "2", "3"], ["XS", "S", "M", "L"], []].map((preset) => (
+                <Button key={preset.join("/") || "none"} type="button" variant="outline" size="sm" onClick={() => set("sizes", preset)}>
+                  {preset.length ? joinList(preset) : "one size / no sizing"}
+                </Button>
+              ))}
+            </div>
+          </Section>
+
+          <Section title="stock by colour & size" subtitle="units for each colour and size. leave a box empty if you don't track it. totals fill the stock fields above.">
+            <VariantStockGrid
+              colors={variantColors}
+              sizes={product.sizes.length ? product.sizes : ["one size"]}
+              stock={product.variant_stock ?? {}}
+              onChange={setVariantStock}
+            />
           </Section>
 
           {/* SECTION: Colors + swatches */}
@@ -657,6 +863,15 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                     {s.image_url
                       ? <img src={s.image_url} alt="" className="h-10 w-10 object-cover border border-border" />
                       : <div className="h-10 w-10 bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
+                    <GalleryImagePicker
+                      urls={product.gallery_urls ?? []}
+                      slug={product.slug}
+                      onPick={(url) => {
+                        const next = [...product.color_swatches];
+                        next[i] = { ...next[i], image_url: url };
+                        set("color_swatches", next);
+                      }}
+                    />
                     <input
                       type="file" accept="image/*" className="text-xs w-44"
                       onChange={(e) => e.target.files?.[0] && swatchImageUpload(i, e.target.files[0])}
@@ -670,12 +885,9 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
               ))}
               <Button variant="outline" size="sm" onClick={addColorRow}><Plus className="h-3 w-3 mr-1" />add color</Button>
               <p className="text-xs text-muted-foreground">
-                colors list (used by old site & cart): also keep this CSV in sync:
+                extra colour names without a swatch row (optional — every colour added above already shows on the product page):
               </p>
-              <Input
-                value={product.colors.join(", ")} onChange={(e) => set("colors", csv(e.target.value))}
-                placeholder="comma-sep, e.g. ivory, navy, black"
-              />
+              <ListInput value={product.colors} onChange={(v) => set("colors", v)} placeholder="e.g. ivory / navy / black" />
             </div>
           </Section>
 
@@ -718,7 +930,7 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
           </Section>
 
           {/* SECTION: Videos */}
-          <Section title="videos" subtitle="youtube / vimeo links, one per line — or upload video files. shown under the product images.">
+          <Section title="videos" subtitle={`upload up to ${MAX_PRODUCT_VIDEOS} video files (max ${MAX_VIDEO_BYTES / 1024 / 1024} MB each), or paste youtube / vimeo links one per line. shown under the product images.`}>
             <Textarea
               rows={3}
               value={videoText}
@@ -727,9 +939,11 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
             />
             <input
               type="file" multiple accept="video/*"
-              onChange={(e) => handleVideoUpload(e.target.files)}
-              className="text-xs mt-2"
+              disabled={videoUploading || videoCount >= MAX_PRODUCT_VIDEOS}
+              onChange={(e) => { handleVideoUpload(e.target.files); e.target.value = ""; }}
+              className="text-xs mt-2 disabled:opacity-40"
             />
+            <p className="text-xs text-muted-foreground mt-1">{videoCount} / {MAX_PRODUCT_VIDEOS} videos</p>
             {videoUploading && <p className="text-xs text-muted-foreground mt-2">uploading…</p>}
           </Section>
 
@@ -763,14 +977,14 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                 })}
               </div>
             </Field>
-            <Field label="filter tags (comma-sep — used by accessories filter)">
-              <Input value={product.tags.join(", ")} onChange={(e) => set("tags", csv(e.target.value))} placeholder="e.g. all-season, women, unisex, wearable" />
+            <Field label="filter tags (separate with / — used by accessories filter)">
+              <ListInput value={product.tags} onChange={(v) => set("tags", v)} placeholder="e.g. all-season / women / unisex / wearable" />
             </Field>
-            <Field label="hashtags (comma-sep — for marketing / social)">
-              <Input
-                value={product.hashtags.join(", ")}
-                onChange={(e) => set("hashtags", csv(e.target.value).map((h) => h.replace(/^#/, "")))}
-                placeholder="e.g. veganbeauty, cleanbeauty, madeinhk"
+            <Field label="hashtags (separate with / — for marketing / social)">
+              <ListInput
+                value={product.hashtags}
+                onChange={(v) => set("hashtags", v.map((h) => h.replace(/^#/, "")))}
+                placeholder="e.g. silver ion / antibacteria / madeinhk"
               />
               {product.hashtags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">

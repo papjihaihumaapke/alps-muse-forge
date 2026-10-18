@@ -134,6 +134,8 @@
 
   html {
     -webkit-font-smoothing: antialiased;
+    /* a touch larger than the 16px default so body copy isn't hard to read */
+    font-size: 17px;
   }
 
   body {

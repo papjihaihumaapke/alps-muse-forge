@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Product, CategorySlug } from "@/lib/alps-data";
 import { localizeAssetUrl } from "@/lib/local-asset-images";
+import type { VariantStock } from "@/lib/product-fields";
 
 export type DbProduct = {
   id: string;
@@ -28,8 +29,21 @@ export type DbProduct = {
   hidden: boolean;
   is_external?: boolean;
   external_url?: string | null;
+  stock?: number;
   stock_ca?: number;
+  variant_stock?: VariantStock;
+  collection?: string | null;
 };
+
+/** Colour list = legacy colours CSV plus every named swatch added in the admin panel. */
+function mergeColors(colors: string[] | null, swatches: DbProduct["color_swatches"] | null): string[] {
+  const out = [...(colors ?? [])];
+  for (const s of swatches ?? []) {
+    const name = s.name?.trim();
+    if (name && !out.includes(name)) out.push(name);
+  }
+  return out;
+}
 
 /** Convert a DB product row to the shared Product shape used by CategoryView/ProductPage. */
 export function dbProductToCatalog(d: DbProduct): Product & {
@@ -44,6 +58,7 @@ export function dbProductToCatalog(d: DbProduct): Product & {
   season?: string;
   isExternal?: boolean;
   externalUrl?: string | null;
+  variantStock?: VariantStock;
 } {
   // Filter out dev-only "/src/assets/..." paths that don't resolve on the published site.
   const isProdSafe = (u: string) => !!u && !u.startsWith("/src/");
@@ -58,7 +73,7 @@ export function dbProductToCatalog(d: DbProduct): Product & {
     category: d.category as CategorySlug,
     priceCAD: Number(d.price_cad),
     priceHKD: Number(d.price_hkd),
-    colors: d.colors,
+    colors: mergeColors(d.colors, d.color_swatches),
     sizes: d.sizes.length ? d.sizes : ["one size"],
     features: d.features,
     tags: d.tags as Product["tags"],
@@ -73,6 +88,7 @@ export function dbProductToCatalog(d: DbProduct): Product & {
     season: d.season,
     isExternal: d.is_external ?? false,
     externalUrl: d.external_url ?? null,
+    variantStock: d.variant_stock ?? {},
   };
 }
 

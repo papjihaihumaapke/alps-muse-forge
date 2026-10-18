@@ -21,10 +21,9 @@ type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
 const SEASON_OPTIONS = [
   { key: "all", label: "all seasons" },
-  { key: "spring", label: "spring" },
-  { key: "summer", label: "summer" },
-  { key: "fall", label: "fall" },
-  { key: "winter", label: "winter" },
+  { key: "spring-summer", label: "spring / summer" },
+  { key: "fall-winter", label: "fall / winter" },
+  { key: "all-season", label: "all season" },
 ] as const;
 
 const LINE_OPTIONS = [
@@ -35,12 +34,15 @@ const LINE_OPTIONS = [
   { key: "unisex", label: "unisex" },
 ] as const;
 
-/** "all-season" pieces show under every season; a "fall-winter" tag counts for both. */
+/** "all-season" pieces show under every season; older single-season rows and the
+ *  "fall-winter" accessory tag map onto the combined seasons. */
 function matchesSeason(season: string | undefined, tags: readonly string[] | undefined, active: string) {
   if (active === "all") return true;
   const s = season ?? "all-season";
   if (s === "all-season" || s === active) return true;
-  return (active === "fall" || active === "winter") && (tags ?? []).includes("fall-winter");
+  if (active === "spring-summer") return s === "spring" || s === "summer";
+  if (active === "fall-winter") return s === "fall" || s === "winter" || (tags ?? []).includes("fall-winter");
+  return false;
 }
 
 /** Unisex pieces also show under women and men. */
@@ -48,6 +50,13 @@ function matchesLine(tags: readonly string[] | undefined, active: string) {
   if (active === "all") return true;
   const t = tags ?? [];
   return t.includes(active) || ((active === "women" || active === "men") && t.includes("unisex"));
+}
+
+/** Collaboration partner: the admin "subcategory" for collaboration products, else read from the name. */
+function collabBrand(name: string, sub: string | null | undefined): string | null {
+  if (sub?.trim()) return sub.trim().toLowerCase();
+  if (/little\s*prince/i.test(name)) return "little prince";
+  return null;
 }
 
 // Clothing and accessory lines get season / line filters; vegan care lines don't.
@@ -65,6 +74,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
   const [featureFilterLocal, setFeatureFilterLocal] = useState<string>("all");
   const [seasonFilter, setSeasonFilter] = useState<string>("all");
   const [lineFilter, setLineFilter] = useState<string>("all");
+  const [brandFilter, setBrandFilter] = useState<string>("all");
 
   const { data: dbRows = [] } = useDbProductsByCategory(slug);
   const { currency } = useCart();
@@ -119,6 +129,9 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
     if (slug === "innovation" && activeSub !== "all") {
       list = list.filter((p) => (subBySlug.get(p.id) ?? inferSubcategory(p.id)) === activeSub);
     }
+    if (slug === "collaborations" && brandFilter !== "all") {
+      list = list.filter((p) => collabBrand(p.name, subBySlug.get(p.id)) === brandFilter);
+    }
     if (seasonFilter !== "all") {
       list = list.filter((p) => matchesSeason((p as Product & { season?: string }).season, p.tags, seasonFilter));
     }
@@ -147,7 +160,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
       default:
         return list;
     }
-  }, [slug, activeTag, activeSub, sort, dbRows, stockBySlug, subBySlug, currency, featureFilter, featureFilterLocal, colorFilter, sizeFilter, seasonFilter, lineFilter]);
+  }, [slug, activeTag, activeSub, brandFilter, sort, dbRows, stockBySlug, subBySlug, currency, featureFilter, featureFilterLocal, colorFilter, sizeFilter, seasonFilter, lineFilter]);
 
   // Build filter options from currently-scoped catalog (category + region).
   const scopedItems = useMemo(() => {
@@ -169,6 +182,19 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
     scopedItems.forEach((p) => p.sizes?.forEach((sz) => s.add(sz)));
     return Array.from(s).sort();
   }, [scopedItems]);
+  // One clickable icon per collaboration partner, each showing a product from that collaboration.
+  const brands = useMemo(() => {
+    if (slug !== "collaborations") return [];
+    const m = new Map<string, string | undefined>();
+    for (const p of scopedItems) {
+      const b = collabBrand(p.name, subBySlug.get(p.id));
+      if (!b) continue;
+      const img = (p as Product & { galleryUrls?: string[] }).galleryUrls?.[0] || productImage(p.id);
+      if (!m.has(b) || (!m.get(b) && img)) m.set(b, img);
+    }
+    return Array.from(m, ([name, img]) => ({ name, img }));
+  }, [slug, scopedItems, subBySlug]);
+
   const featureOptions = useMemo(() => {
     const s = new Set<string>();
     scopedItems.forEach((p) => p.features?.forEach((f) => s.add(f)));
@@ -195,9 +221,9 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
       <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pt-10 pb-6">
         <div className="flex items-start justify-between flex-wrap gap-6">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-primary text-[15px] tracking-wide">{cat.name}</h1>
+            <h1 className="text-primary text-[16px] tracking-wide">{cat.name}</h1>
             {activeFeature && (
-              <span className="inline-flex items-center gap-2 border border-primary text-primary px-2.5 py-1 text-[11px] tracking-wide">
+              <span className="inline-flex items-center gap-2 border border-primary text-primary px-2.5 py-1 text-[12px] tracking-wide">
                 feature: {activeFeature.name}
                 {onClearFeature && (
                   <button
@@ -240,11 +266,11 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                   options={featureOptions.map((f) => ({ value: f.key, label: f.name }))}
                 />
               )}
-              {(colorFilter !== "all" || sizeFilter !== "all" || featureFilterLocal !== "all" || seasonFilter !== "all" || lineFilter !== "all") && (
+              {(colorFilter !== "all" || sizeFilter !== "all" || featureFilterLocal !== "all" || seasonFilter !== "all" || lineFilter !== "all" || brandFilter !== "all") && (
                 <button
                   type="button"
-                  onClick={() => { setColorFilter("all"); setSizeFilter("all"); setFeatureFilterLocal("all"); setSeasonFilter("all"); setLineFilter("all"); }}
-                  className="text-[11px] tracking-wide text-primary hover:underline"
+                  onClick={() => { setColorFilter("all"); setSizeFilter("all"); setFeatureFilterLocal("all"); setSeasonFilter("all"); setLineFilter("all"); setBrandFilter("all"); }}
+                  className="text-[12px] tracking-wide text-primary hover:underline"
                 >
                   clear filters
                 </button>
@@ -253,14 +279,14 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value as SortKey)}
-                  className="appearance-none bg-card border border-border text-[12px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
+                  className="appearance-none bg-card border border-border text-[13px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
                 >
                   <option value="default">default sorting</option>
                   <option value="name">sort by name</option>
                   <option value="price-asc">price: low to high</option>
                   <option value="price-desc">price: high to low</option>
                 </select>
-                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[10px]">▾</span>
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[11px]">▾</span>
               </div>
             </div>
 
@@ -281,7 +307,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                       key={t.key}
                       onClick={() => setActiveTag(t.key)}
                       className={
-                        "px-3 py-1 text-[11px] tracking-wide transition-colors border " +
+                        "px-3 py-1 text-[12px] tracking-wide transition-colors border " +
                         (active
                           ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
                           : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
@@ -303,7 +329,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                       key={t.key}
                       onClick={() => setActiveSub(t.key)}
                       className={
-                        "px-3 py-1 text-[11px] tracking-wide transition-colors border " +
+                        "px-3 py-1 text-[12px] tracking-wide transition-colors border " +
                         (active
                           ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
                           : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
@@ -318,6 +344,40 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
           </div>
         </div>
       </section>
+
+      {brands.length > 0 && (
+        <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pb-8">
+          <div className="flex flex-wrap gap-6" role="group" aria-label="collaboration partners">
+            {brands.map((b) => {
+              const on = brandFilter === b.name;
+              return (
+                <button
+                  key={b.name}
+                  type="button"
+                  onClick={() => setBrandFilter(on ? "all" : b.name)}
+                  aria-pressed={on}
+                  className="group flex flex-col items-center gap-2 w-28"
+                >
+                  <span
+                    className={`h-24 w-24 rounded-full overflow-hidden bg-brand-light flex items-center justify-center transition ring-offset-2 ring-offset-background ${
+                      on ? "ring-2 ring-primary" : "ring-1 ring-border group-hover:ring-foreground/60"
+                    }`}
+                  >
+                    {b.img ? (
+                      <img src={b.img} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-xs text-center px-2">{b.name}</span>
+                    )}
+                  </span>
+                  <span className={`text-sm tracking-wide ${on ? "text-primary" : "text-foreground/80 group-hover:text-primary"}`}>
+                    {b.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pb-20">
         {items.length === 0 && scopedItems.length > 0 ? (
@@ -351,23 +411,23 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       />
                     ) : (
-                      <span className="text-foreground/30 text-[10px] tracking-wide px-4 text-center leading-snug">
+                      <span className="text-foreground/30 text-[11px] tracking-wide px-4 text-center leading-snug">
                         {p.name}
                       </span>
                     )}
                   </div>
                   <div className="mt-3 px-2">
-                    <h3 className="text-[12px] leading-snug text-foreground group-hover:text-primary transition-colors">
+                    <h3 className="text-[13px] leading-snug text-foreground group-hover:text-primary transition-colors">
                       {p.name}
                     </h3>
                     {external.isExternal && external.externalUrl ? (
-                      <p className="text-[11px] text-primary mt-1.5 uppercase tracking-wider">visit site →</p>
+                      <p className="text-[12px] text-primary mt-1.5 uppercase tracking-wider">visit site →</p>
                     ) : (currency === "CAD" ? p.priceCAD : p.priceHKD) > 0 ? (
-                      <p className="num text-[12px] text-primary mt-1.5 font-medium">
+                      <p className="num text-[13px] text-primary mt-1.5 font-medium">
                         {currency} {(currency === "CAD" ? p.priceCAD : p.priceHKD).toFixed(2)}
                       </p>
                     ) : (
-                      <p className="text-[11px] text-foreground/50 mt-1.5 tracking-wide">price on request</p>
+                      <p className="text-[12px] text-foreground/50 mt-1.5 tracking-wide">price on request</p>
                     )}
                     {p.colors.length > 1 && (
                       <div className="flex gap-1 justify-center mt-2">
@@ -442,7 +502,7 @@ function FilterSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none bg-card border border-border text-[12px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
+        className="appearance-none bg-card border border-border text-[13px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
       >
         <option value="all">all {label}s</option>
         {options.map((o) => {
@@ -455,7 +515,7 @@ function FilterSelect({
           );
         })}
       </select>
-      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[10px]">▾</span>
+      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[11px]">▾</span>
     </div>
   );
 }
@@ -478,7 +538,7 @@ function ChipBar({ options, active, onChange, label }: {
             onClick={() => onChange(t.key)}
             aria-pressed={on}
             className={
-              "px-3 py-1 text-[11px] tracking-wide transition-colors border " +
+              "px-3 py-1 text-[12px] tracking-wide transition-colors border " +
               (on
                 ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
                 : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")

@@ -57,7 +57,7 @@ function ContactPage() {
           <div className="bg-[#8f8f8f] text-white px-8 md:px-10 py-10 md:py-12">
             <p className="text-sm md:text-base tracking-[0.35em] uppercase text-center">contact</p>
 
-            <div className="mt-8 space-y-6 text-[13px] leading-relaxed">
+            <div className="mt-8 space-y-6 text-[14px] leading-relaxed">
               <div>
                 <p className="font-semibold">hong kong office</p>
               </div>
@@ -95,7 +95,7 @@ function ContactPage() {
 
       {/* Enquiry form */}
       <section className="max-w-2xl mx-auto px-6 py-16">
-        <h2 className="text-2xl font-light">send a message</h2>
+        <h2 className="text-2xl font-normal">send a message</h2>
         <p className="mt-2 text-sm text-foreground/60">
           fill in the form below and we'll be in touch shortly.
         </p>
@@ -104,7 +104,7 @@ function ContactPage() {
           <Field label="email" type="email" value={f.email} onChange={(v) => setF({ ...f, email: v })} />
           <Field label="subject" value={f.subject} onChange={(v) => setF({ ...f, subject: v })} />
           <label className="block">
-            <span className="text-[11px] tracking-wide text-foreground/60">message</span>
+            <span className="text-[12px] tracking-wide text-foreground/60">message</span>
             <textarea rows={6} value={f.message} onChange={(e) => setF({ ...f, message: e.target.value })} className="mt-1 w-full bg-card border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
           </label>
           <button disabled={busy} className="bg-primary text-primary-foreground px-8 py-3 text-xs tracking-[0.2em] uppercase disabled:opacity-60">
@@ -119,7 +119,7 @@ function ContactPage() {
 function Field({ label, type = "text", value, onChange }: { label: string; type?: string; value: string; onChange: (v: string) => void }) {
   return (
     <label className="block">
-      <span className="text-[11px] tracking-wide text-foreground/60">{label}</span>
+      <span className="text-[12px] tracking-wide text-foreground/60">{label}</span>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full bg-card border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
     </label>
   );

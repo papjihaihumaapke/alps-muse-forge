@@ -19,7 +19,7 @@ export function Footer() {
           dividers, which is what made the 2-up layout look ragged when the
           columns had wildly different heights. md/lg structure is unchanged. */}
       <div
-        className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 pt-0 pb-10 grid grid-cols-1 md:grid-cols-3 text-[11px] leading-[1.4]
+        className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 pt-0 pb-10 grid grid-cols-1 md:grid-cols-3 text-[12px] leading-[1.4]
           lg:[grid-template-columns:0.65fr_0.65fr_1.1fr_1.35fr_1.1fr_0.75fr]
           [&>*]:border-foreground/40 [&>*]:border-t-2
           md:[&>*:nth-child(-n+3)]:border-t-0
@@ -84,8 +84,8 @@ export function Footer() {
                 hash={a.id}
                 className="text-foreground/80 hover:text-primary block"
               >
-                <span className="block font-medium text-foreground text-[11px]">{a.organization}</span>
-                <span className="block text-foreground/70 text-[10px]">
+                <span className="block font-medium text-foreground text-[12px]">{a.organization}</span>
+                <span className="block text-foreground/70 text-[11px]">
                   {a.category} {a.year} — {a.level}
                 </span>
               </Link>
@@ -96,7 +96,7 @@ export function Footer() {
         <Col title="find us">
           <div className="space-y-5">
             <div>
-              <p className="text-foreground font-semibold mb-2 text-[12px] tracking-wider">ALPS</p>
+              <p className="text-foreground font-semibold mb-2 text-[13px] tracking-wider">ALPS</p>
               <div className="flex flex-wrap items-center gap-1.5">
                 <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
                 <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
@@ -111,7 +111,7 @@ export function Footer() {
               </div>
             </div>
             <div>
-              <p className="text-foreground font-semibold mb-2 text-[12px]">vegan skincare</p>
+              <p className="text-foreground font-semibold mb-2 text-[13px]">vegan skincare</p>
               <div className="flex flex-wrap items-center gap-1.5">
                 <SocialIcon href={SOCIALS.skincareFacebook} label="skincare facebook"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
                 <SocialIcon href={SOCIALS.skincareInstagram} label="skincare instagram (english)"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
@@ -163,7 +163,7 @@ function NewsletterBar() {
   };
   return (
     <div className="bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px]">
+      <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[12px]">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
           <span className="tracking-[0.2em] uppercase">stay connected</span>
           <form className="flex items-center w-full sm:w-auto" onSubmit={submit}>
@@ -172,9 +172,9 @@ function NewsletterBar() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="hello@youremail.com"
-              className="bg-white/15 placeholder:text-white/70 text-white px-3 py-1.5 text-[11px] w-full sm:w-64 min-w-0 focus:outline-none"
+              className="bg-white/15 placeholder:text-white/70 text-white px-3 py-1.5 text-[12px] w-full sm:w-64 min-w-0 focus:outline-none"
             />
-            <button disabled={busy} className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 text-[11px] tracking-wide border-l border-white/20 disabled:opacity-60 shrink-0">
+            <button disabled={busy} className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 text-[12px] tracking-wide border-l border-white/20 disabled:opacity-60 shrink-0">
               {busy ? "…" : "subscribe"}
             </button>
           </form>
@@ -188,7 +188,7 @@ function NewsletterBar() {
 function Col({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={`flex flex-col px-0 py-5 md:px-4 md:py-3 lg:py-0 ${className}`}>
-      {title && <h4 className="text-[13px] tracking-wide text-foreground font-semibold mb-3">{title}</h4>}
+      {title && <h4 className="text-[14px] tracking-wide text-foreground font-semibold mb-3">{title}</h4>}
       <div className="flex flex-col gap-1">{children}</div>
     </div>
   );

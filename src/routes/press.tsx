@@ -56,7 +56,7 @@ function LevelBadge({
   const display = level === "honourable mention" ? "honourable" : level;
   return (
     <span
-      className={`inline-flex items-center justify-center gap-1.5 h-7 px-3 text-[10px] tracking-[0.18em] uppercase ${LEVEL_STYLES[level]} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 h-7 px-3 text-[11px] tracking-[0.18em] uppercase ${LEVEL_STYLES[level]} ${className}`}
     >
       <span aria-hidden className="font-semibold">
         {level === "gold" ? "★★★" : level === "silver" ? "★★" : level === "bronze" ? "★" : level === "winner" ? "✓" : "◆"}
@@ -112,7 +112,7 @@ function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }
       </div>
 
       {/* year */}
-      <span className="num mt-3 text-[10px] tracking-[0.25em] text-primary">
+      <span className="num mt-3 text-[11px] tracking-[0.25em] text-primary">
         {award.year}
       </span>
 
@@ -123,14 +123,14 @@ function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }
 
       {/* organization/name — city on top, rest on bottom */}
       <div className="mt-3 leading-tight">
-        <p className="text-[12px] font-medium">{orgTop}</p>
+        <p className="text-[13px] font-medium">{orgTop}</p>
         {orgBottom && (
-          <p className="text-[12px] font-medium">{orgBottom}</p>
+          <p className="text-[13px] font-medium">{orgBottom}</p>
         )}
       </div>
 
       {/* category (bottom-aligned across cards) */}
-      <p className="mt-auto pt-3 text-[11px] text-foreground/70 leading-tight whitespace-nowrap">
+      <p className="mt-auto pt-3 text-[12px] text-foreground/70 leading-tight whitespace-nowrap">
         {award.category}
       </p>
     </button>
@@ -183,7 +183,7 @@ function AwardDialog({
             <div className="relative z-10 w-full flex flex-col items-center gap-5">
               <div className="text-center text-white bg-black/50 backdrop-blur-sm px-6 py-3 rounded-sm">
                 <div className="flex items-center justify-center gap-3 mb-2">
-                  <span className="num text-[11px] tracking-[0.25em] text-white">{award.year}</span>
+                  <span className="num text-[12px] tracking-[0.25em] text-white">{award.year}</span>
                   <LevelBadge level={award.level} />
                 </div>
                 <DialogTitle className="text-xl md:text-2xl font-normal text-white">
@@ -234,7 +234,7 @@ function AwardDialog({
                   href={award.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-white hover:text-primary-foreground bg-primary px-4 py-2 tracking-[0.15em] uppercase text-[11px]"
+                  className="inline-flex items-center gap-2 text-sm text-white hover:text-primary-foreground bg-primary px-4 py-2 tracking-[0.15em] uppercase text-[12px]"
                 >
                   view award listing <ExternalLink className="h-3.5 w-3.5" />
                 </a>
@@ -257,21 +257,21 @@ function MilestoneSection({ section }: { section: PageSection }) {
   const copy = (
     <div>
       {section.eyebrow && (
-        <span className="num text-[11px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
+        <span className="num text-[12px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
       )}
       {section.entry_date && (
-        <span className="num block text-[11px] tracking-[0.25em] text-foreground/60 mt-2">
+        <span className="num block text-[12px] tracking-[0.25em] text-foreground/60 mt-2">
           {new Date(`${section.entry_date}T00:00:00`).toLocaleDateString("en-GB", { month: "long", year: "numeric" }).toLowerCase()}
         </span>
       )}
-      {section.heading && <h3 className="text-2xl font-light mt-3">{section.heading}</h3>}
+      {section.heading && <h3 className="text-2xl font-normal mt-3">{section.heading}</h3>}
       {section.subheading && (
-        <p className="mt-3 text-[11px] tracking-[0.25em] uppercase text-foreground/60">
+        <p className="mt-3 text-[12px] tracking-[0.25em] uppercase text-foreground/60">
           {section.subheading}
         </p>
       )}
       {paragraphs.length > 0 && (
-        <div className="mt-5 space-y-4 text-foreground/80 leading-relaxed text-[15px]">
+        <div className="mt-5 space-y-4 text-foreground/80 leading-relaxed text-[16px]">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
@@ -292,12 +292,12 @@ function MilestoneSection({ section }: { section: PageSection }) {
   );
 
   if (section.images.length + section.video_urls.length === 0) {
-    return <article className="max-w-3xl">{copy}</article>;
+    return <article className="max-w-5xl">{copy}</article>;
   }
 
   // Picture/video carousel on the left, text on the right (stacked on phones).
   return (
-    <article className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+    <article className="grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-8 md:gap-12 items-start">
       <MediaStrip
         images={section.images}
         videos={section.video_urls}
@@ -342,8 +342,8 @@ function PressPage() {
 
   return (
     <Shell>
-      <section className="max-w-6xl mx-auto px-6 py-20">
-        <h1 className="text-4xl font-light">milestones</h1>
+      <section className="max-w-[1600px] mx-auto px-6 lg:px-10 py-20">
+        <h1 className="text-4xl font-normal">milestones</h1>
         <p className="mt-4 text-sm text-foreground/60 max-w-xl">
           selected articles and editorial features written about the brand.
         </p>
@@ -380,7 +380,7 @@ function PressPage() {
           ))}
         </ul>
 
-        <h2 id="awards" className="mt-24 text-2xl font-light">recognitions</h2>
+        <h2 id="awards" className="mt-24 text-2xl font-normal">recognitions</h2>
         <p className="mt-3 text-sm text-foreground/60 max-w-xl">
           tap any award to view the full details and certificate.
         </p>

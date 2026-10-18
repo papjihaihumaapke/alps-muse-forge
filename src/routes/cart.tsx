@@ -15,7 +15,7 @@ function Cart() {
   return (
     <Shell>
       <div className="max-w-4xl mx-auto px-6 py-16">
-        <h1 className="text-3xl font-light">your bag</h1>
+        <h1 className="text-3xl font-normal">your bag</h1>
         {items.length === 0 ? (
           <div className="mt-8">
             <p className="text-foreground/60">your bag is empty.</p>
@@ -44,11 +44,11 @@ function Cart() {
               ))}
             </div>
             <aside className="bg-card border border-border p-6 h-fit">
-              <h3 className="text-[11px] tracking-[0.25em] uppercase">summary</h3>
+              <h3 className="text-[12px] tracking-[0.25em] uppercase">summary</h3>
               <div className="num text-sm mt-6 flex justify-between">
                 <span>subtotal</span><span>{formatMoney(subtotal, currency)}</span>
               </div>
-              <p className="text-[10px] text-foreground/50 mt-2">shipping & tax calculated at checkout</p>
+              <p className="text-[11px] text-foreground/50 mt-2">shipping & tax calculated at checkout</p>
               <Link to="/checkout" className="block text-center mt-6 bg-primary text-primary-foreground py-3 text-xs tracking-[0.2em] uppercase">
                 proceed to checkout
               </Link>
