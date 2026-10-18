@@ -241,6 +241,18 @@ const blankProduct = (): ProductRow => ({
   gallery_urls: [], color_swatches: [], season: "all-season", display_order: 0,
 });
 
+/** Re-split list entries saved before "/" was a separator (e.g. one hashtag holding "a / b / c"). */
+function normalizeLists(p: ProductRow): ProductRow {
+  const fix = (v: string[] | null | undefined) => splitList(joinList(v ?? []));
+  return {
+    ...p,
+    sizes: fix(p.sizes),
+    colors: fix(p.colors),
+    tags: fix(p.tags),
+    hashtags: fix(p.hashtags).map((h) => h.replace(/^#+/, "").trim()).filter(Boolean),
+  };
+}
+
 function ProductsTab() {
   const [rows, setRows] = useState<ProductRow[]>([]);
   const [editing, setEditing] = useState<ProductRow | null>(null);
@@ -290,7 +302,7 @@ function ProductsTab() {
   }, [filtered]);
 
   const save = async (p: ProductRow) => {
-    const payload: any = { ...p };
+    const payload: any = normalizeLists(p);
     payload.color_swatches = payload.color_swatches ?? [];
     payload.gallery_urls = payload.gallery_urls ?? [];
     payload.hashtags = payload.hashtags ?? [];
@@ -428,7 +440,7 @@ function ProductsTab() {
                         </div>
                         <div className="text-xs w-16 text-center">{p.hidden ? <span className="text-muted-foreground">hidden</span> : <span className="text-primary">live</span>}</div>
                         <div className="flex gap-3 text-xs">
-                          <button onClick={() => setEditing(p)} className="link-red">edit</button>
+                          <button onClick={() => setEditing(normalizeLists(p))} className="link-red">edit</button>
                           <button onClick={() => remove(p.id!, p.name)} className="link-red">delete</button>
                         </div>
                       </div>
@@ -1015,13 +1027,13 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
             <Field label="hashtags (separate with / — for marketing / social)">
               <ListInput
                 value={product.hashtags}
-                onChange={(v) => set("hashtags", v.map((h) => h.replace(/^#/, "")))}
+                onChange={(v) => set("hashtags", v)}
                 placeholder="e.g. silver ion / antibacteria / madeinhk"
               />
               {product.hashtags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {product.hashtags.map((h) => (
-                    <span key={h} className="text-[10px] bg-muted px-2 py-0.5 rounded-full">#{h}</span>
+                    <span key={h} className="text-[10px] bg-muted px-2 py-0.5 rounded-full">{h.replace(/^#+/, "")}</span>
                   ))}
                 </div>
               )}
