@@ -173,7 +173,8 @@ function AdminPage() {
 /* ============================================================
    PRODUCTS
    ============================================================ */
-type Swatch = { name: string; hex?: string; swatch_url?: string; image_url?: string };
+// image_urls: every photo of the product in this colour; image_url mirrors the first for older readers.
+type Swatch = { name: string; hex?: string; swatch_url?: string; image_url?: string; image_urls?: string[] };
 type ProductRow = {
   id?: string;
   slug: string;
@@ -561,27 +562,47 @@ function VariantStockGrid({ colors, sizes, stock, onChange }: {
   );
 }
 
-/** Pick one of the product's already-uploaded gallery photos for a colour dot. */
-function GalleryImagePicker({ urls, slug, onPick }: { urls: string[]; slug: string; onPick: (url: string) => void }) {
-  const [open, setOpen] = useState(false);
+/** Pick any number of the product's already-uploaded gallery photos for a colour. */
+function GalleryImagePicker({ urls, slug, selected, onChange }: {
+  urls: string[]; slug: string; selected: string[]; onChange: (urls: string[]) => void;
+}) {
+  const toggle = (u: string) =>
+    onChange(selected.includes(u) ? selected.filter((x) => x !== u) : [...selected, u]);
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover>
       <PopoverTrigger asChild>
         <Button type="button" variant="outline" size="sm" disabled={!urls.length} title={urls.length ? undefined : "upload gallery images first"}>
           choose from gallery
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
-        <div className="grid grid-cols-4 gap-1.5 max-h-72 overflow-y-auto">
-          {urls.map((u) => (
-            <button key={u} type="button" onClick={() => { onPick(u); setOpen(false); }} className="aspect-square border border-border hover:border-primary">
-              <ProductThumb url={u} slug={slug} className="h-full w-full object-cover" />
-            </button>
-          ))}
+      <PopoverContent className="w-96">
+        <p className="text-xs text-muted-foreground mb-2">click every photo of this colour ({selected.length} selected)</p>
+        <div className="grid grid-cols-4 gap-1.5 max-h-80 overflow-y-auto">
+          {urls.map((u) => {
+            const on = selected.includes(u);
+            return (
+              <button
+                key={u} type="button" onClick={() => toggle(u)} aria-pressed={on}
+                className={`relative aspect-square border-2 ${on ? "border-primary" : "border-border hover:border-foreground/60"}`}
+              >
+                <ProductThumb url={u} slug={slug} className="h-full w-full object-cover" />
+                {on && (
+                  <span className="absolute top-0.5 right-0.5 bg-primary text-primary-foreground text-[10px] leading-none px-1 py-0.5">
+                    {selected.indexOf(u) + 1}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </PopoverContent>
     </Popover>
   );
+}
+
+function swatchImages(s: Swatch | undefined): string[] {
+  if (!s) return [];
+  return s.image_urls?.length ? s.image_urls : s.image_url ? [s.image_url] : [];
 }
 
 /* ---------- Editor modal ---------- */
@@ -653,12 +674,19 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
     set("color_swatches", next);
   };
 
-  const swatchImageUpload = async (idx: number, file: File) => {
-    const u = await uploadProductImage(file, `${product.slug}-color-${product.color_swatches[idx]?.name || idx}`);
-    if (!u) return;
+  const setSwatchImages = (idx: number, urls: string[]) => {
     const next = [...product.color_swatches];
-    next[idx] = { ...next[idx], image_url: u };
+    next[idx] = { ...next[idx], image_urls: urls, image_url: urls[0] };
     set("color_swatches", next);
+  };
+
+  const swatchImageUpload = async (idx: number, files: FileList) => {
+    const urls: string[] = [];
+    for (const f of Array.from(files)) {
+      const u = await uploadProductImage(f, `${product.slug}-color-${product.color_swatches[idx]?.name || idx}`);
+      if (u) urls.push(u);
+    }
+    if (urls.length) setSwatchImages(idx, [...swatchImages(product.color_swatches[idx]), ...urls]);
   };
 
   const addColorRow = () => {
@@ -858,28 +886,32 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                       onChange={(e) => e.target.files?.[0] && swatchUpload(i, e.target.files[0])}
                     />
                   </div>
-                  <div className="flex items-center gap-2 ml-auto">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">photo for this color</span>
-                    {s.image_url
-                      ? <img src={s.image_url} alt="" className="h-10 w-10 object-cover border border-border" />
-                      : <div className="h-10 w-10 bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
+                  <button
+                    onClick={() => set("color_swatches", product.color_swatches.filter((_, j) => j !== i))}
+                    className="link-red text-xs ml-auto"
+                  >remove colour</button>
+                  <div className="basis-full flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">photos for this colour</span>
+                    {swatchImages(s).map((u) => (
+                      <div key={u} className="relative h-12 w-12 border border-border group">
+                        <ProductThumb url={u} slug={product.slug} className="h-full w-full object-cover" />
+                        <button
+                          type="button" aria-label="remove photo from this colour"
+                          onClick={() => setSwatchImages(i, swatchImages(s).filter((x) => x !== u))}
+                          className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-background border border-border text-[10px] leading-none opacity-0 group-hover:opacity-100"
+                        >×</button>
+                      </div>
+                    ))}
                     <GalleryImagePicker
                       urls={product.gallery_urls ?? []}
                       slug={product.slug}
-                      onPick={(url) => {
-                        const next = [...product.color_swatches];
-                        next[i] = { ...next[i], image_url: url };
-                        set("color_swatches", next);
-                      }}
+                      selected={swatchImages(s)}
+                      onChange={(urls) => setSwatchImages(i, urls)}
                     />
                     <input
-                      type="file" accept="image/*" className="text-xs w-44"
-                      onChange={(e) => e.target.files?.[0] && swatchImageUpload(i, e.target.files[0])}
+                      type="file" accept="image/*" multiple className="text-xs w-44"
+                      onChange={(e) => { if (e.target.files?.length) swatchImageUpload(i, e.target.files); e.target.value = ""; }}
                     />
-                    <button
-                      onClick={() => set("color_swatches", product.color_swatches.filter((_, j) => j !== i))}
-                      className="link-red text-xs"
-                    >remove</button>
                   </div>
                 </div>
               ))}

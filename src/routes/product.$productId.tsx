@@ -62,7 +62,7 @@ function ProductPage() {
     videoUrls?: string[];
     galleryUrls?: string[];
     variantStock?: VariantStock;
-    swatches?: Array<{ name: string; hex?: string; swatch_url?: string; image_url?: string }>;
+    swatches?: Array<{ name: string; hex?: string; swatch_url?: string; image_url?: string; image_urls?: string[] }>;
   };
 
   const isPersonalCare = product
@@ -78,11 +78,20 @@ function ProductPage() {
     const seen = new Set<string>();
     const out: string[] = [];
     const push = (u?: string) => { if (u && !seen.has(u)) { seen.add(u); out.push(u); } };
-    (dbExtras.swatches ?? []).forEach((s) => push(s.image_url));
+    const swatches = dbExtras.swatches ?? [];
+    const colourImages = swatches.find((s) => s.name === color)?.image_urls ?? [];
+    if (colourImages.length) {
+      // This colour's photos, then any shots not tied to a colour (details, packaging).
+      const linked = new Set(swatches.flatMap((s) => s.image_urls ?? []));
+      colourImages.forEach(push);
+      (dbExtras.galleryUrls ?? []).filter((u) => !linked.has(u)).forEach(push);
+      return out;
+    }
+    swatches.forEach((s) => push(s.image_url));
     (dbExtras.galleryUrls ?? []).forEach(push);
     productGallery(product.id, product.colors).forEach(push);
     return out;
-  }, [product, dbExtras.galleryUrls, dbExtras.swatches]);
+  }, [product, color, dbExtras.galleryUrls, dbExtras.swatches]);
 
   const [activeImage, setActiveImage] = useState<string | undefined>(undefined);
   const [zoomOpen, setZoomOpen] = useState(false);

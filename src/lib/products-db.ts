@@ -24,7 +24,7 @@ export type DbProduct = {
   tags: string[];
   season: string;
   gallery_urls: string[];
-  color_swatches: Array<{ name: string; hex?: string; swatch_url?: string }>;
+  color_swatches: Array<{ name: string; hex?: string; swatch_url?: string; image_url?: string; image_urls?: string[] }>;
   image_url: string | null;
   hidden: boolean;
   is_external?: boolean;
@@ -84,7 +84,12 @@ export function dbProductToCatalog(d: DbProduct): Product & {
     careInstructions: d.care_instructions ?? null,
     videoUrls: (d.video_urls ?? []).filter(Boolean),
     galleryUrls: gallery.length ? gallery : fallback,
-    swatches: d.color_swatches ?? [],
+    // Colour photos come from the same gallery, so resolve them the same way.
+    swatches: (d.color_swatches ?? []).map((sw) => {
+      const imgs = (sw.image_urls?.length ? sw.image_urls : sw.image_url ? [sw.image_url] : [])
+        .filter(isProdSafe).filter(isRenderable).map(localizeAssetUrl);
+      return { ...sw, image_urls: imgs, image_url: imgs[0] };
+    }),
     season: d.season,
     isExternal: d.is_external ?? false,
     externalUrl: d.external_url ?? null,
