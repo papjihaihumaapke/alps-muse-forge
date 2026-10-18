@@ -81,10 +81,8 @@ function ProductPage() {
     const swatches = dbExtras.swatches ?? [];
     const colourImages = swatches.find((s) => s.name === color)?.image_urls ?? [];
     if (colourImages.length) {
-      // This colour's photos, then any shots not tied to a colour (details, packaging).
-      const linked = new Set(swatches.flatMap((s) => s.image_urls ?? []));
+      // Only this colour's photos.
       colourImages.forEach(push);
-      (dbExtras.galleryUrls ?? []).filter((u) => !linked.has(u)).forEach(push);
       return out;
     }
     swatches.forEach((s) => push(s.image_url));
