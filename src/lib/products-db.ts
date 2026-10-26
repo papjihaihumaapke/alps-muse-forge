@@ -106,7 +106,8 @@ export function useDbProducts() {
         .from("products")
         .select("*")
         .eq("hidden", false)
-        .order("display_order", { ascending: true });
+        .order("display_order", { ascending: true })
+        .order("name");
       if (error) throw error;
       return (data ?? []) as unknown as DbProduct[];
     },
@@ -124,7 +125,8 @@ export function useDbProductsByCategory(slug: string) {
         .select("*")
         .eq("hidden", false)
         .eq("category", slug)
-        .order("display_order", { ascending: true });
+        .order("display_order", { ascending: true })
+        .order("name");
       if (error) throw error;
       return (data ?? []) as unknown as DbProduct[];
     },

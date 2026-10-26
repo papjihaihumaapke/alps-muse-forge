@@ -19,7 +19,7 @@ export function Footer() {
           dividers, which is what made the 2-up layout look ragged when the
           columns had wildly different heights. md/lg structure is unchanged. */}
       <div
-        className="mx-auto max-w-[1760px] px-6 sm:px-8 lg:px-12 pt-0 pb-10 grid grid-cols-1 md:grid-cols-3 text-[12px] leading-[1.4]
+        className="px-6 lg:px-10 pt-0 pb-10 grid grid-cols-1 md:grid-cols-3 text-[12px] leading-[1.4]
           lg:[grid-template-columns:0.65fr_0.65fr_1.1fr_1.35fr_1.1fr_0.75fr]
           [&>*]:border-foreground/40 [&>*]:border-t-2
           md:[&>*:nth-child(-n+3)]:border-t-0
@@ -163,7 +163,7 @@ function NewsletterBar() {
   };
   return (
     <div className="bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-[1760px] px-6 lg:px-10 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[12px]">
+      <div className="px-6 lg:px-10 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[12px]">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
           <span className="tracking-[0.2em] uppercase">stay connected</span>
           <form className="flex items-center w-full sm:w-auto" onSubmit={submit}>

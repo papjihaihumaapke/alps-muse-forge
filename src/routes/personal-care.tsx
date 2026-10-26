@@ -35,12 +35,12 @@ const TILES: Tile[] = [
 function PersonalCareHub() {
   return (
     <Shell>
-      <section className="px-3 md:px-6 pt-8 pb-4">
+      <section className="px-6 lg:px-10 pt-10 pb-4">
         <h1 className="text-primary text-[16px] tracking-wide">alps vegan skin & personal care</h1>
         <p className="text-foreground/70 text-sm mt-2">made to make a difference.</p>
       </section>
 
-      <section className="px-3 md:px-6 pb-16">
+      <section className="px-6 lg:px-10 pb-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
           {TILES.map((t, i) => (
             <Link

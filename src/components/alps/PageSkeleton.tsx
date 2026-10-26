@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  */
 export function PageSkeleton() {
   return (
-    <div className="max-w-[1760px] mx-auto px-6 lg:px-10 py-10 animate-[fade-in_0.2s_ease-out]">
+    <div className="px-6 lg:px-10 py-10 animate-[fade-in_0.2s_ease-out]">
       <Skeleton className="h-6 w-40 mb-8" />
       <Skeleton className="h-[42vh] w-full mb-10" />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">

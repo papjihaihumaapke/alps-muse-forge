@@ -145,10 +145,11 @@ function ProductPage() {
 
   return (
     <Shell>
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* LEFT: heading, price, pictures · RIGHT: buying controls + every detail section */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-8 lg:gap-14">
-          <div className="lg:sticky lg:top-24 lg:self-start">
+      <div className="px-6 lg:px-10 py-10">
+        {/* LEFT: heading, price, pictures, then the detail sections · RIGHT: buying controls,
+            description and technology. On phones it stacks pictures → buying → details. */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,min(50%,78vh))_minmax(0,1fr)] lg:grid-rows-[auto_1fr] gap-x-14 gap-y-8">
+          <div className="lg:col-start-1 lg:row-start-1">
             <span className="num text-xs tracking-[0.3em] text-primary uppercase">
               {product.category.replace(/-/g, " ")}
             </span>
@@ -250,7 +251,7 @@ function ProductPage() {
             </Dialog>
           </div>
 
-          <div>
+          <div className="lg:col-start-2 lg:row-start-1 lg:row-span-2">
             {!isPersonalCare && product.colors.length > 0 && (
               <div>
                 <h3 className="text-xs tracking-[0.25em] uppercase text-foreground/70 mb-3">
@@ -357,27 +358,27 @@ function ProductPage() {
                 )}
               </div>
             )}
-
-            {(dbExtras.designFeatures || dbExtras.composition || dbExtras.careInstructions) && (
-              <div className="mt-8 divide-y divide-border border-y border-border">
-                {dbExtras.designFeatures && (
-                  <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
-                    <ListText text={dbExtras.designFeatures} />
-                  </Accordion>
-                )}
-                {dbExtras.composition && (
-                  <Accordion title={isPersonalCare ? "ingredients" : "composition"} defaultOpen>
-                    <ListText text={dbExtras.composition} />
-                  </Accordion>
-                )}
-                {dbExtras.careInstructions && (
-                  <Accordion title={isPersonalCare ? "how to use" : "care"} defaultOpen>
-                    <ListText text={dbExtras.careInstructions} />
-                  </Accordion>
-                )}
-              </div>
-            )}
           </div>
+
+          {(dbExtras.designFeatures || dbExtras.composition || dbExtras.careInstructions) && (
+            <div className="lg:col-start-1 lg:row-start-2 lg:self-start divide-y divide-border border-y border-border">
+              {dbExtras.designFeatures && (
+                <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
+                  <ListText text={dbExtras.designFeatures} />
+                </Accordion>
+              )}
+              {dbExtras.composition && (
+                <Accordion title={isPersonalCare ? "ingredients" : "composition"} defaultOpen>
+                  <ListText text={dbExtras.composition} />
+                </Accordion>
+              )}
+              {dbExtras.careInstructions && (
+                <Accordion title={isPersonalCare ? "how to use" : "care"} defaultOpen>
+                  <ListText text={dbExtras.careInstructions} />
+                </Accordion>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Shell>

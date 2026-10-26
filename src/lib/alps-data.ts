@@ -97,12 +97,8 @@ export type Product = {
 };
 
 export const ACCESSORY_TAGS: { key: "all" | AccessoryTag; label: string }[] = [
+  // Season and line live in their own chip rows above, so only the type tags here.
   { key: "all", label: "all" },
-  { key: "all-season", label: "all season" },
-  { key: "fall-winter", label: "fall/ winter" },
-  { key: "women", label: "women" },
-  { key: "unisex", label: "unisex" },
-  { key: "kids", label: "kids" },
   { key: "handbag", label: "handbag" },
   { key: "home", label: "home" },
   { key: "travel", label: "travel" },

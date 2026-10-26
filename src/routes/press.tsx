@@ -342,7 +342,7 @@ function PressPage() {
 
   return (
     <Shell>
-      <section className="max-w-[1600px] mx-auto px-6 lg:px-10 py-20">
+      <section className="px-6 lg:px-10 py-20">
         <h1 className="text-4xl font-normal">milestones</h1>
         <p className="mt-4 text-sm text-foreground/60 max-w-xl">
           selected articles and editorial features written about the brand.

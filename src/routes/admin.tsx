@@ -16,7 +16,7 @@ import { PRODUCTS, FEATURES, PRODUCT_COLORS } from "@/lib/alps-data";
 import { productImage } from "@/lib/accessory-images";
 import { localizeAssetUrl } from "@/lib/local-asset-images";
 import { featureIcon } from "@/lib/feature-icons";
-import { ChevronDown, ChevronRight, X, Plus, Image as ImageIcon, Palette } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp, X, Plus, Image as ImageIcon, Palette } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SWATCH_LIBRARY, type SwatchGroup } from "@/lib/color-swatches";
 import {
@@ -326,6 +326,29 @@ function ProductsTab() {
     toast.success("saved"); setEditing(null); load();
   };
 
+  // Swap a product with its neighbour and renumber the category 1..n, which is
+  // the order the storefront shows.
+  const move = async (category: string, idx: number, dir: -1 | 1) => {
+    const list = rows.filter((r) => r.category === category);
+    const to = idx + dir;
+    if (to < 0 || to >= list.length) return;
+    [list[idx], list[to]] = [list[to], list[idx]];
+    const changed = list
+      .map((r, i) => ({ r, order: i + 1 }))
+      .filter(({ r, order }) => r.display_order !== order);
+    const newOrder = new Map(list.map((r, i) => [r.id, i + 1]));
+    setRows((prev) =>
+      prev
+        .map((r) => (newOrder.has(r.id) ? { ...r, display_order: newOrder.get(r.id)! } : r))
+        .sort((a, b) => a.category.localeCompare(b.category) || a.display_order - b.display_order),
+    );
+    const results = await Promise.all(
+      changed.map(({ r, order }) => supabase.from("products").update({ display_order: order }).eq("id", r.id!)),
+    );
+    const failed = results.find((x) => x.error);
+    if (failed?.error) { toast.error(failed.error.message); load(); }
+  };
+
   const remove = async (id: string, name: string) => {
     if (!confirm(`delete "${name}"?`)) return;
     const { error } = await supabase.from("products").delete().eq("id", id);
@@ -361,7 +384,7 @@ function ProductsTab() {
         <div>
           <h2 className="text-lg">{rows.length} products in database</h2>
           <p className="text-xs text-muted-foreground">
-            grouped by category. click a category to collapse it.
+            grouped by category, in the order shown on the site. use the arrows to reorder. click a category to collapse it.
             {filtering && <> showing {filtered.length} matching.</>}
           </p>
         </div>
@@ -419,10 +442,28 @@ function ProductsTab() {
 
               {open && items.length > 0 && (
                 <div className="border-t border-border divide-y divide-border">
-                  {items.map((p) => {
+                  {items.map((p, idx) => {
                     const thumb = p.gallery_urls?.[0] || p.image_url;
                     return (
                       <div key={p.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30">
+                        {!filtering && (
+                          <div className="flex flex-col shrink-0" aria-label="change order on the site">
+                            <button
+                              type="button"
+                              onClick={() => move(cat.slug, idx, -1)}
+                              disabled={idx === 0}
+                              title="move up"
+                              className="p-0.5 hover:text-primary disabled:opacity-25"
+                            ><ChevronUp className="h-4 w-4" /></button>
+                            <button
+                              type="button"
+                              onClick={() => move(cat.slug, idx, 1)}
+                              disabled={idx === items.length - 1}
+                              title="move down"
+                              className="p-0.5 hover:text-primary disabled:opacity-25"
+                            ><ChevronDown className="h-4 w-4" /></button>
+                          </div>
+                        )}
                         <div className="h-14 w-14 shrink-0 bg-muted overflow-hidden flex items-center justify-center">
                           <ProductThumb url={thumb} slug={p.slug} className="h-full w-full object-cover" />
                         </div>

@@ -153,7 +153,7 @@ function MyJourney() {
       <BioSection section={bio} isPrimary />
 
       {extraSections.length > 1 && (
-        <div className="max-w-[1600px] mx-auto px-6 lg:px-10 flex justify-end">
+        <div className="px-6 lg:px-10 flex justify-end">
           <SortSelect value={sortOrder} onChange={setSortOrder} />
         </div>
       )}
@@ -164,7 +164,7 @@ function MyJourney() {
 
       {years.length > 0 && (
         <section className="border-t border-border py-16 bg-brand-light">
-          <div className="max-w-6xl mx-auto px-6">
+          <div className="px-6 lg:px-10">
             <h2 className="text-2xl font-normal mb-2">journal</h2>
             <p className="text-[12px] tracking-[0.25em] uppercase text-foreground/60">
               shows · events · press · collaborations
@@ -300,7 +300,7 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
 
   if (isPrimary) {
     return (
-      <section className="max-w-[1600px] mx-auto px-6 lg:px-10 py-20 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-12">
+      <section className="px-6 lg:px-10 py-20 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-12">
         <img
           src={portrait ?? designer}
           alt="annie ling — atelier portrait"
@@ -316,12 +316,12 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
 
   const hasMedia = section.images.length + section.video_urls.length > 0;
   if (!hasMedia) {
-    return <section className="max-w-5xl mx-auto px-6 pb-20">{copy}</section>;
+    return <section className="px-6 lg:px-10 pb-20"><div className="max-w-5xl">{copy}</div></section>;
   }
 
   // Write-ups: picture/video carousel on the left, text on the right (stacked on phones).
   return (
-    <section className="max-w-[1600px] mx-auto px-6 lg:px-10 pb-20 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-8 md:gap-12 items-start">
+    <section className="px-6 lg:px-10 pb-20 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-8 md:gap-12 items-start">
       <MediaStrip
         images={section.images}
         videos={section.video_urls}
@@ -437,7 +437,7 @@ function JourneyPostImage({ image, title }: { image: JourneyImage; title: string
 function Section({ title, bg, children }: { title: string; bg?: string; children: React.ReactNode }) {
   return (
     <section className={`${bg ?? ""} border-t border-border py-16`}>
-      <div className="max-w-[1600px] mx-auto px-6 lg:px-10">
+      <div className="px-6 lg:px-10">
         <h2 className="text-2xl font-normal mb-8">{title}</h2>
         {children}
       </div>

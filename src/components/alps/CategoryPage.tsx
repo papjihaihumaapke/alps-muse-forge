@@ -20,29 +20,56 @@ import { productAvailableInRegion } from "@/lib/region";
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
 const SEASON_OPTIONS = [
-  { key: "all", label: "all seasons" },
+  { key: "all", label: "all" },
   { key: "spring-summer", label: "spring / summer" },
   { key: "fall-winter", label: "fall / winter" },
   { key: "all-season", label: "all season" },
 ] as const;
 
 const LINE_OPTIONS = [
-  { key: "all", label: "all lines" },
+  { key: "all", label: "all" },
   { key: "women", label: "women" },
   { key: "men", label: "men" },
   { key: "kids", label: "kids" },
   { key: "unisex", label: "unisex" },
 ] as const;
 
-/** "all-season" pieces show under every season; older single-season rows and the
- *  "fall-winter" accessory tag map onto the combined seasons. */
+/** Each season chip shows only pieces tagged with that season; older single-season
+ *  rows and the "fall-winter" accessory tag map onto the combined seasons. */
 function matchesSeason(season: string | undefined, tags: readonly string[] | undefined, active: string) {
   if (active === "all") return true;
+  const t = tags ?? [];
   const s = season ?? "all-season";
-  if (s === "all-season" || s === active) return true;
-  if (active === "spring-summer") return s === "spring" || s === "summer";
-  if (active === "fall-winter") return s === "fall" || s === "winter" || (tags ?? []).includes("fall-winter");
-  return false;
+  if (active === "spring-summer") return s === "spring-summer" || s === "spring" || s === "summer";
+  if (active === "fall-winter") return s === "fall-winter" || s === "fall" || s === "winter" || t.includes("fall-winter");
+  return s === active;
+}
+
+// Vegan care lines link to each other instead of season / line filters.
+const VEGAN_LINKS = [
+  { to: "/vegan-skincare", slug: "vegan-skincare", label: "skincare" },
+  { to: "/vegan-personal-care", slug: "vegan-personal-care", label: "personal care" },
+  { to: "/vegan-makeup", slug: "vegan-makeup", label: "make up" },
+  { to: "/vegan-supplement", slug: "vegan-supplement", label: "supplement" },
+  { to: "/vegan-tech", slug: "vegan-tech", label: "the scene behind" },
+] as const;
+
+const SUB_PREFIXES = { oc: "overcoat", jk: "jacket", tp: "top", sk: "skirt", sh: "shorts", pt: "pants", dr: "one-piece" } as const;
+const SUB_WORDS: [RegExp, string][] = [
+  [/\b(overcoat|coat|trench|parka)\b/i, "overcoat"],
+  [/\b(jacket|windbreaker|cape|blazer|vest)\b/i, "jacket"],
+  [/\b(skirt)\b/i, "skirt"],
+  [/\b(shorts)\b/i, "shorts"],
+  [/\b(pants|trousers|leggings|joggers)\b/i, "pants"],
+  [/\b(dress|jumpsuit|romper|one-piece)\b/i, "one-piece"],
+  [/\b(top|tee|t-shirt|shirt|blouse|hoodie|sweater|cardigan|cami|tank)\b/i, "top"],
+];
+
+/** Garment type from the SKU prefix (TP9102…), else from words in the name. */
+function inferSubcategory(id: string, name = ""): string | null {
+  const m = id.toLowerCase().match(/^(oc|jk|tp|sk|sh|pt|dr)/);
+  if (m) return SUB_PREFIXES[m[1] as keyof typeof SUB_PREFIXES];
+  return SUB_WORDS.find(([re]) => re.test(name))?.[1] ?? null;
 }
 
 /** Unisex pieces also show under women and men. */
@@ -61,6 +88,8 @@ function collabBrand(name: string, sub: string | null | undefined): string | nul
 
 // Clothing and accessory lines get season / line filters; vegan care lines don't.
 const SEASONAL_CATEGORIES = new Set(["innovation", "contemporary", "accessories", "collaborations"]);
+// Clothing lines also get the garment-type row.
+const GARMENT_CATEGORIES = new Set(["innovation", "contemporary"]);
 
 export function CategoryView({ slug, featureFilter, onClearFeature, afterContent }: { slug: CategorySlug; featureFilter?: string; onClearFeature?: () => void; afterContent?: React.ReactNode }) {
   const cat = CATEGORIES.find((c) => c.slug === slug);
@@ -86,16 +115,9 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
     return m;
   }, [dbRows]);
 
-  // Infer subcategory from slug prefix when DB doesn't have one set.
-  const inferSubcategory = (id: string): string | null => {
-    const m = id.toLowerCase().match(/^(oc|jk|tp|sk|sh|pt|dr)/);
-    if (!m) return null;
-    return { oc: "overcoat", jk: "jacket", tp: "top", sk: "skirt", sh: "shorts", pt: "pants", dr: "one-piece" }[m[1] as "oc"|"jk"|"tp"|"sk"|"sh"|"pt"|"dr"] ?? null;
-  };
-
   const subBySlug = useMemo(() => {
     const m = new Map<string, string | null>();
-    for (const r of dbRows) m.set(r.slug, r.subcategory ?? inferSubcategory(r.slug));
+    for (const r of dbRows) m.set(r.slug, r.subcategory ?? inferSubcategory(r.slug, r.name));
     return m;
   }, [dbRows]);
 
@@ -120,14 +142,18 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
         map.set(p.id, p as Product);
       }
     }
-    let list = Array.from(map.values());
+    // DB order is the order set in the admin panel; static-only pieces follow.
+    const dbOrder = new Map(dbList.map((p, i) => [p.id, i]));
+    let list = Array.from(map.values()).sort(
+      (a, b) => (dbOrder.get(a.id) ?? Infinity) - (dbOrder.get(b.id) ?? Infinity),
+    );
     // Region gating — hide items only stocked in the other region.
     list = list.filter((p) => productAvailableInRegion(stockBySlug.get(p.id) ?? {}, currency));
     if (slug === "accessories" && activeTag !== "all") {
       list = list.filter((p) => p.tags?.includes(activeTag));
     }
-    if (slug === "innovation" && activeSub !== "all") {
-      list = list.filter((p) => (subBySlug.get(p.id) ?? inferSubcategory(p.id)) === activeSub);
+    if (GARMENT_CATEGORIES.has(slug) && activeSub !== "all") {
+      list = list.filter((p) => (subBySlug.get(p.id) ?? inferSubcategory(p.id, p.name)) === activeSub);
     }
     if (slug === "collaborations" && brandFilter !== "all") {
       list = list.filter((p) => collabBrand(p.name, subBySlug.get(p.id)) === brandFilter);
@@ -204,7 +230,8 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
 
   const showTagBar = slug === "accessories";
   const showSeasonBar = SEASONAL_CATEGORIES.has(slug);
-  const showSubBar = slug === "innovation";
+  const showSubBar = GARMENT_CATEGORIES.has(slug);
+  const isVegan = slug.startsWith("vegan-");
   const SUB_OPTIONS: { key: string; label: string }[] = [
     { key: "all", label: "all" },
     { key: "overcoat", label: "overcoat" },
@@ -218,7 +245,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
 
   return (
     <Shell>
-      <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pt-10 pb-6">
+      <section className="px-6 lg:px-10 pt-10 pb-6">
         <div className="flex items-start justify-between flex-wrap gap-6">
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-primary text-[16px] tracking-wide">{cat.name}</h1>
@@ -250,7 +277,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                   options={colorOptions}
                 />
               )}
-              {sizeOptions.length > 0 && (
+              {sizeOptions.length > 0 && !isVegan && (
                 <FilterSelect
                   value={sizeFilter}
                   onChange={setSizeFilter}
@@ -266,10 +293,10 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                   options={featureOptions.map((f) => ({ value: f.key, label: f.name }))}
                 />
               )}
-              {(colorFilter !== "all" || sizeFilter !== "all" || featureFilterLocal !== "all" || seasonFilter !== "all" || lineFilter !== "all" || brandFilter !== "all") && (
+              {(colorFilter !== "all" || sizeFilter !== "all" || featureFilterLocal !== "all" || seasonFilter !== "all" || lineFilter !== "all" || brandFilter !== "all" || activeTag !== "all" || activeSub !== "all") && (
                 <button
                   type="button"
-                  onClick={() => { setColorFilter("all"); setSizeFilter("all"); setFeatureFilterLocal("all"); setSeasonFilter("all"); setLineFilter("all"); setBrandFilter("all"); }}
+                  onClick={() => { setColorFilter("all"); setSizeFilter("all"); setFeatureFilterLocal("all"); setSeasonFilter("all"); setLineFilter("all"); setBrandFilter("all"); setActiveTag("all"); setActiveSub("all"); }}
                   className="text-[12px] tracking-wide text-primary hover:underline"
                 >
                   clear filters
@@ -296,6 +323,26 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                 <ChipBar options={SEASON_OPTIONS} active={seasonFilter} onChange={setSeasonFilter} label="season" />
                 <ChipBar options={LINE_OPTIONS} active={lineFilter} onChange={setLineFilter} label="line" />
               </>
+            )}
+
+            {isVegan && (
+              <div className="flex flex-wrap justify-end gap-1.5 max-w-[760px]" role="navigation" aria-label="vegan categories">
+                {VEGAN_LINKS.map((v) => (
+                  <Link
+                    key={v.slug}
+                    to={v.to}
+                    aria-current={v.slug === slug ? "page" : undefined}
+                    className={
+                      "px-3 py-1 text-[12px] tracking-wide transition-colors border " +
+                      (v.slug === slug
+                        ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
+                        : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
+                    }
+                  >
+                    {v.label}
+                  </Link>
+                ))}
+              </div>
             )}
 
             {showTagBar && (
@@ -346,7 +393,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
       </section>
 
       {brands.length > 0 && (
-        <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pb-8">
+        <section className="px-6 lg:px-10 pb-8">
           <div className="flex flex-wrap gap-6" role="group" aria-label="collaboration partners">
             {brands.map((b) => {
               const on = brandFilter === b.name;
@@ -379,7 +426,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
         </section>
       )}
 
-      <section className="max-w-[1760px] mx-auto px-6 lg:px-10 pb-20">
+      <section className="px-6 lg:px-10 pb-20">
         {items.length === 0 && scopedItems.length > 0 ? (
           <div className="py-20 text-center">
             <p className="text-foreground/70 text-sm">no products match these filters.</p>
