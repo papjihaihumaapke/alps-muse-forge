@@ -269,7 +269,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
 
           <div className="flex flex-col items-end gap-4 ml-auto">
             <div className="flex flex-wrap justify-end items-center gap-2">
-              {colorOptions.length > 0 && (
+              {colorOptions.length > 0 && !isVegan && (
                 <FilterSelect
                   value={colorFilter}
                   onChange={setColorFilter}
@@ -285,7 +285,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                   options={sizeOptions}
                 />
               )}
-              {featureOptions.length > 0 && !featureFilter && (
+              {featureOptions.length > 0 && !featureFilter && !isVegan && (
                 <FilterSelect
                   value={featureFilterLocal}
                   onChange={setFeatureFilterLocal}

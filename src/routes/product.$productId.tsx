@@ -146,10 +146,10 @@ function ProductPage() {
   return (
     <Shell>
       <div className="px-6 lg:px-10 py-10">
-        {/* LEFT: heading, price, pictures, then the detail sections · RIGHT: buying controls,
-            description and technology. On phones it stacks pictures → buying → details. */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,min(50%,78vh))_minmax(0,1fr)] lg:grid-rows-[auto_1fr] gap-x-14 gap-y-8">
-          <div className="lg:col-start-1 lg:row-start-1">
+        {/* LEFT: style name, price, pictures and videos · RIGHT: buying controls, then all the
+            writing in order. On phones it stacks pictures → buying → details. */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,min(50%,78vh))_minmax(0,1fr)] gap-x-14 gap-y-8">
+          <div>
             <span className="num text-xs tracking-[0.3em] text-primary uppercase">
               {product.category.replace(/-/g, " ")}
             </span>
@@ -159,7 +159,7 @@ function ProductPage() {
             </p>
 
             <div
-              className="mt-6 aspect-square flex items-center justify-center overflow-hidden bg-brand-light"
+              className="relative mt-6 aspect-square flex items-center justify-center overflow-hidden bg-brand-light"
               style={!activeImage ? { background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] } : undefined}
             >
               {activeImage ? (
@@ -180,6 +180,26 @@ function ProductPage() {
                 <span className={`text-sm tracking-wide px-6 text-center ${isPersonalCare ? "text-foreground/60" : "text-white/80 mix-blend-difference"}`}>
                   {product.name}
                 </span>
+              )}
+              {gallery.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => stepImage(-1)}
+                    aria-label="previous image"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => stepImage(1)}
+                    aria-label="next image"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
               )}
             </div>
 
@@ -251,10 +271,10 @@ function ProductPage() {
             </Dialog>
           </div>
 
-          <div className="lg:col-start-2 lg:row-start-1 lg:row-span-2">
+          <div>
             {!isPersonalCare && product.colors.length > 0 && (
               <div>
-                <h3 className="text-xs tracking-[0.25em] uppercase text-foreground/70 mb-3">
+                <h3 className="text-sm tracking-[0.25em] uppercase text-foreground/70 mb-3">
                   colour — <span className="text-foreground">{color}</span>
                 </h3>
                 <div className="flex flex-wrap gap-3">
@@ -280,7 +300,7 @@ function ProductPage() {
                         >
                           {sw && <img src={sw} alt="" className="h-full w-full object-cover" />}
                         </span>
-                        <span className={`text-xs tracking-wide ${selected ? "text-foreground" : "text-foreground/60"}`}>{c}</span>
+                        <span className={`text-sm tracking-wide ${selected ? "text-foreground" : "text-foreground/60"}`}>{c}</span>
                       </button>
                     );
                   })}
@@ -290,7 +310,7 @@ function ProductPage() {
 
             {!sizeless && (
               <div className="mt-6">
-                <h3 className="text-xs tracking-[0.25em] uppercase text-foreground/70 mb-3">size</h3>
+                <h3 className="text-sm tracking-[0.25em] uppercase text-foreground/70 mb-3">size</h3>
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((s) => {
                     const left = variantQty(dbExtras.variantStock, color, s, region);
@@ -313,11 +333,11 @@ function ProductPage() {
               </div>
             )}
             {sizeless && product.category === "accessories" && (
-              <p className="mt-6 text-sm text-foreground/70">one size</p>
+              <p className="mt-6 text-base text-foreground/70">one size</p>
             )}
 
             <div className="mt-6">
-              <h3 className="text-xs tracking-[0.25em] uppercase text-foreground/70 mb-3">quantity</h3>
+              <h3 className="text-sm tracking-[0.25em] uppercase text-foreground/70 mb-3">quantity</h3>
               <div className="inline-flex items-center border border-border">
                 <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-2 hover:bg-muted"><Minus className="h-3 w-3" /></button>
                 <span className="num w-10 text-center">{qty}</span>
@@ -340,45 +360,43 @@ function ProductPage() {
             </div>
 
             {dbExtras.description && (
-              <p className="mt-10 text-base text-foreground/85 leading-relaxed whitespace-pre-line">
+              <p className="mt-10 text-[17px] text-foreground/85 leading-relaxed whitespace-pre-line">
                 {dbExtras.description}
               </p>
             )}
 
-            {(dbExtras.techInfo || product.features.length > 0) && (
-              <div className="mt-8">
-                <h3 className="text-xs tracking-[0.25em] uppercase text-primary mb-3">technology benefits</h3>
-                {dbExtras.techInfo && <ListText text={dbExtras.techInfo} />}
-                {product.features.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {product.features.map((fk) => (
-                      <FeatureChip key={fk} featureKey={fk} />
-                    ))}
-                  </div>
+            {(dbExtras.designFeatures || dbExtras.techInfo || product.features.length > 0 || dbExtras.composition || dbExtras.careInstructions) && (
+              <div className="mt-8 divide-y divide-border border-y border-border">
+                {dbExtras.designFeatures && (
+                  <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
+                    <ListText text={dbExtras.designFeatures} />
+                  </Accordion>
+                )}
+                {(dbExtras.techInfo || product.features.length > 0) && (
+                  <Accordion title="technology benefits" defaultOpen>
+                    {dbExtras.techInfo && <ListText text={dbExtras.techInfo} />}
+                    {product.features.length > 0 && (
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {product.features.map((fk) => (
+                          <FeatureChip key={fk} featureKey={fk} />
+                        ))}
+                      </div>
+                    )}
+                  </Accordion>
+                )}
+                {dbExtras.composition && (
+                  <Accordion title={isPersonalCare ? "ingredients" : "composition"} defaultOpen>
+                    <ListText text={dbExtras.composition} />
+                  </Accordion>
+                )}
+                {dbExtras.careInstructions && (
+                  <Accordion title={isPersonalCare ? "how to use" : "care"} defaultOpen>
+                    <ListText text={dbExtras.careInstructions} />
+                  </Accordion>
                 )}
               </div>
             )}
           </div>
-
-          {(dbExtras.designFeatures || dbExtras.composition || dbExtras.careInstructions) && (
-            <div className="lg:col-start-1 lg:row-start-2 lg:self-start divide-y divide-border border-y border-border">
-              {dbExtras.designFeatures && (
-                <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
-                  <ListText text={dbExtras.designFeatures} />
-                </Accordion>
-              )}
-              {dbExtras.composition && (
-                <Accordion title={isPersonalCare ? "ingredients" : "composition"} defaultOpen>
-                  <ListText text={dbExtras.composition} />
-                </Accordion>
-              )}
-              {dbExtras.careInstructions && (
-                <Accordion title={isPersonalCare ? "how to use" : "care"} defaultOpen>
-                  <ListText text={dbExtras.careInstructions} />
-                </Accordion>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </Shell>
@@ -389,7 +407,7 @@ function ProductPage() {
 function ListText({ text }: { text: string }) {
   const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   return (
-    <div className="space-y-2 text-sm text-foreground/80 leading-relaxed">
+    <div className="space-y-2.5 text-base text-foreground/85 leading-relaxed">
       {lines.map((l, i) => <p key={i}>{l}</p>)}
     </div>
   );
@@ -406,7 +424,7 @@ function FeatureChip({ featureKey }: { featureKey: string }) {
     <button
       type="button"
       onClick={innovation ? () => openInnovation(innovation.slug) : undefined}
-      className="flex items-center gap-2 text-xs tracking-wide px-3 py-1.5 border border-border hover:bg-muted transition-colors cursor-pointer"
+      className="flex items-center gap-2 text-sm tracking-wide px-3 py-1.5 border border-border hover:bg-muted transition-colors cursor-pointer"
       aria-label={`${f.name} — details`}
     >
       {icon && <img src={icon} alt="" className="w-5 h-5 object-contain" />}
@@ -434,7 +452,7 @@ function Accordion({ title, children, defaultOpen = false }: { title: string; ch
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-4 text-base hover:text-primary"
+        className="w-full flex items-center justify-between py-4 text-lg hover:text-primary"
       >
         {title}
         <ChevronDown className={`h-4 w-4 transition ${open ? "rotate-180" : ""}`} />
