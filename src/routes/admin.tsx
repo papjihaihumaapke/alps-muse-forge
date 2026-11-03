@@ -896,8 +896,17 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
           </Section>
 
           {/* SECTION: Colors + swatches */}
-          <Section title="colors & swatches" subtitle="add each color the product comes in. upload a swatch image for each.">
+          <Section title="colors & swatches" subtitle="click a dot to add that colour or print to this product. click it again to remove it.">
             <div className="space-y-2">
+              <SwatchPalette
+                selected={(product.color_swatches ?? []).map((s) => s.swatch_url).filter((u): u is string => !!u)}
+                onToggle={(item) => {
+                  const list = product.color_swatches ?? [];
+                  const at = list.findIndex((s) => s.swatch_url === item.url);
+                  if (at >= 0) set("color_swatches", list.filter((_, j) => j !== at));
+                  else set("color_swatches", [...list, { name: item.key, swatch_url: item.url }]);
+                }}
+              />
               {(product.color_swatches ?? []).map((s, i) => (
                 <div key={i} className="flex flex-wrap items-center gap-2 p-2 border border-border bg-background">
                   <Input
@@ -1609,6 +1618,46 @@ function NewsletterTab() {
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+/* ============================================================
+   SWATCH PALETTE — every dot, always visible, click to add/remove
+   ============================================================ */
+const SWATCH_GROUP_LABELS: Record<SwatchGroup, string> = {
+  solid: "solid colours", "bi-color": "two-colour", "little-prince": "little prince", prints: "prints",
+};
+function SwatchPalette({ selected, onToggle }: {
+  selected: string[];
+  onToggle: (item: { key: string; label: string; url: string }) => void;
+}) {
+  const groups: SwatchGroup[] = ["solid", "bi-color", "prints", "little-prince"];
+  return (
+    <div className="space-y-3 p-3 border border-border bg-background">
+      {groups.map((g) => (
+        <div key={g}>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{SWATCH_GROUP_LABELS[g]}</p>
+          <div className="flex flex-wrap gap-2">
+            {SWATCH_LIBRARY[g].map((item) => {
+              const on = selected.includes(item.url);
+              return (
+                <button
+                  key={item.key} type="button" title={item.label} aria-pressed={on}
+                  onClick={() => onToggle(item)}
+                  className="flex w-14 flex-col items-center gap-1"
+                >
+                  <img
+                    src={item.url} alt={item.label}
+                    className={`h-10 w-10 rounded-full object-cover border ${on ? "ring-2 ring-foreground ring-offset-2 border-foreground" : "border-border opacity-80 hover:opacity-100"}`}
+                  />
+                  <span className={`text-[9px] text-center leading-tight line-clamp-2 ${on ? "text-foreground" : "text-muted-foreground"}`}>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

@@ -34,14 +34,14 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur border-b border-border">
-      <div className="mx-auto flex h-24 md:h-28 items-center justify-between px-6 lg:px-10">
+      <div className="mx-auto flex h-24 md:h-28 items-center justify-between gap-6 px-6 lg:px-10">
         {/* Logo */}
         <Link to="/" aria-label="ALPS home" className="flex items-center gap-3 shrink-0">
           <img src={logoBlack} alt="ALPS Annie Ling" className="h-20 md:h-28 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden xl:flex items-center gap-8 text-[16px] font-semibold tracking-wide">
+        <nav className="hidden 2xl:flex items-center gap-7 whitespace-nowrap text-[16px] font-semibold tracking-wide">
           {NAV.map((n) =>
             n.to === "/personal-care" ? (
               <div key={n.to} className="relative group">
@@ -97,7 +97,7 @@ export function Header() {
             aria-label="region"
             title="switch region — filters inventory to items stocked in the selected country"
             onClick={() => setCurrency(currency === "HKD" ? "CAD" : "HKD")}
-            className="hidden md:flex items-center gap-1 text-[12px] hover:text-primary transition-colors num"
+            className="hidden md:flex items-center gap-1 whitespace-nowrap text-[12px] hover:text-primary transition-colors num"
           >
             <Globe className="h-4 w-4" /> {currency === "CAD" ? "CA · CAD" : "HK · HKD"}
           </button>
@@ -118,7 +118,7 @@ export function Header() {
             <SheetTrigger asChild>
               <button
                 aria-label="open menu"
-                className="xl:hidden hover:text-primary transition-colors"
+                className="2xl:hidden hover:text-primary transition-colors"
               >
                 <Menu className="h-5 w-5" />
               </button>

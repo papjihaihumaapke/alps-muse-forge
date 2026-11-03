@@ -146,10 +146,12 @@ function ProductPage() {
   return (
     <Shell>
       <div className="px-6 lg:px-10 py-10">
-        {/* LEFT: style name, price, pictures and videos · RIGHT: buying controls, then all the
-            writing in order. On phones it stacks pictures → buying → details. */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,min(50%,78vh))_minmax(0,1fr)] gap-x-14 gap-y-8">
-          <div>
+        {/* Three sections on wide screens: LEFT style name, price, pictures and videos ·
+            MIDDLE buying controls and description · RIGHT design features, technology,
+            composition and care. Medium screens put the details under the buying controls;
+            phones stack pictures → buying → details. */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,min(48%,78vh))_minmax(0,1fr)] lg:grid-rows-[auto_1fr] xl:grid-cols-[minmax(0,min(40%,72vh))_minmax(0,1fr)_minmax(0,1fr)] xl:grid-rows-1 gap-x-10 2xl:gap-x-14 gap-y-8 break-words">
+          <div className="min-w-0 lg:row-span-2 xl:row-span-1">
             <span className="num text-xs tracking-[0.3em] text-primary uppercase">
               {product.category.replace(/-/g, " ")}
             </span>
@@ -271,7 +273,7 @@ function ProductPage() {
             </Dialog>
           </div>
 
-          <div>
+          <div className="min-w-0 lg:col-start-2 lg:row-start-1">
             {!isPersonalCare && product.colors.length > 0 && (
               <div>
                 <h3 className="text-sm tracking-[0.25em] uppercase text-foreground/70 mb-3">
@@ -364,39 +366,39 @@ function ProductPage() {
                 {dbExtras.description}
               </p>
             )}
-
-            {(dbExtras.designFeatures || dbExtras.techInfo || product.features.length > 0 || dbExtras.composition || dbExtras.careInstructions) && (
-              <div className="mt-8 divide-y divide-border border-y border-border">
-                {dbExtras.designFeatures && (
-                  <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
-                    <ListText text={dbExtras.designFeatures} />
-                  </Accordion>
-                )}
-                {(dbExtras.techInfo || product.features.length > 0) && (
-                  <Accordion title="technology benefits" defaultOpen>
-                    {dbExtras.techInfo && <ListText text={dbExtras.techInfo} />}
-                    {product.features.length > 0 && (
-                      <div className="mt-5 flex flex-wrap gap-2">
-                        {product.features.map((fk) => (
-                          <FeatureChip key={fk} featureKey={fk} />
-                        ))}
-                      </div>
-                    )}
-                  </Accordion>
-                )}
-                {dbExtras.composition && (
-                  <Accordion title={isPersonalCare ? "ingredients" : "composition"} defaultOpen>
-                    <ListText text={dbExtras.composition} />
-                  </Accordion>
-                )}
-                {dbExtras.careInstructions && (
-                  <Accordion title={isPersonalCare ? "how to use" : "care"} defaultOpen>
-                    <ListText text={dbExtras.careInstructions} />
-                  </Accordion>
-                )}
-              </div>
-            )}
           </div>
+
+          {(dbExtras.designFeatures || dbExtras.techInfo || product.features.length > 0 || dbExtras.composition || dbExtras.careInstructions) && (
+            <div className="min-w-0 self-start lg:col-start-2 lg:row-start-2 xl:col-start-3 xl:row-start-1 divide-y divide-border border-y border-border">
+              {dbExtras.designFeatures && (
+                <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
+                  <ListText text={dbExtras.designFeatures} />
+                </Accordion>
+              )}
+              {(dbExtras.techInfo || product.features.length > 0) && (
+                <Accordion title="technology benefits" defaultOpen>
+                  {dbExtras.techInfo && <ListText text={dbExtras.techInfo} />}
+                  {product.features.length > 0 && (
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {product.features.map((fk) => (
+                        <FeatureChip key={fk} featureKey={fk} />
+                      ))}
+                    </div>
+                  )}
+                </Accordion>
+              )}
+              {dbExtras.composition && (
+                <Accordion title={isPersonalCare ? "ingredients" : "composition"} defaultOpen>
+                  <ListText text={dbExtras.composition} />
+                </Accordion>
+              )}
+              {dbExtras.careInstructions && (
+                <Accordion title={isPersonalCare ? "how to use" : "care"} defaultOpen>
+                  <ListText text={dbExtras.careInstructions} />
+                </Accordion>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Shell>
