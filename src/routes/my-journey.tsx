@@ -166,13 +166,13 @@ function MyJourney() {
         <section className="border-t border-border py-16 bg-brand-light">
           <div className="px-6 lg:px-10">
             <h2 className="text-2xl font-normal mb-2">journal</h2>
-            <p className="text-[14px] tracking-[0.25em] uppercase text-foreground/60">
+            <p className="text-[0.824rem] tracking-[0.25em] uppercase text-foreground/60">
               shows · events · press · collaborations
             </p>
 
             <nav className="mt-8 flex flex-wrap gap-x-4 gap-y-2">
               {years.map((y) => (
-                <a key={y} href={`#year-${y}`} className="num text-[14px] tracking-[0.2em] link-red">
+                <a key={y} href={`#year-${y}`} className="num text-[0.824rem] tracking-[0.2em] link-red">
                   {y}
                 </a>
               ))}
@@ -181,7 +181,7 @@ function MyJourney() {
             <div className="mt-12 space-y-16">
               {years.map((year) => (
                 <div key={year} id={`year-${year}`} className="scroll-mt-24">
-                  <h3 className="num text-[16px] tracking-[0.3em] text-primary border-b border-border pb-3">
+                  <h3 className="num text-[0.941rem] tracking-[0.3em] text-primary border-b border-border pb-3">
                     {year}
                   </h3>
                   <div className="mt-8 space-y-14">
@@ -221,7 +221,7 @@ function MyJourney() {
                 <div className="min-w-0">
                   <p className="text-sm">{a.title}</p>
                   {a.subtitle && <p className="text-xs text-foreground/60 mt-1">{a.subtitle}</p>}
-                  {a.url && <a href={a.url} target="_blank" rel="noreferrer" className="link-red text-[14px] mt-2 inline-block">read more →</a>}
+                  {a.url && <a href={a.url} target="_blank" rel="noreferrer" className="link-red text-[0.824rem] mt-2 inline-block">read more →</a>}
                 </div>
               </div>
             ))}
@@ -257,10 +257,10 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
   const copy = (
     <div>
       {section.eyebrow && (
-        <span className="num text-[14px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
+        <span className="num text-[0.824rem] tracking-[0.3em] text-primary">{section.eyebrow}</span>
       )}
       {!isPrimary && section.entry_date && (
-        <span className="num block text-[14px] tracking-[0.25em] text-foreground/60 mt-2">
+        <span className="num block text-[0.824rem] tracking-[0.25em] text-foreground/60 mt-2">
           {eventDateLabel({ event_year: Number(section.entry_date.slice(0, 4)), event_date: section.entry_date, event_label: null })}
         </span>
       )}
@@ -271,12 +271,12 @@ function BioSection({ section, isPrimary = false }: { section: PageSection; isPr
           <h2 className="text-3xl font-normal mt-3">{section.heading}</h2>
         ))}
       {section.subheading && (
-        <p className="mt-4 text-[14px] tracking-[0.25em] uppercase text-foreground/60">
+        <p className="mt-4 text-[0.824rem] tracking-[0.25em] uppercase text-foreground/60">
           {section.subheading}
         </p>
       )}
       {paragraphs.length > 0 && (
-        <div className="mt-8 space-y-5 text-foreground/80 leading-relaxed text-[18px]">
+        <div className="mt-8 space-y-5 text-foreground/80 leading-relaxed text-[1.059rem]">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
@@ -343,17 +343,17 @@ function PostEntry({ post }: { post: JourneyPost }) {
     <article id={anchor} className="scroll-mt-24">
       <header>
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span className="num text-[14px] tracking-[0.25em] text-foreground/60">
+          <span className="num text-[0.824rem] tracking-[0.25em] text-foreground/60">
             {eventDateLabel(post)}
           </span>
           {post.kind !== "journal" && (
-            <span className="text-[13px] tracking-[0.2em] uppercase text-primary">
+            <span className="text-[0.765rem] tracking-[0.2em] uppercase text-primary">
               {kindLabel(post.kind)}
             </span>
           )}
         </div>
         <h4 className="text-2xl font-normal mt-2">{post.title}</h4>
-        {post.excerpt && <p className="mt-3 text-[18px] text-foreground/70 italic">{post.excerpt}</p>}
+        {post.excerpt && <p className="mt-3 text-[1.059rem] text-foreground/70 italic">{post.excerpt}</p>}
       </header>
 
       {post.cover_image_url && (
@@ -366,7 +366,7 @@ function PostEntry({ post }: { post: JourneyPost }) {
       )}
 
       {paragraphs.length > 0 && (
-        <div className="mt-6 space-y-4 text-foreground/80 leading-relaxed text-[18px]">
+        <div className="mt-6 space-y-4 text-foreground/80 leading-relaxed text-[1.059rem]">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
@@ -379,7 +379,7 @@ function PostEntry({ post }: { post: JourneyPost }) {
             <figure key={i}>
               <JourneyPostImage image={img} title={post.title} />
               {img.caption && (
-                <figcaption className="mt-2 text-[14px] text-foreground/60">{img.caption}</figcaption>
+                <figcaption className="mt-2 text-[0.824rem] text-foreground/60">{img.caption}</figcaption>
               )}
             </figure>
           ))}

@@ -34,14 +34,14 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur border-b border-border">
-      <div className="mx-auto flex h-24 md:h-28 items-center justify-between gap-6 px-6 lg:px-10">
+      <div className="mx-auto flex h-24 md:h-[clamp(112px,6vw,170px)] items-center justify-between gap-6 px-6 lg:px-10">
         {/* Logo */}
         <Link to="/" aria-label="ALPS home" className="flex items-center gap-3 shrink-0">
-          <img src={logoBlack} alt="ALPS Annie Ling" className="h-20 md:h-28 w-auto" />
+          <img src={logoBlack} alt="ALPS Annie Ling" className="h-20 md:h-[clamp(104px,5.6vw,160px)] w-auto" />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden 2xl:flex items-center gap-7 whitespace-nowrap text-[16px] font-semibold tracking-wide">
+        <nav className="hidden 2xl:flex items-center gap-[clamp(18px,1.5vw,40px)] whitespace-nowrap text-[clamp(15px,0.95vw,26px)] font-semibold tracking-wide">
           {NAV.map((n) =>
             n.to === "/personal-care" ? (
               <div key={n.to} className="relative group">
@@ -58,7 +58,7 @@ export function Header() {
                       <Link
                         key={s.to}
                         to={s.to}
-                        className="block px-4 py-2 text-[13px] text-foreground/80 hover:text-primary hover:bg-muted whitespace-nowrap"
+                        className="block px-4 py-2 text-[0.765rem] text-foreground/80 hover:text-primary hover:bg-muted whitespace-nowrap"
                       >
                         {s.label}
                       </Link>
@@ -97,19 +97,19 @@ export function Header() {
             aria-label="region"
             title="switch region — filters inventory to items stocked in the selected country"
             onClick={() => setCurrency(currency === "HKD" ? "CAD" : "HKD")}
-            className="hidden md:flex items-center gap-1 whitespace-nowrap text-[12px] hover:text-primary transition-colors num"
+            className="hidden md:flex items-center gap-1 whitespace-nowrap text-[0.706rem] hover:text-primary transition-colors num"
           >
             <Globe className="h-4 w-4" /> {currency === "CAD" ? "CA · CAD" : "HK · HKD"}
           </button>
 
           {isAdmin && (
-            <Link to="/admin" className="hidden lg:inline text-[12px] link-red">admin</Link>
+            <Link to="/admin" className="hidden lg:inline text-[0.706rem] link-red">admin</Link>
           )}
 
           <Link to="/cart" aria-label="cart" className="relative hover:text-primary transition-colors">
             <ShoppingBag className="h-4 w-4" />
             {count > 0 && (
-              <span className="num absolute -top-2 -right-3 text-[11px] bg-primary text-primary-foreground px-1">{count}</span>
+              <span className="num absolute -top-2 -right-3 text-[0.647rem] bg-primary text-primary-foreground px-1">{count}</span>
             )}
           </Link>
 
@@ -127,7 +127,7 @@ export function Header() {
               <div className="flex flex-col h-full">
                 {/* Mobile nav header */}
                 <div className="flex items-center justify-between px-6 h-16 border-b border-border">
-                  <span className="text-[13px] tracking-wide text-muted-foreground">menu</span>
+                  <span className="text-[0.765rem] tracking-wide text-muted-foreground">menu</span>
                   <button
                     onClick={() => setOpen(false)}
                     aria-label="close menu"
@@ -144,8 +144,8 @@ export function Header() {
                       <Link
                         to={n.to}
                         onClick={() => setOpen(false)}
-                        className="block text-[14px] tracking-wide py-3 border-b border-border text-foreground/80 hover:text-foreground hover:pl-2 transition-all"
-                        activeProps={{ className: "block text-[14px] tracking-wide py-3 border-b border-border text-foreground pl-2" }}
+                        className="block text-[0.824rem] tracking-wide py-3 border-b border-border text-foreground/80 hover:text-foreground hover:pl-2 transition-all"
+                        activeProps={{ className: "block text-[0.824rem] tracking-wide py-3 border-b border-border text-foreground pl-2" }}
                       >
                         {n.label}
                       </Link>
@@ -156,7 +156,7 @@ export function Header() {
                               key={s.to}
                               to={s.to}
                               onClick={() => setOpen(false)}
-                              className="block text-[13px] py-2 text-foreground/60 hover:text-primary"
+                              className="block text-[0.765rem] py-2 text-foreground/60 hover:text-primary"
                             >
                               {s.label}
                             </Link>
@@ -169,7 +169,7 @@ export function Header() {
 
                 {/* Mobile nav footer */}
                 <div className="mt-auto px-6 py-6 border-t border-border">
-                  <div className="flex items-center gap-6 text-[13px] text-muted-foreground">
+                  <div className="flex items-center gap-6 text-[0.765rem] text-muted-foreground">
                     <Link to="/account" onClick={() => setOpen(false)} className="hover:text-foreground transition-colors">
                       account
                     </Link>

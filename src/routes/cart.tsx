@@ -44,11 +44,11 @@ function Cart() {
               ))}
             </div>
             <aside className="bg-card border border-border p-6 h-fit">
-              <h3 className="text-[12px] tracking-[0.25em] uppercase">summary</h3>
+              <h3 className="text-[0.706rem] tracking-[0.25em] uppercase">summary</h3>
               <div className="num text-sm mt-6 flex justify-between">
                 <span>subtotal</span><span>{formatMoney(subtotal, currency)}</span>
               </div>
-              <p className="text-[11px] text-foreground/50 mt-2">shipping & tax calculated at checkout</p>
+              <p className="text-[0.647rem] text-foreground/50 mt-2">shipping & tax calculated at checkout</p>
               <Link to="/checkout" className="block text-center mt-6 bg-primary text-primary-foreground py-3 text-xs tracking-[0.2em] uppercase">
                 proceed to checkout
               </Link>

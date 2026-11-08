@@ -56,7 +56,7 @@ function LevelBadge({
   const display = level === "honourable mention" ? "honourable" : level;
   return (
     <span
-      className={`inline-flex items-center justify-center gap-1.5 h-7 px-3 text-[11px] tracking-[0.18em] uppercase ${LEVEL_STYLES[level]} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 h-7 px-3 text-[0.647rem] tracking-[0.18em] uppercase ${LEVEL_STYLES[level]} ${className}`}
     >
       <span aria-hidden className="font-semibold">
         {level === "gold" ? "★★★" : level === "silver" ? "★★" : level === "bronze" ? "★" : level === "winner" ? "✓" : "◆"}
@@ -112,7 +112,7 @@ function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }
       </div>
 
       {/* year */}
-      <span className="num mt-3 text-[11px] tracking-[0.25em] text-primary">
+      <span className="num mt-3 text-[0.647rem] tracking-[0.25em] text-primary">
         {award.year}
       </span>
 
@@ -123,14 +123,14 @@ function AwardIconTile({ award, onClick }: { award: Award; onClick: () => void }
 
       {/* organization/name — city on top, rest on bottom */}
       <div className="mt-3 leading-tight">
-        <p className="text-[13px] font-medium">{orgTop}</p>
+        <p className="text-[0.765rem] font-medium">{orgTop}</p>
         {orgBottom && (
-          <p className="text-[13px] font-medium">{orgBottom}</p>
+          <p className="text-[0.765rem] font-medium">{orgBottom}</p>
         )}
       </div>
 
       {/* category (bottom-aligned across cards) */}
-      <p className="mt-auto pt-3 text-[12px] text-foreground/70 leading-tight whitespace-nowrap">
+      <p className="mt-auto pt-3 text-[0.706rem] text-foreground/70 leading-tight whitespace-nowrap">
         {award.category}
       </p>
     </button>
@@ -183,7 +183,7 @@ function AwardDialog({
             <div className="relative z-10 w-full flex flex-col items-center gap-5">
               <div className="text-center text-white bg-black/50 backdrop-blur-sm px-6 py-3 rounded-sm">
                 <div className="flex items-center justify-center gap-3 mb-2">
-                  <span className="num text-[12px] tracking-[0.25em] text-white">{award.year}</span>
+                  <span className="num text-[0.706rem] tracking-[0.25em] text-white">{award.year}</span>
                   <LevelBadge level={award.level} />
                 </div>
                 <DialogTitle className="text-xl md:text-2xl font-normal text-white">
@@ -234,7 +234,7 @@ function AwardDialog({
                   href={award.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-white hover:text-primary-foreground bg-primary px-4 py-2 tracking-[0.15em] uppercase text-[12px]"
+                  className="inline-flex items-center gap-2 text-sm text-white hover:text-primary-foreground bg-primary px-4 py-2 tracking-[0.15em] uppercase text-[0.706rem]"
                 >
                   view award listing <ExternalLink className="h-3.5 w-3.5" />
                 </a>
@@ -257,21 +257,21 @@ function MilestoneSection({ section }: { section: PageSection }) {
   const copy = (
     <div>
       {section.eyebrow && (
-        <span className="num text-[12px] tracking-[0.3em] text-primary">{section.eyebrow}</span>
+        <span className="num text-[0.706rem] tracking-[0.3em] text-primary">{section.eyebrow}</span>
       )}
       {section.entry_date && (
-        <span className="num block text-[12px] tracking-[0.25em] text-foreground/60 mt-2">
+        <span className="num block text-[0.706rem] tracking-[0.25em] text-foreground/60 mt-2">
           {new Date(`${section.entry_date}T00:00:00`).toLocaleDateString("en-GB", { month: "long", year: "numeric" }).toLowerCase()}
         </span>
       )}
       {section.heading && <h3 className="text-2xl font-normal mt-3">{section.heading}</h3>}
       {section.subheading && (
-        <p className="mt-3 text-[12px] tracking-[0.25em] uppercase text-foreground/60">
+        <p className="mt-3 text-[0.706rem] tracking-[0.25em] uppercase text-foreground/60">
           {section.subheading}
         </p>
       )}
       {paragraphs.length > 0 && (
-        <div className="mt-5 space-y-4 text-foreground/80 leading-relaxed text-[16px]">
+        <div className="mt-5 space-y-4 text-foreground/80 leading-relaxed text-[0.941rem]">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}

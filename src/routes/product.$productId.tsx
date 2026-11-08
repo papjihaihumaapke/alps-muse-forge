@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useDbProductBySlug, dbProductToCatalog } from "@/lib/products-db";
 import { SizeChartDialog, inferSizeChartKinds } from "@/components/alps/SizeChart";
 import { ProductVideos } from "@/components/alps/ProductVideos";
+import { toParagraphs } from "@/lib/journey";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/product/$productId")({
@@ -80,8 +81,8 @@ function ProductPage() {
     const push = (u?: string) => { if (u && !seen.has(u)) { seen.add(u); out.push(u); } };
     const swatches = dbExtras.swatches ?? [];
     const colourImages = swatches.find((s) => s.name === color)?.image_urls ?? [];
-    if (colourImages.length) {
-      // Only this colour's photos.
+    // Only this colour's photos — except personal care, which has no colour picker.
+    if (colourImages.length && !isPersonalCare) {
       colourImages.forEach(push);
       return out;
     }
@@ -89,7 +90,7 @@ function ProductPage() {
     (dbExtras.galleryUrls ?? []).forEach(push);
     productGallery(product.id, product.colors).forEach(push);
     return out;
-  }, [product, color, dbExtras.galleryUrls, dbExtras.swatches]);
+  }, [product, color, isPersonalCare, dbExtras.galleryUrls, dbExtras.swatches]);
 
   const [activeImage, setActiveImage] = useState<string | undefined>(undefined);
   const [zoomOpen, setZoomOpen] = useState(false);
@@ -143,140 +144,190 @@ function ProductPage() {
   const variantLeft = variantQty(dbExtras.variantStock, color, size, region);
   const soldOut = variantLeft !== null && variantLeft <= 0;
 
+  // "the science behind" posts are news, not products: no price, no buying controls.
+  const isNews = product.category === "vegan-tech";
+
+  const nameAndPrice = (
+    <>
+      <span className="num text-sm tracking-[0.3em] text-primary uppercase">
+        {product.category.replace(/-/g, " ")}
+      </span>
+      <h1 className="text-3xl md:text-4xl mt-2 leading-tight">{product.name}</h1>
+      {!isNews && (
+        <p className="num text-xl mt-3 text-primary font-medium">
+          CAD {product.priceCAD} <span className="text-foreground/40">·</span> HKD {product.priceHKD}
+        </p>
+      )}
+    </>
+  );
+
+  const pictures = (
+    <>
+      <div
+        className="relative aspect-square flex items-center justify-center overflow-hidden bg-brand-light"
+        style={!activeImage ? { background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] } : undefined}
+      >
+        {activeImage ? (
+          <button
+            type="button"
+            onClick={() => setZoomOpen(true)}
+            className="h-full w-full cursor-zoom-in"
+            aria-label="enlarge image"
+          >
+            <img
+              key={activeImage}
+              src={activeImage}
+              alt={`${product.name} — ${color}`}
+              className="h-full w-full object-cover transition-opacity duration-300"
+            />
+          </button>
+        ) : (
+          <span className={`text-sm tracking-wide px-6 text-center ${isPersonalCare ? "text-foreground/60" : "text-white/80 mix-blend-difference"}`}>
+            {product.name}
+          </span>
+        )}
+        {gallery.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={() => stepImage(-1)}
+              aria-label="previous image"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <button
+              type="button"
+              onClick={() => stepImage(1)}
+              aria-label="next image"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          </>
+        )}
+      </div>
+
+      {gallery.length > 1 && (
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+          {gallery.map((url, i) => {
+            const active = url === activeImage;
+            return (
+              <button
+                key={url + i}
+                onClick={() => setActiveImage(url)}
+                className={`h-20 w-20 shrink-0 overflow-hidden border-2 transition ${
+                  active ? "border-primary" : "border-border hover:border-foreground/60"
+                }`}
+                aria-label={`view ${i + 1}`}
+              >
+                <img src={url} alt="" className="h-full w-full object-cover" />
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <ProductVideos urls={dbExtras.videoUrls ?? []} title={product.name} />
+
+      <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
+        <DialogContent
+          className="max-w-[min(96vw,1400px)] w-full p-2 sm:p-4 bg-background"
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight") stepImage(1);
+            if (e.key === "ArrowLeft") stepImage(-1);
+          }}
+        >
+          <DialogTitle className="sr-only">{product.name}</DialogTitle>
+          {/* Fixed-size stage so the window doesn't jump between photos of different dimensions. */}
+          <div className="relative flex items-center justify-center h-[82vh] w-full">
+            {activeImage && (
+              <img
+                src={activeImage}
+                alt={`${product.name} — enlarged`}
+                className="h-full w-full object-contain"
+              />
+            )}
+            {gallery.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => stepImage(-1)}
+                  aria-label="previous image"
+                  className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => stepImage(1)}
+                  aria-label="next image"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+                <span className="num absolute bottom-2 left-1/2 -translate-x-1/2 bg-background/80 px-2 py-0.5 text-xs">
+                  {zoomIndex + 1} / {gallery.length}
+                </span>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+
+  if (isNews) {
+    // News post: pictures on the left, the write-up on the right (stacked on phones).
+    const extra = [dbExtras.designFeatures, dbExtras.techInfo, dbExtras.composition, dbExtras.careInstructions].filter(
+      (t): t is string => !!t?.trim(),
+    );
+    return (
+      <Shell>
+        <div className="px-6 lg:px-10 py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,min(45%,80vh))_minmax(0,1fr)] gap-x-12 gap-y-8 break-words">
+            <div className="min-w-0">{pictures}</div>
+            <div className="min-w-0">
+              {nameAndPrice}
+              {dbExtras.description && (
+                <div className="mt-8 space-y-5 text-lg text-foreground/85 leading-relaxed">
+                  {toParagraphs(dbExtras.description).map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}
+                </div>
+              )}
+              {extra.map((t, i) => (
+                <div key={i} className="mt-8"><ListText text={t} /></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Shell>
+    );
+  }
+
+  const hasDetails = !!(dbExtras.designFeatures || dbExtras.composition || dbExtras.careInstructions);
+  const hasTech = !!(dbExtras.techInfo || product.features.length > 0);
+
   return (
     <Shell>
       <div className="px-6 lg:px-10 py-10">
-        {/* Three sections on wide screens: LEFT style name, price, pictures and videos ·
-            MIDDLE buying controls and description · RIGHT design features, technology,
-            composition and care. Medium screens put the details under the buying controls;
-            phones stack pictures → buying → details. */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,min(48%,78vh))_minmax(0,1fr)] lg:grid-rows-[auto_1fr] xl:grid-cols-[minmax(0,min(40%,72vh))_minmax(0,1fr)_minmax(0,1fr)] xl:grid-rows-1 gap-x-10 2xl:gap-x-14 gap-y-8 break-words">
-          <div className="min-w-0 lg:row-span-2 xl:row-span-1">
-            <span className="num text-xs tracking-[0.3em] text-primary uppercase">
-              {product.category.replace(/-/g, " ")}
-            </span>
-            <h1 className="text-3xl md:text-4xl mt-2 leading-tight">{product.name}</h1>
-            <p className="num text-lg mt-3 text-primary font-medium">
-              CAD {product.priceCAD} <span className="text-foreground/40">·</span> HKD {product.priceHKD}
-            </p>
-
-            <div
-              className="relative mt-6 aspect-square flex items-center justify-center overflow-hidden bg-brand-light"
-              style={!activeImage ? { background: isPersonalCare ? "var(--muted)" : PRODUCT_COLORS[color] } : undefined}
-            >
-              {activeImage ? (
-                <button
-                  type="button"
-                  onClick={() => setZoomOpen(true)}
-                  className="h-full w-full cursor-zoom-in"
-                  aria-label="enlarge image"
-                >
-                  <img
-                    key={activeImage}
-                    src={activeImage}
-                    alt={`${product.name} — ${color}`}
-                    className="h-full w-full object-cover transition-opacity duration-300"
-                  />
-                </button>
-              ) : (
-                <span className={`text-sm tracking-wide px-6 text-center ${isPersonalCare ? "text-foreground/60" : "text-white/80 mix-blend-difference"}`}>
-                  {product.name}
-                </span>
-              )}
-              {gallery.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => stepImage(-1)}
-                    aria-label="previous image"
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => stepImage(1)}
-                    aria-label="next image"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </>
-              )}
-            </div>
-
-            {gallery.length > 1 && (
-              <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-                {gallery.map((url, i) => {
-                  const active = url === activeImage;
-                  return (
-                    <button
-                      key={url + i}
-                      onClick={() => setActiveImage(url)}
-                      className={`h-20 w-20 shrink-0 overflow-hidden border-2 transition ${
-                        active ? "border-primary" : "border-border hover:border-foreground/60"
-                      }`}
-                      aria-label={`view ${i + 1}`}
-                    >
-                      <img src={url} alt="" className="h-full w-full object-cover" />
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            <ProductVideos urls={dbExtras.videoUrls ?? []} title={product.name} />
-
-            <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
-              <DialogContent
-                className="max-w-[min(96vw,1400px)] w-full p-2 sm:p-4 bg-background"
-                onKeyDown={(e) => {
-                  if (e.key === "ArrowRight") stepImage(1);
-                  if (e.key === "ArrowLeft") stepImage(-1);
-                }}
-              >
-                <DialogTitle className="sr-only">{product.name}</DialogTitle>
-                {/* Fixed-size stage so the window doesn't jump between photos of different dimensions. */}
-                <div className="relative flex items-center justify-center h-[82vh] w-full">
-                  {activeImage && (
-                    <img
-                      src={activeImage}
-                      alt={`${product.name} — enlarged`}
-                      className="h-full w-full object-contain"
-                    />
-                  )}
-                  {gallery.length > 1 && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => stepImage(-1)}
-                        aria-label="previous image"
-                        className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => stepImage(1)}
-                        aria-label="next image"
-                        className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/80 p-2 hover:bg-background"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-                      <span className="num absolute bottom-2 left-1/2 -translate-x-1/2 bg-background/80 px-2 py-0.5 text-xs">
-                        {zoomIndex + 1} / {gallery.length}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
+        {/* Three sections on wide screens (confirmed with Annie):
+              LEFT   design features · composition · care
+              MIDDLE style name · price · pictures · videos
+              RIGHT  colour · size · quantity · add to bag · style description · technology benefits · tech icons
+            Medium screens: pictures on the left, everything else on the right.
+            Phones: pictures → buying → details, one column. */}
+        <div className="grid grid-cols-1 gap-y-10 gap-x-10 2xl:gap-x-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] xl:grid-cols-[minmax(0,1fr)_minmax(0,min(40%,85vh))_minmax(0,1fr)] xl:grid-rows-1 break-words">
+          {/* MIDDLE */}
+          <div className="min-w-0 lg:col-start-1 lg:row-start-1 lg:row-span-2 xl:col-start-2 xl:row-span-1">
+            {nameAndPrice}
+            <div className="mt-6">{pictures}</div>
           </div>
 
-          <div className="min-w-0 lg:col-start-2 lg:row-start-1">
+          {/* RIGHT */}
+          <div className="min-w-0 lg:col-start-2 lg:row-start-1 xl:col-start-3">
             {!isPersonalCare && product.colors.length > 0 && (
               <div>
-                <h3 className="text-sm tracking-[0.25em] uppercase text-foreground/70 mb-3">
+                <h3 className="text-base tracking-[0.25em] uppercase text-foreground/70 mb-3">
                   colour — <span className="text-foreground">{color}</span>
                 </h3>
                 <div className="flex flex-wrap gap-3">
@@ -302,7 +353,7 @@ function ProductPage() {
                         >
                           {sw && <img src={sw} alt="" className="h-full w-full object-cover" />}
                         </span>
-                        <span className={`text-sm tracking-wide ${selected ? "text-foreground" : "text-foreground/60"}`}>{c}</span>
+                        <span className={`text-base tracking-wide ${selected ? "text-foreground" : "text-foreground/60"}`}>{c}</span>
                       </button>
                     );
                   })}
@@ -312,7 +363,7 @@ function ProductPage() {
 
             {!sizeless && (
               <div className="mt-6">
-                <h3 className="text-sm tracking-[0.25em] uppercase text-foreground/70 mb-3">size</h3>
+                <h3 className="text-base tracking-[0.25em] uppercase text-foreground/70 mb-3">size</h3>
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((s) => {
                     const left = variantQty(dbExtras.variantStock, color, s, region);
@@ -322,7 +373,7 @@ function ProductPage() {
                         key={s}
                         onClick={() => setSize(s)}
                         title={out ? "sold out in this colour" : undefined}
-                        className={`min-w-11 px-4 py-2 text-sm border ${
+                        className={`min-w-11 px-4 py-2 text-base border ${
                           size === s ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
                         } ${out ? "line-through opacity-50" : ""}`}
                       >
@@ -335,18 +386,18 @@ function ProductPage() {
               </div>
             )}
             {sizeless && product.category === "accessories" && (
-              <p className="mt-6 text-base text-foreground/70">one size</p>
+              <p className="mt-6 text-lg text-foreground/70">one size</p>
             )}
 
             <div className="mt-6">
-              <h3 className="text-sm tracking-[0.25em] uppercase text-foreground/70 mb-3">quantity</h3>
+              <h3 className="text-base tracking-[0.25em] uppercase text-foreground/70 mb-3">quantity</h3>
               <div className="inline-flex items-center border border-border">
-                <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-2 hover:bg-muted"><Minus className="h-3 w-3" /></button>
-                <span className="num w-10 text-center">{qty}</span>
-                <button onClick={() => setQty(variantLeft !== null ? Math.min(variantLeft, qty + 1) : qty + 1)} className="p-2 hover:bg-muted"><Plus className="h-3 w-3" /></button>
+                <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-2.5 hover:bg-muted" aria-label="less"><Minus className="h-4 w-4" /></button>
+                <span className="num w-12 text-center text-lg">{qty}</span>
+                <button onClick={() => setQty(variantLeft !== null ? Math.min(variantLeft, qty + 1) : qty + 1)} className="p-2.5 hover:bg-muted" aria-label="more"><Plus className="h-4 w-4" /></button>
               </div>
               {variantLeft !== null && variantLeft > 0 && variantLeft <= 3 && (
-                <p className="mt-2 text-xs text-primary">only {variantLeft} left</p>
+                <p className="mt-2 text-sm text-primary">only {variantLeft} left</p>
               )}
             </div>
 
@@ -354,7 +405,7 @@ function ProductPage() {
               <button
                 onClick={onAdd}
                 disabled={soldOut}
-                className="flex-1 bg-primary text-primary-foreground py-4 text-sm tracking-[0.2em] uppercase hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-1 bg-primary text-primary-foreground py-4 text-base tracking-[0.2em] uppercase hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {soldOut ? "sold out" : "add to bag"}
               </button>
@@ -362,20 +413,13 @@ function ProductPage() {
             </div>
 
             {dbExtras.description && (
-              <p className="mt-10 text-[17px] text-foreground/85 leading-relaxed whitespace-pre-line">
+              <p className="mt-10 text-lg text-foreground/85 leading-relaxed whitespace-pre-line">
                 {dbExtras.description}
               </p>
             )}
-          </div>
 
-          {(dbExtras.designFeatures || dbExtras.techInfo || product.features.length > 0 || dbExtras.composition || dbExtras.careInstructions) && (
-            <div className="min-w-0 self-start lg:col-start-2 lg:row-start-2 xl:col-start-3 xl:row-start-1 divide-y divide-border border-y border-border">
-              {dbExtras.designFeatures && (
-                <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
-                  <ListText text={dbExtras.designFeatures} />
-                </Accordion>
-              )}
-              {(dbExtras.techInfo || product.features.length > 0) && (
+            {hasTech && (
+              <div className="mt-8 border-y border-border">
                 <Accordion title="technology benefits" defaultOpen>
                   {dbExtras.techInfo && <ListText text={dbExtras.techInfo} />}
                   {product.features.length > 0 && (
@@ -385,6 +429,17 @@ function ProductPage() {
                       ))}
                     </div>
                   )}
+                </Accordion>
+              </div>
+            )}
+          </div>
+
+          {/* LEFT */}
+          {hasDetails && (
+            <div className="min-w-0 self-start lg:col-start-2 lg:row-start-2 xl:col-start-1 xl:row-start-1 divide-y divide-border border-y border-border">
+              {dbExtras.designFeatures && (
+                <Accordion title={isPersonalCare ? "benefits" : "design features"} defaultOpen>
+                  <ListText text={dbExtras.designFeatures} />
                 </Accordion>
               )}
               {dbExtras.composition && (
@@ -409,7 +464,7 @@ function ProductPage() {
 function ListText({ text }: { text: string }) {
   const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   return (
-    <div className="space-y-2.5 text-base text-foreground/85 leading-relaxed">
+    <div className="space-y-3 text-lg text-foreground/85 leading-relaxed">
       {lines.map((l, i) => <p key={i}>{l}</p>)}
     </div>
   );
@@ -426,7 +481,7 @@ function FeatureChip({ featureKey }: { featureKey: string }) {
     <button
       type="button"
       onClick={innovation ? () => openInnovation(innovation.slug) : undefined}
-      className="flex items-center gap-2 text-sm tracking-wide px-3 py-1.5 border border-border hover:bg-muted transition-colors cursor-pointer"
+      className="flex items-center gap-2 text-base tracking-wide px-3 py-1.5 border border-border hover:bg-muted transition-colors cursor-pointer"
       aria-label={`${f.name} — details`}
     >
       {icon && <img src={icon} alt="" className="w-5 h-5 object-contain" />}
@@ -454,7 +509,7 @@ function Accordion({ title, children, defaultOpen = false }: { title: string; ch
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-4 text-lg hover:text-primary"
+        className="w-full flex items-center justify-between py-4 text-xl hover:text-primary"
       >
         {title}
         <ChevronDown className={`h-4 w-4 transition ${open ? "rotate-180" : ""}`} />

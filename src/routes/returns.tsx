@@ -12,7 +12,7 @@ export const Route = createFileRoute("/returns")({
   component: () => (
     <Shell>
       <article className="max-w-3xl mx-auto px-6 py-20 prose-invert">
-        <span className="num text-[12px] tracking-[0.3em] text-primary">policy</span>
+        <span className="num text-[0.706rem] tracking-[0.3em] text-primary">policy</span>
         <h1 className="text-4xl font-normal mt-3 mb-8">returns & exchanges</h1>
         <div className="space-y-5 text-foreground/80 leading-relaxed text-sm">
           <p>we want you to love what you receive. if something isn't right, we'll make it right.</p>

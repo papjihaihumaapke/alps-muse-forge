@@ -33,7 +33,7 @@ function WishlistPage() {
   return (
     <Shell>
       <section className="max-w-6xl mx-auto px-6 py-16">
-        <span className="num text-[12px] tracking-[0.3em] text-primary">saved</span>
+        <span className="num text-[0.706rem] tracking-[0.3em] text-primary">saved</span>
         <h1 className="text-4xl font-normal mt-3 mb-10">wishlist</h1>
         {isLoading ? (
           <p className="text-foreground/60">loading…</p>

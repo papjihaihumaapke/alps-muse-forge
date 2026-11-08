@@ -595,7 +595,7 @@ function VariantStockGrid({ colors, sizes, stock, onChange }: {
                     <div className="flex gap-1">
                       {(["hk", "ca"] as const).map((r) => (
                         <label key={r} className="flex items-center gap-0.5">
-                          <span className="text-[10px] uppercase text-muted-foreground">{r}</span>
+                          <span className="text-[0.588rem] uppercase text-muted-foreground">{r}</span>
                           <Input
                             type="number" min={0} className="h-8 w-14 px-1.5"
                             value={cell[r] ?? ""}
@@ -640,7 +640,7 @@ function GalleryImagePicker({ urls, slug, selected, onChange }: {
               >
                 <ProductThumb url={u} slug={slug} className="h-full w-full object-cover" />
                 {on && (
-                  <span className="absolute top-0.5 right-0.5 bg-primary text-primary-foreground text-[10px] leading-none px-1 py-0.5">
+                  <span className="absolute top-0.5 right-0.5 bg-primary text-primary-foreground text-[0.588rem] leading-none px-1 py-0.5">
                     {selected.indexOf(u) + 1}
                   </span>
                 )}
@@ -953,14 +953,14 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                     className="link-red text-xs ml-auto"
                   >remove colour</button>
                   <div className="basis-full flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">photos for this colour</span>
+                    <span className="text-[0.588rem] uppercase tracking-wider text-muted-foreground">photos for this colour</span>
                     {swatchImages(s).map((u) => (
                       <div key={u} className="relative h-12 w-12 border border-border group">
                         <ProductThumb url={u} slug={product.slug} className="h-full w-full object-cover" />
                         <button
                           type="button" aria-label="remove photo from this colour"
                           onClick={() => setSwatchImages(i, swatchImages(s).filter((x) => x !== u))}
-                          className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-background border border-border text-[10px] leading-none opacity-0 group-hover:opacity-100"
+                          className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-background border border-border text-[0.588rem] leading-none opacity-0 group-hover:opacity-100"
                         >×</button>
                       </div>
                     ))}
@@ -997,7 +997,7 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
               <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-3">
                 <div className="relative aspect-square border border-border">
                   <ProductThumb url={product.image_url} slug={product.slug} className="h-full w-full object-cover" />
-                  <span className="absolute bottom-0 left-0 text-[9px] bg-primary text-primary-foreground px-1">current cover</span>
+                  <span className="absolute bottom-0 left-0 text-[0.529rem] bg-primary text-primary-foreground px-1">current cover</span>
                 </div>
               </div>
             )}
@@ -1006,16 +1006,16 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                 {product.gallery_urls.map((url, idx) => (
                   <div key={url} className="relative group aspect-square border border-border">
                     <ProductThumb url={url} slug={product.slug} className="h-full w-full object-cover" />
-                    {idx === 0 && <span className="absolute bottom-0 left-0 text-[9px] bg-primary text-primary-foreground px-1">cover</span>}
+                    {idx === 0 && <span className="absolute bottom-0 left-0 text-[0.529rem] bg-primary text-primary-foreground px-1">cover</span>}
                     <button
                       onClick={() => removeGalleryUrl(url)}
-                      className="absolute top-1 right-1 bg-background/90 text-[10px] px-1.5 py-0.5 opacity-0 group-hover:opacity-100"
+                      className="absolute top-1 right-1 bg-background/90 text-[0.588rem] px-1.5 py-0.5 opacity-0 group-hover:opacity-100"
                     >remove</button>
                     <div className="absolute bottom-0 right-0 flex opacity-0 group-hover:opacity-100">
                       <button type="button" disabled={idx === 0} onClick={() => moveGalleryUrl(idx, -1)}
-                        aria-label="move earlier" className="bg-background/90 px-1.5 text-[11px] disabled:opacity-30">←</button>
+                        aria-label="move earlier" className="bg-background/90 px-1.5 text-[0.647rem] disabled:opacity-30">←</button>
                       <button type="button" disabled={idx === product.gallery_urls.length - 1} onClick={() => moveGalleryUrl(idx, 1)}
-                        aria-label="move later" className="bg-background/90 px-1.5 text-[11px] disabled:opacity-30">→</button>
+                        aria-label="move later" className="bg-background/90 px-1.5 text-[0.647rem] disabled:opacity-30">→</button>
                     </div>
                   </div>
                 ))}
@@ -1083,7 +1083,7 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
               {product.hashtags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {product.hashtags.map((h) => (
-                    <span key={h} className="text-[10px] bg-muted px-2 py-0.5 rounded-full">{h.replace(/^#+/, "")}</span>
+                    <span key={h} className="text-[0.588rem] bg-muted px-2 py-0.5 rounded-full">{h.replace(/^#+/, "")}</span>
                   ))}
                 </div>
               )}
@@ -1637,7 +1637,7 @@ function SwatchPalette({ selected, onToggle }: {
     <div className="space-y-3 p-3 border border-border bg-background">
       {groups.map((g) => (
         <div key={g}>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{SWATCH_GROUP_LABELS[g]}</p>
+          <p className="text-[0.588rem] uppercase tracking-wider text-muted-foreground mb-1">{SWATCH_GROUP_LABELS[g]}</p>
           <div className="flex flex-wrap gap-2">
             {SWATCH_LIBRARY[g].map((item) => {
               const on = selected.includes(item.url);
@@ -1651,7 +1651,7 @@ function SwatchPalette({ selected, onToggle }: {
                     src={item.url} alt={item.label}
                     className={`h-10 w-10 rounded-full object-cover border ${on ? "ring-2 ring-foreground ring-offset-2 border-foreground" : "border-border opacity-80 hover:opacity-100"}`}
                   />
-                  <span className={`text-[9px] text-center leading-tight line-clamp-2 ${on ? "text-foreground" : "text-muted-foreground"}`}>{item.label}</span>
+                  <span className={`text-[0.529rem] text-center leading-tight line-clamp-2 ${on ? "text-foreground" : "text-muted-foreground"}`}>{item.label}</span>
                 </button>
               );
             })}
@@ -1683,7 +1683,7 @@ function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: 
               key={g}
               type="button"
               onClick={() => setGroup(g)}
-              className={`text-[10px] uppercase tracking-wider px-2 py-1 border ${
+              className={`text-[0.588rem] uppercase tracking-wider px-2 py-1 border ${
                 group === g ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
               }`}
             >
@@ -1701,7 +1701,7 @@ function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: 
               className="flex flex-col items-center gap-1 p-1 rounded hover:bg-muted transition"
             >
               <img src={item.url} alt={item.label} className="h-12 w-12 rounded-full object-cover border border-border" />
-              <span className="text-[9px] text-center leading-tight text-muted-foreground line-clamp-2">{item.label}</span>
+              <span className="text-[0.529rem] text-center leading-tight text-muted-foreground line-clamp-2">{item.label}</span>
             </button>
           ))}
         </div>
@@ -1915,7 +1915,7 @@ function JourneyTab() {
               <div className="aspect-video bg-muted overflow-hidden">
                 {r.image_url ? <img src={r.image_url} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
               </div>
-              <label className="text-[10px] block cursor-pointer hover:text-primary">
+              <label className="text-[0.588rem] block cursor-pointer hover:text-primary">
                 upload image
                 <input type="file" accept="image/*" className="hidden"
                   onChange={async (e) => { const f = e.target.files?.[0]; if (!f) return; const u = await uploadJourneyImage(f, r.kind); if (u) update(r.id!, { image_url: u }); }} />
@@ -2090,15 +2090,15 @@ function JourneyPostsTab() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-baseline gap-x-3">
-                  <span className="num text-[11px] tracking-[0.2em] text-muted-foreground">
+                  <span className="num text-[0.647rem] tracking-[0.2em] text-muted-foreground">
                     {eventDateLabel(p)}
                   </span>
-                  <span className="text-[10px] tracking-[0.15em] uppercase text-primary">
+                  <span className="text-[0.588rem] tracking-[0.15em] uppercase text-primary">
                     {kindLabel(p.kind)}
                   </span>
                 </div>
                 <p className="text-sm truncate mt-0.5">{p.title || "(untitled)"}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
+                <p className="text-[0.588rem] text-muted-foreground mt-0.5">
                   {p.images.length} image{p.images.length === 1 ? "" : "s"}
                   {p.video_url ? " · video" : ""}
                   {p.links.length > 0 ? ` · ${p.links.length} link${p.links.length === 1 ? "" : "s"}` : ""}
@@ -2285,7 +2285,7 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
                     />
                     <div className="flex flex-col gap-1 shrink-0">
                       <button
-                        className="text-[10px] link-red disabled:opacity-40"
+                        className="text-[0.588rem] link-red disabled:opacity-40"
                         disabled={i === 0}
                         onClick={() => {
                           const next = [...draft.images];
@@ -2294,7 +2294,7 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
                         }}
                       >move up</button>
                       <button
-                        className="text-[10px] link-red"
+                        className="text-[0.588rem] link-red"
                         onClick={() => set({ images: draft.images.filter((_, j) => j !== i) })}
                       >remove</button>
                     </div>
@@ -2468,7 +2468,7 @@ function MediaThumb({ kind, url }: { kind: "image" | "video"; url: string }) {
       {kind === "image" && src ? (
         <img src={src} alt="" className="h-full w-full object-cover" />
       ) : kind === "video" ? (
-        <span className="text-[10px] text-muted-foreground">▶</span>
+        <span className="text-[0.588rem] text-muted-foreground">▶</span>
       ) : (
         <ImageIcon className="h-4 w-4 text-muted-foreground" />
       )}
@@ -2649,7 +2649,7 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
   return (
     <div id={`section-${row.id}`} className="border border-border bg-card p-4 space-y-4 scroll-mt-24">
       <div className="flex items-center gap-3">
-        <span className="text-[10px] tracking-[0.2em] uppercase text-primary">
+        <span className="text-[0.588rem] tracking-[0.2em] uppercase text-primary">
           {isFirst ? firstLabel : restLabel}
         </span>
         <div className="ml-auto flex items-center gap-3 text-xs">
@@ -2720,7 +2720,7 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
         )}
         <Button size="sm" onClick={() => onSave(draft)}>save section</Button>
         {!isFirst && (
-          <p className="text-[11px] text-muted-foreground basis-full">
+          <p className="text-[0.647rem] text-muted-foreground basis-full">
             write-ups are ordered by this date, newest at the top. for older stories (e.g. school days) just pick the old date — newer posts will appear above them automatically.
           </p>
         )}

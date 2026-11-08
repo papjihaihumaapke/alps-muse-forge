@@ -54,14 +54,15 @@ export function toPageSection(r: Record<string, unknown>): PageSection {
 export type SortOrder = "newest" | "oldest";
 
 /**
- * Newest write-up first, by when it was added. Ordering on the entry date used
- * to push a freshly published write-up below older ones whenever its date was
- * earlier, so insertion order is the rule: a new write-up is always on top.
+ * Newest first by the date written on the write-up (the "entry date" in the admin panel),
+ * so posts uploaded in any order still read in date order. A write-up without a date
+ * uses the day it was added.
  */
 export function newestFirst(a: PageSection, b: PageSection): number {
-  const ka = a.created_at ?? a.entry_date ?? "";
-  const kb = b.created_at ?? b.entry_date ?? "";
-  return kb.localeCompare(ka);
+  const day = (x: PageSection) => (x.entry_date || x.created_at || "").slice(0, 10);
+  const byDay = day(b).localeCompare(day(a));
+  if (byDay !== 0) return byDay;
+  return (b.created_at ?? "").localeCompare(a.created_at ?? "");
 }
 
 /** Write-ups in the reader's chosen order; `newest` is the default everywhere. */

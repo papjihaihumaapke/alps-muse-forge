@@ -12,7 +12,7 @@ export const Route = createFileRoute("/privacy")({
   component: () => (
     <Shell>
       <article className="max-w-3xl mx-auto px-6 py-20">
-        <span className="num text-[12px] tracking-[0.3em] text-primary">legal</span>
+        <span className="num text-[0.706rem] tracking-[0.3em] text-primary">legal</span>
         <h1 className="text-4xl font-normal mt-3 mb-8">privacy</h1>
         <div className="space-y-5 text-foreground/80 leading-relaxed text-sm">
           <p>we collect only the information needed to fulfil your order and improve your experience: name, contact details, shipping address, and payment reference (handled by our payment processor — we never store card numbers).</p>

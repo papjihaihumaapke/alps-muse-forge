@@ -94,7 +94,7 @@ export function MediaStrip({
       )}
 
       {images[current]?.caption && (
-        <p className="mt-2 text-[12px] text-foreground/60 text-center">{images[current].caption}</p>
+        <p className="mt-2 text-[0.706rem] text-foreground/60 text-center">{images[current].caption}</p>
       )}
     </div>
   );

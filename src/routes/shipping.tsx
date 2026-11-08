@@ -12,7 +12,7 @@ export const Route = createFileRoute("/shipping")({
   component: () => (
     <Shell>
       <article className="max-w-3xl mx-auto px-6 py-20">
-        <span className="num text-[12px] tracking-[0.3em] text-primary">delivery</span>
+        <span className="num text-[0.706rem] tracking-[0.3em] text-primary">delivery</span>
         <h1 className="text-4xl font-normal mt-3 mb-8">shipping</h1>
         <div className="space-y-5 text-foreground/80 leading-relaxed text-sm">
           <h2 className="text-primary text-lg font-medium">rates</h2>

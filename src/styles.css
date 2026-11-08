@@ -134,8 +134,10 @@
 
   html {
     -webkit-font-smoothing: antialiased;
-    /* a touch larger than the 16px default so body copy isn't hard to read */
-    font-size: 17px;
+    /* 17px on phones and laptops, then grows with the window so text keeps its
+       proportion to the photos on large monitors (about 30px on a 2800px-wide screen).
+       Every text size on the site is in rem, so it all scales from this one value. */
+    font-size: clamp(17px, calc(6px + 0.9vw), 34px);
   }
 
   body {

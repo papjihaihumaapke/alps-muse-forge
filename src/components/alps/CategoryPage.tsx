@@ -51,7 +51,7 @@ const VEGAN_LINKS = [
   { to: "/vegan-personal-care", slug: "vegan-personal-care", label: "personal care" },
   { to: "/vegan-makeup", slug: "vegan-makeup", label: "make up" },
   { to: "/vegan-supplement", slug: "vegan-supplement", label: "supplement" },
-  { to: "/vegan-tech", slug: "vegan-tech", label: "the scene behind" },
+  { to: "/vegan-tech", slug: "vegan-tech", label: "the science behind" },
 ] as const;
 
 const SUB_PREFIXES = { oc: "overcoat", jk: "jacket", tp: "top", sk: "skirt", sh: "shorts", pt: "pants", dr: "one-piece" } as const;
@@ -72,11 +72,37 @@ function inferSubcategory(id: string, name = ""): string | null {
   return SUB_WORDS.find(([re]) => re.test(name))?.[1] ?? null;
 }
 
+const LINE_SYNONYMS: Record<string, string> = {
+  women: "women", woman: "women", womens: "women", "women's": "women", ladies: "women", lady: "women", female: "women",
+  men: "men", man: "men", mens: "men", "men's": "men", male: "men",
+  kids: "kids", kid: "kids", children: "kids", child: "kids", junior: "kids",
+  unisex: "unisex",
+};
+
+/** Lines a piece belongs to: the line buttons/tags in the admin panel (old rows may have
+ *  "women / unisex" joined in one tag or capitals), else words in the product name. */
+function productLines(tags: readonly string[] | undefined, name: string): Set<string> {
+  const out = new Set<string>();
+  for (const raw of tags ?? []) {
+    for (const part of String(raw).split(/[/,|]/)) {
+      const line = LINE_SYNONYMS[part.trim().toLowerCase().replace(/^#/, "")];
+      if (line) out.add(line);
+    }
+  }
+  if (out.size === 0) {
+    for (const w of name.toLowerCase().match(/[a-z']+/g) ?? []) {
+      const line = LINE_SYNONYMS[w];
+      if (line) out.add(line);
+    }
+  }
+  return out;
+}
+
 /** Unisex pieces also show under women and men. */
-function matchesLine(tags: readonly string[] | undefined, active: string) {
+function matchesLine(tags: readonly string[] | undefined, name: string, active: string) {
   if (active === "all") return true;
-  const t = tags ?? [];
-  return t.includes(active) || ((active === "women" || active === "men") && t.includes("unisex"));
+  const lines = productLines(tags, name);
+  return lines.has(active) || ((active === "women" || active === "men") && lines.has("unisex"));
 }
 
 /** Collaboration partner: the admin "subcategory" for collaboration products, else read from the name. */
@@ -121,7 +147,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
     return m;
   }, [dbRows]);
 
-  const items = useMemo(() => {
+  const baseItems = useMemo(() => {
     const staticList: Product[] = PRODUCTS.filter((p) => p.category === slug);
     const dbList = dbRows.map((r) => dbProductToCatalog(r));
     const map = new Map<string, Product>();
@@ -144,38 +170,34 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
     }
     // DB order is the order set in the admin panel; static-only pieces follow.
     const dbOrder = new Map(dbList.map((p, i) => [p.id, i]));
-    let list = Array.from(map.values()).sort(
+    const list = Array.from(map.values()).sort(
       (a, b) => (dbOrder.get(a.id) ?? Infinity) - (dbOrder.get(b.id) ?? Infinity),
     );
     // Region gating — hide items only stocked in the other region.
-    list = list.filter((p) => productAvailableInRegion(stockBySlug.get(p.id) ?? {}, currency));
-    if (slug === "accessories" && activeTag !== "all") {
-      list = list.filter((p) => p.tags?.includes(activeTag));
-    }
-    if (GARMENT_CATEGORIES.has(slug) && activeSub !== "all") {
-      list = list.filter((p) => (subBySlug.get(p.id) ?? inferSubcategory(p.id, p.name)) === activeSub);
-    }
-    if (slug === "collaborations" && brandFilter !== "all") {
-      list = list.filter((p) => collabBrand(p.name, subBySlug.get(p.id)) === brandFilter);
-    }
-    if (seasonFilter !== "all") {
-      list = list.filter((p) => matchesSeason((p as Product & { season?: string }).season, p.tags, seasonFilter));
-    }
-    if (lineFilter !== "all") {
-      list = list.filter((p) => matchesLine(p.tags, lineFilter));
-    }
-    if (featureFilter) {
-      list = list.filter((p) => p.features?.includes(featureFilter));
-    }
-    if (featureFilterLocal !== "all") {
-      list = list.filter((p) => p.features?.includes(featureFilterLocal));
-    }
-    if (colorFilter !== "all") {
-      list = list.filter((p) => p.colors?.some((c) => c.toLowerCase() === colorFilter.toLowerCase()));
-    }
-    if (sizeFilter !== "all") {
-      list = list.filter((p) => p.sizes?.some((s) => s.toLowerCase() === sizeFilter.toLowerCase()));
-    }
+    return list.filter((p) => productAvailableInRegion(stockBySlug.get(p.id) ?? {}, currency));
+  }, [slug, dbRows, stockBySlug, currency]);
+
+  type Filters = { tag: string; sub: string; brand: string; season: string; line: string; feature: string; color: string; size: string };
+  const filters: Filters = { tag: activeTag, sub: activeSub, brand: brandFilter, season: seasonFilter, line: lineFilter, feature: featureFilterLocal, color: colorFilter, size: sizeFilter };
+  const passes = (p: Product, f: Filters) => {
+    if (slug === "accessories" && f.tag !== "all" && !p.tags?.includes(f.tag as AccessoryTag)) return false;
+    if (GARMENT_CATEGORIES.has(slug) && f.sub !== "all" && (subBySlug.get(p.id) ?? inferSubcategory(p.id, p.name)) !== f.sub) return false;
+    if (slug === "collaborations" && f.brand !== "all" && collabBrand(p.name, subBySlug.get(p.id)) !== f.brand) return false;
+    if (!matchesSeason((p as Product & { season?: string }).season, p.tags, f.season)) return false;
+    if (!matchesLine(p.tags, p.name, f.line)) return false;
+    if (featureFilter && !p.features?.includes(featureFilter)) return false;
+    if (f.feature !== "all" && !p.features?.includes(f.feature)) return false;
+    if (f.color !== "all" && !p.colors?.some((c) => c.toLowerCase() === f.color.toLowerCase())) return false;
+    if (f.size !== "all" && !p.sizes?.some((sz) => sz.toLowerCase() === f.size.toLowerCase())) return false;
+    return true;
+  };
+  /** How many pieces a chip would show with the other filters as they are — chips that would
+   *  show nothing are greyed out instead of leading to an empty page. */
+  const countWith = (key: keyof Filters, value: string) =>
+    value === "all" ? 1 : baseItems.filter((p) => passes(p, { ...filters, [key]: value })).length;
+
+  const items = (() => {
+    const list = baseItems.filter((p) => passes(p, filters));
     switch (sort) {
       case "price-asc":
         return [...list].sort((a, b) => a.priceHKD - b.priceHKD);
@@ -186,7 +208,8 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
       default:
         return list;
     }
-  }, [slug, activeTag, activeSub, brandFilter, sort, dbRows, stockBySlug, subBySlug, currency, featureFilter, featureFilterLocal, colorFilter, sizeFilter, seasonFilter, lineFilter]);
+  })();
+
 
   // Build filter options from currently-scoped catalog (category + region).
   const scopedItems = useMemo(() => {
@@ -243,14 +266,105 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
     { key: "one-piece", label: "one-piece" },
   ];
 
+  // "the science behind" is news posts, not things for sale: no prices on the cards.
+  const isNews = slug === "vegan-tech";
+  const renderCard = (p: Product) => {
+          const dbGallery = (p as Product & { galleryUrls?: string[] }).galleryUrls;
+          const swatches = (p as Product & { swatches?: Array<{ name: string; hex?: string; swatch_url?: string }> }).swatches;
+          const external = p as Product & { isExternal?: boolean; externalUrl?: string | null };
+          const img = (dbGallery && dbGallery[0]) || productImage(p.id);
+          const inner = (
+            <>
+              <div className="aspect-square bg-brand-light flex items-center justify-center overflow-hidden">
+                {img ? (
+                  <img
+                    src={img}
+                    alt={p.name}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                ) : (
+                  <span className="text-foreground/30 text-[0.647rem] tracking-wide px-4 text-center leading-snug">
+                    {p.name}
+                  </span>
+                )}
+              </div>
+              <div className="mt-3 px-2">
+                <h3 className="text-[0.765rem] leading-snug text-foreground group-hover:text-primary transition-colors">
+                  {p.name}
+                </h3>
+                {external.isExternal && external.externalUrl ? (
+                  <p className="text-[0.706rem] text-primary mt-1.5 uppercase tracking-wider">visit site →</p>
+                ) : isNews ? null : (currency === "CAD" ? p.priceCAD : p.priceHKD) > 0 ? (
+                  <p className="num text-[0.765rem] text-primary mt-1.5 font-medium">
+                    {currency} {(currency === "CAD" ? p.priceCAD : p.priceHKD).toFixed(2)}
+                  </p>
+                ) : (
+                  <p className="text-[0.706rem] text-foreground/50 mt-1.5 tracking-wide">price on request</p>
+                )}
+                {p.colors.length > 1 && (
+                  <div className="flex gap-1 justify-center mt-2">
+                    {p.colors.slice(0, 5).map((c) => {
+                      const dbSw = swatches?.find((s) => s.name === c);
+                      const sw = dbSw?.swatch_url ?? colorSwatch(c);
+                      return sw ? (
+                        <img
+                          key={c}
+                          src={sw}
+                          alt={c}
+                          title={c}
+                          className="h-3 w-3 rounded-full object-cover"
+                        />
+                      ) : (
+                        <span
+                          key={c}
+                          title={c}
+                          className="h-2 w-2 rounded-full border border-border/60"
+                          style={{ background: dbSw?.hex ?? PRODUCT_COLORS[c] ?? "transparent" }}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </>
+          );
+          return external.isExternal && external.externalUrl ? (
+            <a
+              key={p.id}
+              href={external.externalUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="group block text-center"
+            >
+              {inner}
+            </a>
+          ) : (
+            <Link
+              key={p.id}
+              to="/product/$productId"
+              params={{ productId: p.id }}
+              className="group block text-center"
+            >
+              {inner}
+            </Link>
+          );
+  };
+  const gridClass = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-10";
+  // Collaborations: one row per partner brand (little prince, a new notebook brand…), each under its own heading.
+  const brandGroups = slug === "collaborations" && brandFilter === "all" && brands.length > 1
+    ? [...brands.map((b) => ({ name: b.name, list: items.filter((p) => collabBrand(p.name, subBySlug.get(p.id)) === b.name) })),
+       { name: "", list: items.filter((p) => !collabBrand(p.name, subBySlug.get(p.id))) }].filter((g) => g.list.length > 0)
+    : null;
+
   return (
     <Shell>
       <section className="px-6 lg:px-10 pt-10 pb-6">
         <div className="flex items-start justify-between flex-wrap gap-6">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-primary text-[16px] tracking-wide">{cat.name}</h1>
+            <h1 className="text-primary text-[0.941rem] tracking-wide">{cat.name}</h1>
             {activeFeature && (
-              <span className="inline-flex items-center gap-2 border border-primary text-primary px-2.5 py-1 text-[12px] tracking-wide">
+              <span className="inline-flex items-center gap-2 border border-primary text-primary px-2.5 py-1 text-[0.706rem] tracking-wide">
                 feature: {activeFeature.name}
                 {onClearFeature && (
                   <button
@@ -268,8 +382,9 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
 
 
           <div className="flex flex-col items-end gap-4 ml-auto">
+            {!isVegan && (
             <div className="flex flex-wrap justify-end items-center gap-2">
-              {colorOptions.length > 0 && !isVegan && (
+              {colorOptions.length > 0 && (
                 <FilterSelect
                   value={colorFilter}
                   onChange={setColorFilter}
@@ -277,7 +392,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                   options={colorOptions}
                 />
               )}
-              {sizeOptions.length > 0 && !isVegan && (
+              {sizeOptions.length > 0 && (
                 <FilterSelect
                   value={sizeFilter}
                   onChange={setSizeFilter}
@@ -285,7 +400,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                   options={sizeOptions}
                 />
               )}
-              {featureOptions.length > 0 && !featureFilter && !isVegan && (
+              {featureOptions.length > 0 && !featureFilter && (
                 <FilterSelect
                   value={featureFilterLocal}
                   onChange={setFeatureFilterLocal}
@@ -297,7 +412,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                 <button
                   type="button"
                   onClick={() => { setColorFilter("all"); setSizeFilter("all"); setFeatureFilterLocal("all"); setSeasonFilter("all"); setLineFilter("all"); setBrandFilter("all"); setActiveTag("all"); setActiveSub("all"); }}
-                  className="text-[12px] tracking-wide text-primary hover:underline"
+                  className="text-[0.706rem] tracking-wide text-primary hover:underline"
                 >
                   clear filters
                 </button>
@@ -306,34 +421,35 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value as SortKey)}
-                  className="appearance-none bg-card border border-border text-[13px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
+                  className="appearance-none bg-card border border-border text-[0.765rem] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
                 >
                   <option value="default">default sorting</option>
                   <option value="name">sort by name</option>
                   <option value="price-asc">price: low to high</option>
                   <option value="price-desc">price: high to low</option>
                 </select>
-                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[11px]">▾</span>
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[0.647rem]">▾</span>
               </div>
             </div>
+            )}
 
 
             {showSeasonBar && (
               <>
-                <ChipBar options={SEASON_OPTIONS} active={seasonFilter} onChange={setSeasonFilter} label="season" />
-                <ChipBar options={LINE_OPTIONS} active={lineFilter} onChange={setLineFilter} label="line" />
+                <ChipBar options={SEASON_OPTIONS} active={seasonFilter} onChange={setSeasonFilter} label="season" count={(k) => countWith("season", k)} />
+                <ChipBar options={LINE_OPTIONS} active={lineFilter} onChange={setLineFilter} label="line" count={(k) => countWith("line", k)} />
               </>
             )}
 
             {isVegan && (
-              <div className="flex flex-wrap justify-end gap-1.5 max-w-[760px]" role="navigation" aria-label="vegan categories">
+              <div className="flex flex-wrap justify-end gap-1.5 max-w-[45rem]" role="navigation" aria-label="vegan categories">
                 {VEGAN_LINKS.map((v) => (
                   <Link
                     key={v.slug}
                     to={v.to}
                     aria-current={v.slug === slug ? "page" : undefined}
                     className={
-                      "px-3 py-1 text-[12px] tracking-wide transition-colors border " +
+                      "px-3 py-1 text-[0.706rem] tracking-wide transition-colors border " +
                       (v.slug === slug
                         ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
                         : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
@@ -346,47 +462,11 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
             )}
 
             {showTagBar && (
-              <div className="flex flex-wrap justify-end gap-1.5 max-w-[760px]">
-                {ACCESSORY_TAGS.map((t) => {
-                  const active = activeTag === t.key;
-                  return (
-                    <button
-                      key={t.key}
-                      onClick={() => setActiveTag(t.key)}
-                      className={
-                        "px-3 py-1 text-[12px] tracking-wide transition-colors border " +
-                        (active
-                          ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
-                          : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
-                      }
-                    >
-                      {t.label}
-                    </button>
-                  );
-                })}
-              </div>
+              <ChipBar options={ACCESSORY_TAGS} active={activeTag} onChange={(k) => setActiveTag(k as "all" | AccessoryTag)} label="type" count={(k) => countWith("tag", k)} />
             )}
 
             {showSubBar && (
-              <div className="flex flex-wrap justify-end gap-1.5 max-w-[760px]">
-                {SUB_OPTIONS.map((t) => {
-                  const active = activeSub === t.key;
-                  return (
-                    <button
-                      key={t.key}
-                      onClick={() => setActiveSub(t.key)}
-                      className={
-                        "px-3 py-1 text-[12px] tracking-wide transition-colors border " +
-                        (active
-                          ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
-                          : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
-                      }
-                    >
-                      {t.label}
-                    </button>
-                  );
-                })}
-              </div>
+              <ChipBar options={SUB_OPTIONS} active={activeSub} onChange={setActiveSub} label="garment" count={(k) => countWith("sub", k)} />
             )}
           </div>
         </div>
@@ -441,90 +521,18 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-10">
-            {items.map((p) => {
-              const dbGallery = (p as Product & { galleryUrls?: string[] }).galleryUrls;
-              const swatches = (p as Product & { swatches?: Array<{ name: string; hex?: string; swatch_url?: string }> }).swatches;
-              const external = p as Product & { isExternal?: boolean; externalUrl?: string | null };
-              const img = (dbGallery && dbGallery[0]) || productImage(p.id);
-              const inner = (
-                <>
-                  <div className="aspect-square bg-brand-light flex items-center justify-center overflow-hidden">
-                    {img ? (
-                      <img
-                        src={img}
-                        alt={p.name}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                      />
-                    ) : (
-                      <span className="text-foreground/30 text-[11px] tracking-wide px-4 text-center leading-snug">
-                        {p.name}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-3 px-2">
-                    <h3 className="text-[13px] leading-snug text-foreground group-hover:text-primary transition-colors">
-                      {p.name}
-                    </h3>
-                    {external.isExternal && external.externalUrl ? (
-                      <p className="text-[12px] text-primary mt-1.5 uppercase tracking-wider">visit site →</p>
-                    ) : (currency === "CAD" ? p.priceCAD : p.priceHKD) > 0 ? (
-                      <p className="num text-[13px] text-primary mt-1.5 font-medium">
-                        {currency} {(currency === "CAD" ? p.priceCAD : p.priceHKD).toFixed(2)}
-                      </p>
-                    ) : (
-                      <p className="text-[12px] text-foreground/50 mt-1.5 tracking-wide">price on request</p>
-                    )}
-                    {p.colors.length > 1 && (
-                      <div className="flex gap-1 justify-center mt-2">
-                        {p.colors.slice(0, 5).map((c) => {
-                          const dbSw = swatches?.find((s) => s.name === c);
-                          const sw = dbSw?.swatch_url ?? colorSwatch(c);
-                          return sw ? (
-                            <img
-                              key={c}
-                              src={sw}
-                              alt={c}
-                              title={c}
-                              className="h-3 w-3 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span
-                              key={c}
-                              title={c}
-                              className="h-2 w-2 rounded-full border border-border/60"
-                              style={{ background: dbSw?.hex ?? PRODUCT_COLORS[c] ?? "transparent" }}
-                            />
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </>
-              );
-              return external.isExternal && external.externalUrl ? (
-                <a
-                  key={p.id}
-                  href={external.externalUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group block text-center"
-                >
-                  {inner}
-                </a>
-              ) : (
-                <Link
-                  key={p.id}
-                  to="/product/$productId"
-                  params={{ productId: p.id }}
-                  className="group block text-center"
-                >
-                  {inner}
-                </Link>
-              );
-            })}
-          </div>
+          brandGroups ? (
+            <div className="space-y-16">
+              {brandGroups.map((g) => (
+                <div key={g.name || "other"}>
+                  {g.name && <h2 className="text-xl tracking-wide mb-6 border-b border-border pb-3">{g.name}</h2>}
+                  <div className={gridClass}>{g.list.map(renderCard)}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className={gridClass}>{items.map(renderCard)}</div>
+          )
         )}
       </section>
       {afterContent}
@@ -549,7 +557,7 @@ function FilterSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none bg-card border border-border text-[13px] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
+        className="appearance-none bg-card border border-border text-[0.765rem] pl-3 pr-8 py-1.5 text-foreground/80 focus:outline-none focus:border-primary cursor-pointer"
       >
         <option value="all">all {label}s</option>
         {options.map((o) => {
@@ -562,33 +570,40 @@ function FilterSelect({
           );
         })}
       </select>
-      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[11px]">▾</span>
+      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-foreground/50 text-[0.647rem]">▾</span>
     </div>
   );
 }
 
 
-function ChipBar({ options, active, onChange, label }: {
+function ChipBar({ options, active, onChange, label, count }: {
   options: readonly { key: string; label: string }[];
   active: string;
   onChange: (key: string) => void;
   label: string;
+  /** Pieces this chip would show; chips with none are greyed out and can't be pressed. */
+  count?: (key: string) => number;
 }) {
   return (
-    <div className="flex flex-wrap justify-end items-center gap-1.5 max-w-[760px]" role="group" aria-label={label}>
+    <div className="flex flex-wrap justify-end items-center gap-1.5 max-w-[45rem]" role="group" aria-label={label}>
       {options.map((t) => {
         const on = active === t.key;
+        const empty = !on && count ? count(t.key) === 0 : false;
         return (
           <button
             key={t.key}
             type="button"
             onClick={() => onChange(t.key)}
             aria-pressed={on}
+            disabled={empty}
+            title={empty ? "nothing here with the other filters you picked" : undefined}
             className={
-              "px-3 py-1 text-[12px] tracking-wide transition-colors border " +
+              "px-3 py-1 text-[0.706rem] tracking-wide transition-colors border " +
               (on
                 ? "bg-[oklch(0.35_0.14_18)] border-[oklch(0.35_0.14_18)] text-white"
-                : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
+                : empty
+                  ? "bg-transparent border-border text-foreground/35 cursor-not-allowed"
+                  : "bg-primary border-primary text-primary-foreground hover:bg-[oklch(0.35_0.14_18)] hover:border-[oklch(0.35_0.14_18)]")
             }
           >
             {t.label}
