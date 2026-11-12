@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Shell } from "@/components/alps/Shell";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -105,16 +106,16 @@ function AdminPage() {
 
   return (
     <Shell>
-      <div className="px-6 lg:px-10 py-10 max-w-[1600px] mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-light">admin panel</h1>
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <span>{user.email}</span>
+      <div className="px-4 sm:px-6 lg:px-10 py-6 sm:py-10 max-w-[1600px] mx-auto">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-light">admin panel</h1>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground min-w-0">
+            <span className="truncate">{user.email}</span>
             <button onClick={signOut} className="link-red">sign out</button>
           </div>
         </div>
         <Tabs defaultValue="products">
-          <TabsList>
+          <TabsList className="h-auto w-full flex-wrap justify-start gap-1">
             <TabsTrigger value="products">products</TabsTrigger>
             <TabsTrigger value="banners">homepage banners</TabsTrigger>
             <TabsTrigger value="orders">orders</TabsTrigger>
@@ -272,6 +273,7 @@ function normalizeLists(p: ProductRow): ProductRow {
 }
 
 function ProductsTab() {
+  const qc = useQueryClient();
   const [rows, setRows] = useState<ProductRow[]>([]);
   const [editing, setEditing] = useState<ProductRow | null>(null);
   const [search, setSearch] = useState("");
@@ -342,6 +344,8 @@ function ProductsTab() {
       : await supabase.from("products").insert(payload);
     if (error) return toast.error(error.message);
     toast.success("saved"); setEditing(null); load();
+    qc.invalidateQueries({ queryKey: ["admin-brands"] });
+    qc.invalidateQueries({ queryKey: ["brand-icons"] });
   };
 
   // Swap a product with its neighbour and renumber the category 1..n, which is
@@ -398,18 +402,18 @@ function ProductsTab() {
   return (
     <div className="py-6 space-y-6">
       {/* Top bar */}
-      <div className="flex flex-wrap gap-3 items-center justify-between">
-        <div>
+      <div className="flex flex-wrap gap-3 items-end justify-between">
+        <div className="min-w-0">
           <h2 className="text-lg">{rows.length} products in database</h2>
           <p className="text-xs text-muted-foreground">
             grouped by category, in the order shown on the site. use the arrows to reorder. click a category to collapse it.
             {filtering && <> showing {filtered.length} matching.</>}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 w-full lg:w-auto">
           <select
             aria-label="filter by season"
-            className="h-9 border border-input bg-background px-3 text-sm"
+            className="h-9 border border-input bg-background px-3 text-sm flex-1 sm:flex-none"
             value={seasonFilter}
             onChange={(e) => setSeasonFilter(e.target.value)}
           >
@@ -418,7 +422,7 @@ function ProductsTab() {
           </select>
           <select
             aria-label="filter by collection"
-            className="h-9 border border-input bg-background px-3 text-sm"
+            className="h-9 border border-input bg-background px-3 text-sm flex-1 sm:flex-none"
             value={collectionFilter}
             onChange={(e) => setCollectionFilter(e.target.value)}
           >
@@ -426,7 +430,7 @@ function ProductsTab() {
             {collections.map((c) => <option key={c} value={c}>{c}</option>)}
             <option value="none">no collection set</option>
           </select>
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="search name / slug…" className="w-64" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="search name / slug…" className="w-full sm:w-64" />
           <Button variant="outline" onClick={syncCatalog} disabled={syncing}>{syncing ? "syncing…" : "sync static catalog"}</Button>
           <Button onClick={() => setEditing(blankProduct())}><Plus className="h-4 w-4 mr-1" />new product</Button>
         </div>
@@ -443,20 +447,22 @@ function ProductsTab() {
           const open = openCats[cat.slug] ?? items.length > 0;
           return (
             <div key={cat.slug} className="border border-border bg-card">
-              <button
-                onClick={() => setOpenCats((s) => ({ ...s, [cat.slug]: !open }))}
-                className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/40"
-              >
-                <div className="flex items-center gap-2">
+              <div className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-muted/40">
+                <button
+                  type="button"
+                  onClick={() => setOpenCats((s) => ({ ...s, [cat.slug]: !open }))}
+                  className="flex flex-1 min-w-0 items-center gap-2 text-left"
+                >
                   {open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   <span className="font-medium">{cat.label}</span>
                   <span className="text-xs text-muted-foreground">({items.length})</span>
-                </div>
+                </button>
                 <button
-                  onClick={(e) => { e.stopPropagation(); setEditing({ ...blankProduct(), category: cat.slug }); }}
-                  className="text-xs link-red"
-                >+ add to {cat.label}</button>
-              </button>
+                  type="button"
+                  onClick={() => setEditing({ ...blankProduct(), category: cat.slug })}
+                  className="text-xs link-red shrink-0"
+                >+ add<span className="hidden sm:inline"> to {cat.label}</span></button>
+              </div>
 
               {cat.slug === "vegan-tech" && (
                 <p className="px-4 pb-3 text-xs text-muted-foreground">
@@ -468,7 +474,7 @@ function ProductsTab() {
                   {items.map((p, idx) => {
                     const thumb = p.gallery_urls?.[0] || p.image_url;
                     return (
-                      <div key={p.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30">
+                      <div key={p.id} className="flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 hover:bg-muted/30">
                         {!filtering && (
                           <div className="flex flex-col shrink-0" aria-label="change order on the site">
                             <button
@@ -487,23 +493,26 @@ function ProductsTab() {
                             ><ChevronDown className="h-4 w-4" /></button>
                           </div>
                         )}
-                        <div className="h-14 w-14 shrink-0 bg-muted overflow-hidden flex items-center justify-center">
+                        <div className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 bg-muted overflow-hidden flex items-center justify-center">
                           <ProductThumb url={thumb} slug={p.slug} className="h-full w-full object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm truncate">{p.name || <em className="text-muted-foreground">untitled</em>}</div>
                           <div className="text-xs text-muted-foreground font-mono truncate">{p.slug}</div>
+                          <div className="text-xs text-muted-foreground sm:hidden truncate">
+                            CAD {p.price_cad} · HKD {p.price_hkd} · {p.hidden ? "hidden" : <span className="text-primary">live</span>}
+                          </div>
                         </div>
-                        <div className="text-xs text-muted-foreground hidden md:block w-32">
+                        <div className="text-xs text-muted-foreground hidden lg:block w-32 shrink-0">
                           {SEASON_LABELS[p.season] ?? p.season}
                           {p.collection && <div className="text-foreground/70">{p.collection}</div>}
                         </div>
-                        <div className="text-xs num text-primary w-28 text-right">CAD {p.price_cad} · HKD {p.price_hkd}</div>
-                        <div className="text-xs w-16 text-center">
+                        <div className="text-xs num text-primary w-28 text-right hidden sm:block shrink-0">CAD {p.price_cad} · HKD {p.price_hkd}</div>
+                        <div className="text-xs w-16 text-center hidden md:block shrink-0">
                           {(p.gallery_urls ?? []).length || (p.image_url ? 1 : 0)} img
                         </div>
-                        <div className="text-xs w-16 text-center">{p.hidden ? <span className="text-muted-foreground">hidden</span> : <span className="text-primary">live</span>}</div>
-                        <div className="flex gap-3 text-xs">
+                        <div className="text-xs w-16 text-center hidden sm:block shrink-0">{p.hidden ? <span className="text-muted-foreground">hidden</span> : <span className="text-primary">live</span>}</div>
+                        <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 text-xs shrink-0 text-right">
                           <button onClick={() => setEditing(normalizeLists(p))} className="link-red">edit</button>
                           <button onClick={() => remove(p.id!, p.name)} className="link-red">delete</button>
                         </div>
@@ -651,7 +660,7 @@ function GalleryImagePicker({ urls, slug, selected, onChange }: {
           choose from gallery
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-96">
+      <PopoverContent className="w-[min(24rem,calc(100vw-2rem))]">
         <p className="text-xs text-muted-foreground mb-2">click every photo of this colour ({selected.length} selected)</p>
         <div className="grid grid-cols-4 gap-1.5 max-h-80 overflow-y-auto">
           {urls.map((u) => {
@@ -793,21 +802,21 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
 
   return (
     <div className="fixed inset-0 z-50 bg-background/95 overflow-y-auto">
-      <div className="max-w-5xl mx-auto my-8 bg-card border border-border shadow-lg">
+      <div className="max-w-5xl mx-auto sm:my-8 bg-card border-border sm:border shadow-lg min-h-full sm:min-h-0">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
-          <h3 className="text-lg">
+        <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
+          <h3 className="text-lg min-w-0 truncate">
             {product.id ? "edit product" : "new product"}
             {product.name && <span className="text-muted-foreground text-sm ml-2">· {product.name}</span>}
           </h3>
-          <div className="flex gap-2">
+          <div className="flex gap-2 shrink-0">
             <Button variant="outline" onClick={onCancel}>cancel</Button>
             <Button onClick={onSave}>save</Button>
             <button onClick={onCancel} className="ml-2 p-1 hover:bg-muted"><X className="h-4 w-4" /></button>
           </div>
         </div>
 
-        <div className="p-6 space-y-8">
+        <div className="p-4 sm:p-6 space-y-8">
           {/* SECTION: Basics */}
           <Section title="basics">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -818,8 +827,10 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                   {CATEGORY_GROUPS.map((c) => <option key={c.slug} value={c.slug}>{c.label}</option>)}
                 </select>
               </Field>
-              <Field label={product.category === "collaborations" ? "collaboration partner (shows as a clickable icon)" : "subcategory (free text)"}>
-                <Input value={product.subcategory ?? ""} onChange={(e) => set("subcategory", e.target.value)} placeholder={product.category === "collaborations" ? "e.g. little prince" : "e.g. botalab"} />
+              <Field label={product.category === "collaborations" ? "collaboration partner / brand (shows as a clickable icon)" : "subcategory (free text)"}>
+                {product.category === "collaborations"
+                  ? <BrandSelect value={product.subcategory ?? ""} onChange={(v) => set("subcategory", v || null)} />
+                  : <Input value={product.subcategory ?? ""} onChange={(e) => set("subcategory", e.target.value)} placeholder="e.g. botalab" />}
               </Field>
               <Field label="season">
                 <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={product.season} onChange={(e) => set("season", e.target.value as ProductRow["season"])}>
@@ -1184,6 +1195,7 @@ function AdminsTab() {
         <Button type="submit" disabled={busy}>grant</Button>
       </form>
       <p className="text-xs text-muted-foreground">user must have signed up first.</p>
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead><tr className="text-left text-muted-foreground border-b border-border">
           <th className="py-2">email</th><th>granted</th><th></th>
@@ -1200,6 +1212,7 @@ function AdminsTab() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -1316,7 +1329,7 @@ function OrderDetail({ order, onClose, onStatus }: { order: any; onClose: () => 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto" onClick={onClose}>
       <div className="max-w-3xl mx-auto my-8 bg-card border border-border shadow-lg" onClick={(e) => e.stopPropagation()}>
-        <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4 flex items-center justify-between gap-4">
+        <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="font-mono text-sm">{order.order_number}</div>
             <div className="text-xs text-muted-foreground">
@@ -1496,6 +1509,7 @@ function CustomersTab() {
 
       <div>
         <h3 className="text-sm font-medium mb-3">registered accounts ({rows.length})</h3>
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead><tr className="text-left text-muted-foreground border-b border-border">
             <th className="py-2">name</th><th>mobile</th><th>newsletter</th><th>joined</th>
@@ -1511,10 +1525,12 @@ function CustomersTab() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <div>
         <h3 className="text-sm font-medium mb-3">imported customers ({imported.length})</h3>
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead><tr className="text-left text-muted-foreground border-b border-border">
             <th className="py-2">name</th><th>email</th><th>phone</th><th>source</th><th>imported</th>
@@ -1531,6 +1547,7 @@ function CustomersTab() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
@@ -1570,10 +1587,10 @@ function PromosTab() {
   };
   return (
     <div className="py-6 space-y-6">
-      <div className="flex justify-between"><h2>{rows.length} codes</h2><Button onClick={() => setEditing({ ...blankPromo })}>+ new code</Button></div>
+      <div className="flex flex-wrap gap-3 items-center justify-between"><h2>{rows.length} codes</h2><Button onClick={() => setEditing({ ...blankPromo })}>+ new code</Button></div>
       {editing && (
         <div className="border border-border p-6 bg-card space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="code"><Input value={editing.code} onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })} /></Field>
             <Field label="type">
               <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={editing.discount_type} onChange={(e) => setEditing({ ...editing, discount_type: e.target.value })}>
@@ -1590,6 +1607,7 @@ function PromosTab() {
           <div className="flex gap-3"><Button onClick={save}>save</Button><Button variant="outline" onClick={() => setEditing(null)}>cancel</Button></div>
         </div>
       )}
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead><tr className="text-left text-muted-foreground border-b border-border">
           <th className="py-2">code</th><th>type</th><th>amount</th><th>used</th><th>active</th><th></th>
@@ -1609,6 +1627,7 @@ function PromosTab() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -1629,7 +1648,8 @@ function NewsletterTab() {
   };
   return (
     <div className="py-6 space-y-4">
-      <div className="flex justify-between"><h2>{rows.length} subscribers</h2><Button onClick={csv} variant="outline">export CSV</Button></div>
+      <div className="flex flex-wrap gap-3 items-center justify-between"><h2>{rows.length} subscribers</h2><Button onClick={csv} variant="outline">export CSV</Button></div>
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead><tr className="text-left text-muted-foreground border-b border-border"><th className="py-2">email</th><th>subscribed</th></tr></thead>
         <tbody>
@@ -1641,6 +1661,7 @@ function NewsletterTab() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -1714,7 +1735,7 @@ function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: 
             </button>
           ))}
         </div>
-        <div className="grid grid-cols-6 gap-2 max-h-72 overflow-y-auto">
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-72 overflow-y-auto">
           {SWATCH_LIBRARY[group].map((item) => (
             <button
               key={item.key}
@@ -2851,25 +2872,65 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
 /* ============================================================
    COLLABORATION BRANDS — the round icons on the collaborations page
    ============================================================ */
-function BrandIconsTab() {
-  const [names, setNames] = useState<string[]>([]);
-  const [icons, setIcons] = useState<{ id: string; name: string; url: string | null }[]>([]);
-  const [busy, setBusy] = useState<string | null>(null);
+/** Every collaboration brand: ones added in the brands tab plus ones typed on products. */
+function useAdminBrands() {
+  return useQuery({
+    queryKey: ["admin-brands"],
+    queryFn: async () => {
+      const [prods, rows] = await Promise.all([
+        supabase.from("products").select("id, name, subcategory").eq("category", "collaborations"),
+        supabase.from("page_sections").select("*").eq("page", BRAND_ICON_PAGE),
+      ]);
+      if (prods.error) throw prods.error;
+      if (rows.error) throw rows.error;
+      const icons = (rows.data ?? []).map((r) => toPageSection(r)).filter((r) => r.heading?.trim())
+        .map((r) => ({ id: r.id, name: brandKey(r.heading!), url: r.images[0]?.url ?? null }));
+      const usage: Record<string, { id: string; name: string }[]> = {};
+      for (const p of prods.data ?? []) {
+        const b = collabBrand(p.name, p.subcategory);
+        if (b) (usage[b] ??= []).push({ id: p.id, name: p.name });
+      }
+      const found = new Set<string>([...icons.map((i) => i.name), ...Object.keys(usage)]);
+      for (const p of PRODUCTS) if (p.category === "collaborations") { const b = collabBrand(p.name, null); if (b) found.add(b); }
+      return { names: Array.from(found).sort(), icons, usage };
+    },
+  });
+}
 
-  const load = async () => {
-    const [prods, rows] = await Promise.all([
-      supabase.from("products").select("name, subcategory").eq("category", "collaborations"),
-      supabase.from("page_sections").select("*").eq("page", BRAND_ICON_PAGE),
-    ]);
-    if (prods.error) return toast.error(prods.error.message);
-    if (rows.error) return toast.error(rows.error.message);
-    const found = new Set<string>();
-    for (const p of prods.data ?? []) { const b = collabBrand(p.name, p.subcategory); if (b) found.add(b); }
-    for (const p of PRODUCTS) if (p.category === "collaborations") { const b = collabBrand(p.name, null); if (b) found.add(b); }
-    setNames(Array.from(found).sort());
-    setIcons((rows.data ?? []).map((r) => toPageSection(r)).filter((r) => r.heading).map((r) => ({ id: r.id, name: brandKey(r.heading!), url: r.images[0]?.url ?? null })));
+/** Adds a brand (a page_sections row with no icon yet). Returns its key, or null on failure. */
+async function addBrand(raw: string, existing: string[]): Promise<string | null> {
+  const name = brandKey(raw);
+  if (!name) { toast.error("type a brand name first"); return null; }
+  if (existing.includes(name)) { toast.message(`${name} is already a brand`); return name; }
+  const { error } = await supabase.from("page_sections").insert({
+    page: BRAND_ICON_PAGE, heading: name, images: [] as unknown as Json, image_url: null,
+    links: [] as unknown as Json, video_urls: [], sort_order: 0, active: true,
+  });
+  if (error) { toast.error(error.message); return null; }
+  toast.success(`brand "${name}" added`);
+  return name;
+}
+
+function BrandIconsTab() {
+  const qc = useQueryClient();
+  const { data, error, isLoading } = useAdminBrands();
+  const names = data?.names ?? [];
+  const icons = data?.icons ?? [];
+  const usage = data?.usage ?? {};
+  const [busy, setBusy] = useState<string | null>(null);
+  const [newName, setNewName] = useState("");
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["admin-brands"] });
+    qc.invalidateQueries({ queryKey: ["brand-icons"] });
   };
-  useEffect(() => { load(); }, []);
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy("__new");
+    const ok = await addBrand(newName, names);
+    setBusy(null);
+    if (ok) { setNewName(""); refresh(); }
+  };
 
   const upload = async (name: string, file: File | undefined) => {
     if (!file) return;
@@ -2884,41 +2945,73 @@ function BrandIconsTab() {
     setBusy(null);
     if (error) return toast.error(error.message);
     toast.success(`new icon for ${name} saved`);
-    load();
+    refresh();
   };
 
-  const reset = async (id: string, name: string) => {
+  // Clears the uploaded picture but keeps the brand.
+  const resetIcon = async (id: string, name: string) => {
     if (!confirm(`remove the uploaded icon for ${name}?`)) return;
-    const { error } = await supabase.from("page_sections").delete().eq("id", id);
+    const { error } = await supabase.from("page_sections").update({ images: [] as unknown as Json, image_url: null }).eq("id", id);
     if (error) return toast.error(error.message);
-    load();
+    refresh();
+  };
+
+  // Deletes the brand. Its products stay in collaborations, without a brand.
+  const removeBrand = async (name: string) => {
+    const used = usage[name] ?? [];
+    const msg = used.length
+      ? `remove the brand "${name}"?\n\n${used.length} product${used.length === 1 ? "" : "s"} use it (${used.map((p) => p.name).join(", ")}). they stay in alps collaborations but lose this brand.`
+      : `remove the brand "${name}"?`;
+    if (!confirm(msg)) return;
+    setBusy(name);
+    const row = icons.find((i) => i.name === name);
+    const results = await Promise.all([
+      row ? supabase.from("page_sections").delete().eq("id", row.id) : Promise.resolve({ error: null }),
+      used.length ? supabase.from("products").update({ subcategory: null }).in("id", used.map((p) => p.id)) : Promise.resolve({ error: null }),
+    ]);
+    setBusy(null);
+    const failed = results.find((r) => r.error);
+    if (failed?.error) return toast.error(failed.error.message);
+    toast.success(`brand "${name}" removed`);
+    refresh();
   };
 
   return (
     <div className="py-6 space-y-6">
       <Section
         title="collaboration brands"
-        subtitle='each brand shows as a round icon on the collaborations page; tapping it shows that brand’s pieces. a new brand appears here by itself once a product has its name typed in "collaboration partner" (products tab → + add to alps collaborations). upload a square picture — the circle shows the middle of it.'
+        subtitle="each brand shows as a round icon on the collaborations page; tapping it shows that brand’s pieces. add a brand here, then pick it from the “collaboration partner” list when adding a product. upload a square picture — the circle shows the middle of it."
       >
-        {names.length === 0 && <p className="text-xs text-muted-foreground">no collaboration brands yet.</p>}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <form onSubmit={add} className="flex flex-col sm:flex-row gap-2 sm:items-center max-w-xl">
+          <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="new brand name, e.g. tatou" className="sm:flex-1" />
+          <Button type="submit" disabled={busy === "__new" || !newName.trim()}>
+            <Plus className="h-4 w-4 mr-1" />{busy === "__new" ? "adding…" : "add brand"}
+          </Button>
+        </form>
+        {isLoading && <p className="text-xs text-muted-foreground">loading brands…</p>}
+        {error && <p className="text-xs text-destructive">failed to load: {(error as Error).message}</p>}
+        {!isLoading && names.length === 0 && <p className="text-xs text-muted-foreground">no collaboration brands yet.</p>}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {names.map((name) => {
             const row = icons.find((i) => i.name === name);
             const current = row?.url || BUILT_IN_BRAND_ICONS[name] || null;
+            const count = usage[name]?.length ?? 0;
             return (
-              <div key={name} className="border border-border bg-card p-4 flex items-center gap-4">
+              <div key={name} className="border border-border bg-card p-4 flex items-center gap-4 min-w-0">
                 <BrandIconPreview url={current} />
-                <div className="space-y-2 min-w-0">
-                  <p className="font-medium">{name}</p>
+                <div className="space-y-1.5 min-w-0 flex-1">
+                  <p className="font-medium truncate">{name}</p>
                   <p className="text-[0.647rem] text-muted-foreground">
+                    {count} product{count === 1 ? "" : "s"} ·{" "}
                     {row?.url ? "your uploaded icon" : BUILT_IN_BRAND_ICONS[name] ? "built-in logo" : "using the first product photo"}
                   </p>
-                  <div className="flex gap-3 text-xs">
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
                     <label className={`cursor-pointer link-red ${busy === name ? "opacity-50 pointer-events-none" : ""}`}>
-                      {busy === name ? "uploading…" : "change icon"}
+                      {busy === name ? "working…" : "change icon"}
                       <input type="file" accept="image/*" className="hidden" onChange={(e) => { upload(name, e.target.files?.[0]); e.target.value = ""; }} />
                     </label>
-                    {row && <button className="link-red" onClick={() => reset(row.id, name)}>remove upload</button>}
+                    {row?.url && <button className="link-red" onClick={() => resetIcon(row.id, name)}>remove icon</button>}
+                    <button className="link-red" disabled={busy === name} onClick={() => removeBrand(name)}>remove brand</button>
                   </div>
                 </div>
               </div>
@@ -2927,6 +3020,51 @@ function BrandIconsTab() {
         </div>
       </Section>
     </div>
+  );
+}
+
+/** Collaboration partner picker for the product form, with "+ add a new brand…". */
+function BrandSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const qc = useQueryClient();
+  const { data } = useAdminBrands();
+  const names = data?.names ?? [];
+  const current = brandKey(value);
+  const options = current && !names.includes(current) ? [...names, current].sort() : names;
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const save = async () => {
+    setBusy(true);
+    const name = await addBrand(draft, names);
+    setBusy(false);
+    if (!name) return;
+    qc.invalidateQueries({ queryKey: ["admin-brands"] });
+    qc.invalidateQueries({ queryKey: ["brand-icons"] });
+    onChange(name);
+    setDraft(""); setAdding(false);
+  };
+
+  if (adding) {
+    return (
+      <div className="flex gap-2">
+        <Input autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="new brand name"
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); save(); } if (e.key === "Escape") setAdding(false); }} />
+        <Button type="button" size="sm" className="h-9" onClick={save} disabled={busy || !draft.trim()}>{busy ? "adding…" : "add"}</Button>
+        <Button type="button" size="sm" variant="outline" className="h-9" onClick={() => setAdding(false)}>cancel</Button>
+      </div>
+    );
+  }
+  return (
+    <select
+      className="w-full h-9 border border-input bg-background px-3 text-sm"
+      value={current}
+      onChange={(e) => (e.target.value === "__add" ? setAdding(true) : onChange(e.target.value))}
+    >
+      <option value="">— no brand —</option>
+      {options.map((n) => <option key={n} value={n}>{n}</option>)}
+      <option value="__add">+ add a new brand…</option>
+    </select>
   );
 }
 
