@@ -35,6 +35,8 @@ import {
 import type { Json } from "@/integrations/supabase/types";
 import { normalizeUrl } from "@/lib/utils";
 import { useMediaUrl } from "@/lib/storage-url";
+import { BRAND_ICON_PAGE, BUILT_IN_BRAND_ICONS, collabBrand, brandKey } from "@/lib/collab-brands";
+import { SCIENCE_PAGE } from "@/components/alps/ScienceBehind";
 import { splitList, joinList, variantKey, isSizeless, SEASON_LABELS, type VariantStock } from "@/lib/product-fields";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
@@ -120,6 +122,8 @@ function AdminPage() {
             <TabsTrigger value="journal">journey posts</TabsTrigger>
             <TabsTrigger value="page-content">design path content</TabsTrigger>
             <TabsTrigger value="milestones">milestones</TabsTrigger>
+            <TabsTrigger value="science">the science behind</TabsTrigger>
+            <TabsTrigger value="brands">collaboration brands</TabsTrigger>
             <TabsTrigger value="journey">journey extras</TabsTrigger>
             <TabsTrigger value="promos">promo codes</TabsTrigger>
             <TabsTrigger value="newsletter">newsletter</TabsTrigger>
@@ -160,6 +164,20 @@ function AdminPage() {
               emptyHint='no blocks yet — click "add section" to put a picture and some text on the milestones page.'
             />
           </TabsContent>
+          <TabsContent value="science">
+            <PageSectionsTab
+              page={SCIENCE_PAGE}
+              pinFirst={false}
+              captions
+              importOld
+              title="the science behind — one write-up per technology"
+              subtitle='each technology (ASK LAB, …) is its own write-up. add pictures, then type the words that go beside each picture. to start a new technology click "add section". a picture in the wrong write-up can be moved with "move to".'
+              firstLabel="technology"
+              restLabel="technology"
+              emptyHint='no write-ups yet — the page is still showing the old posts from the products tab. click "copy the old posts here" to bring them over, or "add section" to start a new technology.'
+            />
+          </TabsContent>
+          <TabsContent value="brands"><BrandIconsTab /></TabsContent>
           <TabsContent value="journey"><JourneyTab /></TabsContent>
           <TabsContent value="promos"><PromosTab /></TabsContent>
           <TabsContent value="newsletter"><NewsletterTab /></TabsContent>
@@ -440,6 +458,11 @@ function ProductsTab() {
                 >+ add to {cat.label}</button>
               </button>
 
+              {cat.slug === "vegan-tech" && (
+                <p className="px-4 pb-3 text-xs text-muted-foreground">
+                  the science behind page is now written in the "the science behind" tab (pictures with words beside them). posts here only show on the site until the first write-up is added there.
+                </p>
+              )}
               {open && items.length > 0 && (
                 <div className="border-t border-border divide-y divide-border">
                   {items.map((p, idx) => {
@@ -2515,6 +2538,8 @@ function PageSectionsTab({
   emptyHint = 'no sections yet — the page is showing its built-in bio. click "add section" to take over the copy.',
   pinFirst = true,
   single = false,
+  captions = false,
+  importOld = false,
 }: {
   page?: string;
   title?: string;
@@ -2527,6 +2552,10 @@ function PageSectionsTab({
   pinFirst?: boolean;
   /** Only one section allowed (e.g. the bio): hide "add section" once it exists. */
   single?: boolean;
+  /** Words beside each picture, and moving a picture to another section. */
+  captions?: boolean;
+  /** Offer to copy the old "science behind" product posts into sections. */
+  importOld?: boolean;
 } = {}) {
   const [rows, setRows] = useState<PageSection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -2596,6 +2625,56 @@ function PageSectionsTab({
     load();
   };
 
+  /** Move one picture (with its words) to another section, saving this one without it. */
+  const moveImage = async (draft: SectionDraft, index: number, targetId: string) => {
+    const img = draft.images[index];
+    const target = rows.find((r) => r.id === targetId);
+    if (!img || !target || !draft.id) return;
+    const images = [...target.images, img];
+    const { error } = await supabase.from("page_sections").update({
+      images: images as unknown as Json,
+      image_url: normalizeUrl(images[0]?.url) ?? null,
+    }).eq("id", targetId);
+    if (error) return toast.error(error.message);
+    await save({ ...draft, images: draft.images.filter((_, j) => j !== index) });
+    toast.success(`picture moved to "${target.heading || "untitled"}"`);
+  };
+
+  /** Copy the old product-style science behind posts (products tab) into write-ups. */
+  const copyOldPosts = async () => {
+    const { data, error } = await supabase.from("products").select("*").eq("category", "vegan-tech").order("display_order");
+    if (error) return toast.error(error.message);
+    const have = new Set(rows.map((r) => (r.heading ?? "").trim().toLowerCase()));
+    const fresh = (data ?? []).filter((p) => !have.has(p.name.trim().toLowerCase()));
+    if (!fresh.length) return toast("nothing new to copy — every old post is already here");
+    if (!confirm(`copy ${fresh.length} old post${fresh.length === 1 ? "" : "s"} (${fresh.map((p) => p.name).join(", ")}) into write-ups? the old posts stay in the products tab; you can delete them after.`)) return;
+    const usable = (u: string | null | undefined): u is string => !!u && !u.startsWith("/src/") && !/\.(psd|ai|tiff?|heic)$/i.test(u);
+    const payload = fresh.map((p, i) => {
+      const row = p as unknown as Record<string, unknown> & { gallery_urls?: string[]; image_url?: string | null; video_urls?: string[] };
+      const urls = (row.gallery_urls?.length ? row.gallery_urls : [row.image_url]).filter(usable);
+      const text = ["description", "tech_info", "design_features", "composition", "care_instructions"]
+        .map((k) => row[k]).filter((t): t is string => typeof t === "string" && !!t.trim());
+      return {
+        page,
+        eyebrow: null,
+        heading: p.name,
+        subheading: null,
+        body: text.join("\n\n") || null,
+        image_url: urls[0] ?? null,
+        images: urls.map((url) => ({ url, caption: null })) as unknown as Json,
+        video_urls: (row.video_urls ?? []).filter(Boolean),
+        entry_date: new Date().toISOString().slice(0, 10),
+        links: [] as unknown as Json,
+        sort_order: rows.length + i,
+        active: true,
+      };
+    });
+    const { error: insErr } = await supabase.from("page_sections").insert(payload);
+    if (insErr) return toast.error(insErr.message);
+    toast.success("copied — now type the words beside each picture, and move pictures that belong to another technology");
+    load();
+  };
+
   const remove = async (id: string) => {
     if (!confirm("delete this section?")) return;
     const { error } = await supabase.from("page_sections").delete().eq("id", id);
@@ -2606,7 +2685,8 @@ function PageSectionsTab({
   return (
     <div className="py-6 space-y-6">
       <Section title={title} subtitle={subtitle}>
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end gap-2 mb-4">
+          {importOld && <Button size="sm" variant="outline" onClick={copyOldPosts}>copy the old posts here</Button>}
           {!(single && rows.length > 0) && <Button size="sm" onClick={add}><Plus className="h-3 w-3 mr-1" />add section</Button>}
         </div>
 
@@ -2626,6 +2706,9 @@ function PageSectionsTab({
               firstImageLabel={firstImageLabel}
               onSave={save}
               onDelete={() => remove(row.id)}
+              captions={captions}
+              moveTargets={captions ? rows.filter((r) => r.id !== row.id).map((r) => ({ id: r.id, heading: r.heading || "untitled" })) : []}
+              onMoveImage={moveImage}
             />
           ))}
         </div>
@@ -2634,7 +2717,7 @@ function PageSectionsTab({
   );
 }
 
-function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, onSave, onDelete }: {
+function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, onSave, onDelete, captions = false, moveTargets = [], onMoveImage }: {
   row: PageSection;
   isFirst: boolean;
   firstLabel: string;
@@ -2642,6 +2725,9 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
   firstImageLabel: string;
   onSave: (r: SectionDraft) => void;
   onDelete: () => void;
+  captions?: boolean;
+  moveTargets?: { id: string; heading: string }[];
+  onMoveImage?: (draft: SectionDraft, index: number, targetId: string) => void;
 }) {
   const [draft, setDraft] = useState<PageSection>(row);
   useEffect(() => { setDraft(row); }, [row]);
@@ -2675,16 +2761,49 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
         <Textarea rows={10} value={draft.body ?? ""} onChange={(e) => set({ body: e.target.value })} />
       </Field>
 
-      <Field label={isFirst ? firstImageLabel : "pictures — upload as many as you like; they scroll sideways on the page"}>
+      <Field label={captions ? "pictures — upload as many as you like; type the words for each one below" : isFirst ? firstImageLabel : "pictures — upload as many as you like; they scroll sideways on the page"}>
         <MediaListEditor
           kind="image"
           items={draft.images.map((i) => i.url)}
-          single={isFirst}
+          single={isFirst && !captions}
           onChange={(urls) => set({ images: urls.map((url) => ({ url, caption: draft.images.find((i) => i.url === url)?.caption ?? null })) })}
         />
       </Field>
 
-      {!isFirst && (
+      {captions && draft.images.length > 0 && (
+        <Field label="words beside each picture — shown to the right of the picture on the page (leave a blank line between paragraphs)">
+          <div className="space-y-3">
+            {draft.images.map((img, i) => (
+              <div key={img.url + i} className="flex gap-3 items-start">
+                <MediaThumb kind="image" url={img.url} />
+                <Textarea
+                  rows={4}
+                  className="flex-1"
+                  placeholder={`words for picture ${i + 1}`}
+                  value={img.caption ?? ""}
+                  onChange={(e) => set({ images: draft.images.map((x, j) => (j === i ? { ...x, caption: e.target.value } : x)) })}
+                />
+                {moveTargets.length > 0 && onMoveImage && (
+                  <select
+                    aria-label="move this picture to another write-up"
+                    className="h-9 border border-input bg-background px-2 text-xs w-40 shrink-0"
+                    value=""
+                    onChange={(e) => {
+                      const t = moveTargets.find((m) => m.id === e.target.value);
+                      if (t && confirm(`move this picture (and its words) to "${t.heading}"? this write-up is saved at the same time.`)) onMoveImage(draft, i, t.id);
+                    }}
+                  >
+                    <option value="">move to…</option>
+                    {moveTargets.map((m) => <option key={m.id} value={m.id}>{m.heading}</option>)}
+                  </select>
+                )}
+              </div>
+            ))}
+          </div>
+        </Field>
+      )}
+
+      {(!isFirst || captions) && (
         <Field label="videos — upload a video file or paste a YouTube / Vimeo link">
           <MediaListEditor kind="video" items={draft.video_urls} onChange={(urls) => set({ video_urls: urls })} />
         </Field>
@@ -2710,7 +2829,7 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
       </Field>
 
       <div className="flex flex-wrap items-end gap-4">
-        {!isFirst && (
+        {(!isFirst || captions) && (
           <div className="w-48">
             <Field label="date (newest shows first)">
               <Input type="date" value={draft.entry_date ?? ""}
@@ -2719,12 +2838,103 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
           </div>
         )}
         <Button size="sm" onClick={() => onSave(draft)}>save section</Button>
-        {!isFirst && (
+        {(!isFirst || captions) && (
           <p className="text-[0.647rem] text-muted-foreground basis-full">
             write-ups are ordered by this date, newest at the top. for older stories (e.g. school days) just pick the old date — newer posts will appear above them automatically.
           </p>
         )}
       </div>
     </div>
+  );
+}
+
+/* ============================================================
+   COLLABORATION BRANDS — the round icons on the collaborations page
+   ============================================================ */
+function BrandIconsTab() {
+  const [names, setNames] = useState<string[]>([]);
+  const [icons, setIcons] = useState<{ id: string; name: string; url: string | null }[]>([]);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const load = async () => {
+    const [prods, rows] = await Promise.all([
+      supabase.from("products").select("name, subcategory").eq("category", "collaborations"),
+      supabase.from("page_sections").select("*").eq("page", BRAND_ICON_PAGE),
+    ]);
+    if (prods.error) return toast.error(prods.error.message);
+    if (rows.error) return toast.error(rows.error.message);
+    const found = new Set<string>();
+    for (const p of prods.data ?? []) { const b = collabBrand(p.name, p.subcategory); if (b) found.add(b); }
+    for (const p of PRODUCTS) if (p.category === "collaborations") { const b = collabBrand(p.name, null); if (b) found.add(b); }
+    setNames(Array.from(found).sort());
+    setIcons((rows.data ?? []).map((r) => toPageSection(r)).filter((r) => r.heading).map((r) => ({ id: r.id, name: brandKey(r.heading!), url: r.images[0]?.url ?? null })));
+  };
+  useEffect(() => { load(); }, []);
+
+  const upload = async (name: string, file: File | undefined) => {
+    if (!file) return;
+    setBusy(name);
+    const url = await uploadSectionMedia(file, "image");
+    if (!url) { setBusy(null); return; }
+    const existing = icons.find((i) => i.name === name);
+    const fields = { images: [{ url }] as unknown as Json, image_url: url };
+    const { error } = existing
+      ? await supabase.from("page_sections").update(fields).eq("id", existing.id)
+      : await supabase.from("page_sections").insert({ page: BRAND_ICON_PAGE, heading: name, links: [] as unknown as Json, video_urls: [], sort_order: 0, active: true, ...fields });
+    setBusy(null);
+    if (error) return toast.error(error.message);
+    toast.success(`new icon for ${name} saved`);
+    load();
+  };
+
+  const reset = async (id: string, name: string) => {
+    if (!confirm(`remove the uploaded icon for ${name}?`)) return;
+    const { error } = await supabase.from("page_sections").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    load();
+  };
+
+  return (
+    <div className="py-6 space-y-6">
+      <Section
+        title="collaboration brands"
+        subtitle='each brand shows as a round icon on the collaborations page; tapping it shows that brand’s pieces. a new brand appears here by itself once a product has its name typed in "collaboration partner" (products tab → + add to alps collaborations). upload a square picture — the circle shows the middle of it.'
+      >
+        {names.length === 0 && <p className="text-xs text-muted-foreground">no collaboration brands yet.</p>}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {names.map((name) => {
+            const row = icons.find((i) => i.name === name);
+            const current = row?.url || BUILT_IN_BRAND_ICONS[name] || null;
+            return (
+              <div key={name} className="border border-border bg-card p-4 flex items-center gap-4">
+                <BrandIconPreview url={current} />
+                <div className="space-y-2 min-w-0">
+                  <p className="font-medium">{name}</p>
+                  <p className="text-[0.647rem] text-muted-foreground">
+                    {row?.url ? "your uploaded icon" : BUILT_IN_BRAND_ICONS[name] ? "built-in logo" : "using the first product photo"}
+                  </p>
+                  <div className="flex gap-3 text-xs">
+                    <label className={`cursor-pointer link-red ${busy === name ? "opacity-50 pointer-events-none" : ""}`}>
+                      {busy === name ? "uploading…" : "change icon"}
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => { upload(name, e.target.files?.[0]); e.target.value = ""; }} />
+                    </label>
+                    {row && <button className="link-red" onClick={() => reset(row.id, name)}>remove upload</button>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function BrandIconPreview({ url }: { url: string | null }) {
+  const src = useMediaUrl(url);
+  return (
+    <span className="h-20 w-20 shrink-0 rounded-full overflow-hidden bg-muted ring-1 ring-border flex items-center justify-center">
+      {src ? <img src={src} alt="" className="h-full w-full object-cover" /> : <ImageIcon className="h-5 w-5 text-muted-foreground" />}
+    </span>
   );
 }

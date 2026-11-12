@@ -43,6 +43,7 @@ import img_collab_ac0014n from "@/assets/collaborations/AC0014N.jpg";
 import img_collab_ac0024 from "@/assets/collaborations/AC0024.jpg";
 import img_collab_ac0029m from "@/assets/collaborations/AC0029M.jpg";
 import img_collab_ac0029v from "@/assets/collaborations/AC0029V.jpg";
+import img_collab_tatou_wave from "@/assets/collaborations/tatou-wave-notebook.jpg";
 import img_pc_cleansing_oil from "@/assets/personal-care/01-cleansing-oil.jpg";
 import img_pc_a_cleansing_powder from "@/assets/personal-care/02a-cleansing-powder.jpg";
 import img_pc_b_balance_gel_cleanser from "@/assets/personal-care/02b-balance-gel-cleanser.jpg";
@@ -121,6 +122,7 @@ export const EXTRA_PRODUCT_IMAGES: Record<string, string> = {
   "collab-ac0024": img_collab_ac0024,
   "collab-ac0029m": img_collab_ac0029m,
   "collab-ac0029v": img_collab_ac0029v,
+  "collab-tatou-wave-notebook": img_collab_tatou_wave,
   "pc-cleansing-oil": img_pc_cleansing_oil,
   "pc-a-cleansing-powder": img_pc_a_cleansing_powder,
   "pc-b-balance-gel-cleanser": img_pc_b_balance_gel_cleanser,
@@ -198,6 +200,8 @@ export const EXTRA_PRODUCTS: Product[] = [
   { id: "collab-ac0024", name: "AC0024 little prince silver ion anti-bacterial COOLMAX\u00ae quick dry petit pouch", category: "collaborations", priceCAD: 150, priceHKD: 880, colors: ["black"], sizes: ["one size"], features: ["quick-dry", "silver-ion", "coolmax"] },
   { id: "collab-ac0029m", name: "AC0029M little prince anti-bacterial light fresh\u00ae reversible bucket hat", category: "collaborations", priceCAD: 150, priceHKD: 880, colors: ["black"], sizes: ["one size"], features: ["silver-ion"] },
   { id: "collab-ac0029v", name: "AC0029V little prince silver ion anti-bacterial COOLMAX\u00ae reversible bucket hat", category: "collaborations", priceCAD: 150, priceHKD: 880, colors: ["black"], sizes: ["one size"], features: ["silver-ion", "coolmax", "silver-ion"] },
+  // Trial piece for the TATOU notebook collaboration (Nov 2026) — no price yet.
+  { id: "collab-tatou-wave-notebook", name: "TATOU wave notebook", category: "collaborations", priceCAD: 0, priceHKD: 0, colors: ["red"], sizes: ["one size"], features: [], tags: ["all-season", "unisex"] },
   { id: "pc-cleansing-oil", name: "cleansing oil", category: "personal-care", priceCAD: 42, priceHKD: 240, colors: ["ivory"], sizes: ["standard"], features: ["vegan", "natural"] },
   { id: "pc-a-cleansing-powder", name: "A cleansing powder", category: "personal-care", priceCAD: 38, priceHKD: 220, colors: ["ivory"], sizes: ["standard"], features: ["vegan", "natural"] },
   { id: "pc-b-balance-gel-cleanser", name: "B balance gel cleanser", category: "personal-care", priceCAD: 38, priceHKD: 220, colors: ["ivory"], sizes: ["standard"], features: ["vegan", "natural"] },

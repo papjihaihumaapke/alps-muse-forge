@@ -146,6 +146,8 @@ function ProductPage() {
 
   // "the science behind" posts are news, not products: no price, no buying controls.
   const isNews = product.category === "vegan-tech";
+  // No price set yet (e.g. a trial collaboration piece): show "price on request", no buying.
+  const noPrice = !(product.priceCAD > 0) && !(product.priceHKD > 0);
 
   const nameAndPrice = (
     <>
@@ -153,7 +155,8 @@ function ProductPage() {
         {product.category.replace(/-/g, " ")}
       </span>
       <h1 className="text-3xl md:text-4xl mt-2 leading-tight">{product.name}</h1>
-      {!isNews && (
+      {!isNews && noPrice && <p className="text-xl mt-3 text-foreground/60">price on request</p>}
+      {!isNews && !noPrice && (
         <p className="num text-xl mt-3 text-primary font-medium">
           CAD {product.priceCAD} <span className="text-foreground/40">·</span> HKD {product.priceHKD}
         </p>
@@ -404,10 +407,10 @@ function ProductPage() {
             <div className="mt-8 flex gap-2">
               <button
                 onClick={onAdd}
-                disabled={soldOut}
+                disabled={soldOut || noPrice}
                 className="flex-1 bg-primary text-primary-foreground py-4 text-base tracking-[0.2em] uppercase hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {soldOut ? "sold out" : "add to bag"}
+                {soldOut ? "sold out" : noPrice ? "coming soon" : "add to bag"}
               </button>
               <WishlistButton slug={product.id} />
             </div>

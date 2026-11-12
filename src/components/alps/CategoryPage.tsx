@@ -16,6 +16,8 @@ import { colorSwatch } from "@/lib/color-swatches";
 import { useDbProductsByCategory, dbProductToCatalog } from "@/lib/products-db";
 import { useCart } from "@/lib/cart";
 import { productAvailableInRegion } from "@/lib/region";
+import { BUILT_IN_BRAND_ICONS, collabBrand, useBrandIcons } from "@/lib/collab-brands";
+import { useMediaUrl } from "@/lib/storage-url";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name";
 
@@ -105,19 +107,19 @@ function matchesLine(tags: readonly string[] | undefined, name: string, active: 
   return lines.has(active) || ((active === "women" || active === "men") && lines.has("unisex"));
 }
 
-/** Collaboration partner: the admin "subcategory" for collaboration products, else read from the name. */
-function collabBrand(name: string, sub: string | null | undefined): string | null {
-  if (sub?.trim()) return sub.trim().toLowerCase();
-  if (/little\s*prince/i.test(name)) return "little prince";
-  return null;
-}
-
 // Clothing and accessory lines get season / line filters; vegan care lines don't.
 const SEASONAL_CATEGORIES = new Set(["innovation", "contemporary", "accessories", "collaborations"]);
 // Clothing lines also get the garment-type row.
 const GARMENT_CATEGORIES = new Set(["innovation", "contemporary"]);
 
-export function CategoryView({ slug, featureFilter, onClearFeature, afterContent }: { slug: CategorySlug; featureFilter?: string; onClearFeature?: () => void; afterContent?: React.ReactNode }) {
+export function CategoryView({ slug, featureFilter, onClearFeature, afterContent, replaceContent }: {
+  slug: CategorySlug;
+  featureFilter?: string;
+  onClearFeature?: () => void;
+  afterContent?: React.ReactNode;
+  /** Shown instead of the product grid (e.g. the science behind write-ups). */
+  replaceContent?: React.ReactNode;
+}) {
   const cat = CATEGORIES.find((c) => c.slug === slug);
   if (!cat) throw notFound();
 
@@ -231,7 +233,9 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
     scopedItems.forEach((p) => p.sizes?.forEach((sz) => s.add(sz)));
     return Array.from(s).sort();
   }, [scopedItems]);
-  // One clickable icon per collaboration partner, each showing a product from that collaboration.
+  // One clickable icon per collaboration partner. The icon is the picture uploaded in the
+  // admin "collaboration brands" tab, else the built-in logo, else a product photo.
+  const { data: brandIcons = [] } = useBrandIcons();
   const brands = useMemo(() => {
     if (slug !== "collaborations") return [];
     const m = new Map<string, string | undefined>();
@@ -241,8 +245,11 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
       const img = (p as Product & { galleryUrls?: string[] }).galleryUrls?.[0] || productImage(p.id);
       if (!m.has(b) || (!m.get(b) && img)) m.set(b, img);
     }
-    return Array.from(m, ([name, img]) => ({ name, img }));
-  }, [slug, scopedItems, subBySlug]);
+    return Array.from(m, ([name, img]) => ({
+      name,
+      img: brandIcons.find((r) => r.name === name)?.url || BUILT_IN_BRAND_ICONS[name] || img,
+    }));
+  }, [slug, scopedItems, subBySlug, brandIcons]);
 
   const featureOptions = useMemo(() => {
     const s = new Set<string>();
@@ -351,11 +358,10 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
           );
   };
   const gridClass = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-10";
-  // Collaborations: one row per partner brand (little prince, a new notebook brand…), each under its own heading.
-  const brandGroups = slug === "collaborations" && brandFilter === "all" && brands.length > 1
-    ? [...brands.map((b) => ({ name: b.name, list: items.filter((p) => collabBrand(p.name, subBySlug.get(p.id)) === b.name) })),
-       { name: "", list: items.filter((p) => !collabBrand(p.name, subBySlug.get(p.id))) }].filter((g) => g.list.length > 0)
-    : null;
+  // Collaborations: only the brand icons until one is tapped, so the page stays tidy as
+  // partners are added. Pieces without a partner still show underneath.
+  const pickBrand = slug === "collaborations" && brands.length > 0 && brandFilter === "all";
+  const shownItems = pickBrand ? items.filter((p) => !collabBrand(p.name, subBySlug.get(p.id))) : items;
 
   return (
     <Shell>
@@ -474,7 +480,7 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
 
       {brands.length > 0 && (
         <section className="px-6 lg:px-10 pb-8">
-          <div className="flex flex-wrap gap-6" role="group" aria-label="collaboration partners">
+          <div className="flex flex-wrap gap-4 sm:gap-6" role="group" aria-label="collaboration partners">
             {brands.map((b) => {
               const on = brandFilter === b.name;
               return (
@@ -483,18 +489,14 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
                   type="button"
                   onClick={() => setBrandFilter(on ? "all" : b.name)}
                   aria-pressed={on}
-                  className="group flex flex-col items-center gap-2 w-28"
+                  className="group flex flex-col items-center gap-3 w-[7rem] sm:w-[9.5rem]"
                 >
                   <span
-                    className={`h-24 w-24 rounded-full overflow-hidden bg-brand-light flex items-center justify-center transition ring-offset-2 ring-offset-background ${
+                    className={`h-28 w-28 sm:h-32 sm:w-32 rounded-full overflow-hidden bg-brand-light flex items-center justify-center transition ring-offset-2 ring-offset-background ${
                       on ? "ring-2 ring-primary" : "ring-1 ring-border group-hover:ring-foreground/60"
                     }`}
                   >
-                    {b.img ? (
-                      <img src={b.img} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-xs text-center px-2">{b.name}</span>
-                    )}
+                    {b.img ? <BrandIcon url={b.img} /> : <span className="text-xs text-center px-2">{b.name}</span>}
                   </span>
                   <span className={`text-sm tracking-wide ${on ? "text-primary" : "text-foreground/80 group-hover:text-primary"}`}>
                     {b.name}
@@ -503,9 +505,13 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
               );
             })}
           </div>
+          {pickBrand && (
+            <p className="mt-6 text-sm text-foreground/60 tracking-wide">tap a brand to see its pieces.</p>
+          )}
         </section>
       )}
 
+      {replaceContent ?? (
       <section className="px-6 lg:px-10 pb-20">
         {items.length === 0 && scopedItems.length > 0 ? (
           <div className="py-20 text-center">
@@ -521,23 +527,24 @@ export function CategoryView({ slug, featureFilter, onClearFeature, afterContent
             </p>
           </div>
         ) : (
-          brandGroups ? (
-            <div className="space-y-16">
-              {brandGroups.map((g) => (
-                <div key={g.name || "other"}>
-                  {g.name && <h2 className="text-xl tracking-wide mb-6 border-b border-border pb-3">{g.name}</h2>}
-                  <div className={gridClass}>{g.list.map(renderCard)}</div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className={gridClass}>{items.map(renderCard)}</div>
-          )
+          <>
+            {slug === "collaborations" && brandFilter !== "all" && (
+              <h2 className="text-xl tracking-wide mb-6 border-b border-border pb-3">{brandFilter}</h2>
+            )}
+            {shownItems.length > 0 && <div className={gridClass}>{shownItems.map(renderCard)}</div>}
+          </>
         )}
       </section>
+      )}
       {afterContent}
     </Shell>
   );
+}
+
+/** Brand icon picture; admin uploads live in private storage and need a signed url. */
+function BrandIcon({ url }: { url: string }) {
+  const src = useMediaUrl(url);
+  return src ? <img src={src} alt="" className="h-full w-full object-cover" /> : null;
 }
 
 type FilterOption = string | { value: string; label: string };
