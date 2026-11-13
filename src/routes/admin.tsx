@@ -235,12 +235,13 @@ type ProductRow = {
 const SEASONS: ProductRow["season"][] = ["spring-summer", "fall-winter", "all-season"];
 const LEGACY_SEASONS: ProductRow["season"][] = ["spring", "summer", "fall", "winter"];
 
+const LEGACY_CATEGORY = "personal-care";
+
 const CATEGORY_GROUPS: { slug: string; label: string }[] = [
   { slug: "innovation", label: "alps innovation" },
   { slug: "contemporary", label: "alps contemporary" },
   { slug: "accessories", label: "alps accessories" },
   { slug: "collaborations", label: "alps collaborations" },
-  { slug: "personal-care", label: "personal care (legacy)" },
   { slug: "vegan-skincare", label: "vegan skincare" },
   { slug: "vegan-personal-care", label: "vegan personal care" },
   { slug: "vegan-makeup", label: "vegan makeup" },
@@ -285,8 +286,12 @@ function ProductsTab() {
 
   const load = async () => {
     setLoading(true);
+    // "personal-care" rows are leftovers from the first import: no storefront page lists
+    // that category, so editing them changed nothing on the site while the live copy
+    // (same product under vegan-skincare etc.) stayed as it was. Keep them out of reach.
     const { data, error } = await supabase
       .from("products").select("*")
+      .neq("category", LEGACY_CATEGORY)
       .order("category").order("display_order").order("name");
     if (error) { setLoadErr(error.message); setLoading(false); return; }
     setRows((data ?? []) as unknown as ProductRow[]);
