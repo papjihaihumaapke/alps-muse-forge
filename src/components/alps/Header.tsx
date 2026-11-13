@@ -34,14 +34,14 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur border-b border-border">
-      <div className="mx-auto flex h-24 md:h-[clamp(112px,6vw,170px)] items-center justify-between gap-6 px-6 lg:px-10">
+      <div className="mx-auto flex h-24 md:h-[clamp(112px,6vw,170px)] items-center justify-between gap-6 xl:gap-4 2xl:gap-6 px-6 lg:px-10">
         {/* Logo */}
         <Link to="/" aria-label="ALPS home" className="flex items-center gap-3 shrink-0">
           <img src={logoBlack} alt="ALPS Annie Ling" className="h-20 md:h-[clamp(104px,5.6vw,160px)] w-auto" />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden 2xl:flex items-center gap-[clamp(18px,1.5vw,40px)] whitespace-nowrap text-[clamp(15px,0.95vw,26px)] font-semibold tracking-wide">
+        <nav className="hidden xl:flex items-center gap-[clamp(10px,1.1vw,40px)] whitespace-nowrap text-[clamp(13px,0.95vw,26px)] font-semibold tracking-wide">
           {NAV.map((n) =>
             n.to === "/personal-care" ? (
               <div key={n.to} className="relative group">
@@ -118,7 +118,7 @@ export function Header() {
             <SheetTrigger asChild>
               <button
                 aria-label="open menu"
-                className="2xl:hidden hover:text-primary transition-colors"
+                className="xl:hidden hover:text-primary transition-colors"
               >
                 <Menu className="h-5 w-5" />
               </button>
