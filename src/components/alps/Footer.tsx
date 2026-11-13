@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, Youtube, Twitter, MessageCircle, Music2 } from "lucide-react";
+import { Instagram, Facebook, Youtube, MessageCircle, Music2 } from "lucide-react";
 import { useState } from "react";
 import { SOCIALS, FEATURES } from "@/lib/alps-data";
 import { AWARDS } from "@/lib/awards";
@@ -8,6 +8,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { openSizeInfo, type SizeKind } from "@/lib/size-info-store";
 import { openInnovation } from "@/lib/innovation-store";
+
+// The current X (formerly Twitter) mark — lucide only ships the old bird.
+function XLogo({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
 
 const SIZE_GROUPS: SizeKind[] = ["kids", "men", "women", "unisex"];
 
@@ -100,7 +109,7 @@ export function Footer() {
               <div className="flex flex-wrap items-center gap-1.5">
                 <SocialIcon href={SOCIALS.facebook} label="ALPS facebook page"><Facebook className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
                 <SocialIcon href={SOCIALS.instagram} label="ALPS instagram"><Instagram className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
-                <SocialIcon href={SOCIALS.x} label="ALPS x"><Twitter className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
+                <SocialIcon href={SOCIALS.x} label="ALPS x"><XLogo className="h-3 w-3 shrink-0" /></SocialIcon>
                 <SocialIcon href={SOCIALS.youtube} label="ALPS youtube"><Youtube className="h-3.5 w-3.5 shrink-0" fill="currentColor" strokeWidth={0} /></SocialIcon>
                 <SocialIcon href={SOCIALS.tiktok} label="ALPS tiktok"><Music2 className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
                 <SocialIcon href={SOCIALS.threads} label="ALPS threads"><MessageCircle className="h-3.5 w-3.5 shrink-0" /></SocialIcon>
