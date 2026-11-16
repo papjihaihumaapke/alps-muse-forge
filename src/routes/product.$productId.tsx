@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Minus, Plus, ChevronDown, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { useWishlist, useToggleWishlist } from "@/lib/wishlist";
 import { Shell } from "@/components/alps/Shell";
@@ -79,18 +79,18 @@ function ProductPage() {
     const seen = new Set<string>();
     const out: string[] = [];
     const push = (u?: string) => { if (u && !seen.has(u)) { seen.add(u); out.push(u); } };
-    const swatches = dbExtras.swatches ?? [];
-    const colourImages = swatches.find((s) => s.name === color)?.image_urls ?? [];
-    // Only this colour's photos — except personal care, which has no colour picker.
-    if (colourImages.length && !isPersonalCare) {
-      colourImages.forEach(push);
-      return out;
+    // Every photo shows in the strip, grouped colour by colour; picking a colour
+    // jumps to that colour's first photo (see the effect below).
+    for (const s of dbExtras.swatches ?? []) {
+      (s.image_urls?.length ? s.image_urls : [s.image_url]).forEach(push);
     }
-    swatches.forEach((s) => push(s.image_url));
     (dbExtras.galleryUrls ?? []).forEach(push);
     productGallery(product.id, product.colors).forEach(push);
     return out;
-  }, [product, color, isPersonalCare, dbExtras.galleryUrls, dbExtras.swatches]);
+  }, [product, dbExtras.galleryUrls, dbExtras.swatches]);
+
+  // Keep the selected thumbnail visible in the sideways-scrolling strip.
+  const thumbStripRef = useRef<HTMLDivElement>(null);
 
   const [activeImage, setActiveImage] = useState<string | undefined>(undefined);
   const [zoomOpen, setZoomOpen] = useState(false);
@@ -109,6 +109,16 @@ function ProductPage() {
     if (next) { setActiveImage(next); return; }
     if (gallery[0]) setActiveImage(gallery[0]);
   }, [color, product, dbExtras.swatches, gallery]);
+
+  useEffect(() => {
+    const strip = thumbStripRef.current;
+    const thumb = strip?.querySelector<HTMLElement>('[data-active="true"]');
+    if (!strip || !thumb) return;
+    const left = thumb.getBoundingClientRect().left - strip.getBoundingClientRect().left + strip.scrollLeft;
+    if (left < strip.scrollLeft || left + thumb.offsetWidth > strip.scrollLeft + strip.clientWidth) {
+      strip.scrollTo({ left: Math.max(0, left - 8), behavior: "smooth" });
+    }
+  }, [activeImage]);
 
   // Sync colour default when product resolves from DB.
   useEffect(() => {
@@ -212,12 +222,13 @@ function ProductPage() {
       </div>
 
       {gallery.length > 1 && (
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+        <div ref={thumbStripRef} className="mt-4 flex gap-2 overflow-x-auto pb-1">
           {gallery.map((url, i) => {
             const active = url === activeImage;
             return (
               <button
                 key={url + i}
+                data-active={active}
                 onClick={() => setActiveImage(url)}
                 className={`h-20 w-20 shrink-0 overflow-hidden border-2 transition ${
                   active ? "border-primary" : "border-border hover:border-foreground/60"

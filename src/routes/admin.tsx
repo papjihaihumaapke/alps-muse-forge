@@ -250,7 +250,8 @@ const CATEGORY_GROUPS: { slug: string; label: string }[] = [
 ];
 
 const blankProduct = (): ProductRow => ({
-  slug: "", name: "", category: "vegan-skincare",
+  // No default: a silent default filed new clothes under skincare (JK1601, Nov 15).
+  slug: "", name: "", category: "",
   subcategory: "", description: "", design_features: "", tech_info: "",
   composition: "", care_instructions: "", package_size: "", package_weight: "",
   price_cad: 0, price_hkd: 0,
@@ -344,6 +345,7 @@ function ProductsTab() {
     }
     if (!payload.slug) return toast.error("slug is required");
     if (!payload.name) return toast.error("name is required");
+    if (!payload.category) return toast.error("choose a category first");
     const { error } = payload.id
       ? await supabase.from("products").update(payload).eq("id", payload.id)
       : await supabase.from("products").insert(payload);
@@ -835,6 +837,7 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
               <Field label="slug (url id) *"><Input value={product.slug} onChange={(e) => set("slug", e.target.value)} placeholder="e.g. botalab-cleanser" /></Field>
               <Field label="category">
                 <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={product.category} onChange={(e) => set("category", e.target.value)}>
+                  {!product.category && <option value="">— choose a category —</option>}
                   {CATEGORY_GROUPS.map((c) => <option key={c.slug} value={c.slug}>{c.label}</option>)}
                 </select>
               </Field>
