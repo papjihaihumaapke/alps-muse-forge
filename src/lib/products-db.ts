@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Product, CategorySlug } from "@/lib/alps-data";
 import { localizeAssetUrl } from "@/lib/local-asset-images";
 import type { VariantStock } from "@/lib/product-fields";
+import { signMediaUrls } from "@/lib/storage-url";
 
 export type DbProduct = {
   id: string;
@@ -97,6 +98,40 @@ export function dbProductToCatalog(d: DbProduct): Product & {
   };
 }
 
+/**
+ * Admin uploads live in the private `product-media` bucket, so their saved
+ * /object/public/ urls answer "Bucket not found" for visitors. Swap every stored
+ * photo/video url on the rows for a signed one (one request per bucket).
+ */
+async function withSignedMedia(rows: DbProduct[]): Promise<DbProduct[]> {
+  const urls: string[] = [];
+  for (const r of rows) {
+    if (r.image_url) urls.push(r.image_url);
+    urls.push(...(r.gallery_urls ?? []), ...(r.video_urls ?? []));
+    for (const sw of r.color_swatches ?? []) {
+      if (sw.swatch_url) urls.push(sw.swatch_url);
+      if (sw.image_url) urls.push(sw.image_url);
+      urls.push(...(sw.image_urls ?? []));
+    }
+  }
+  const signed = await signMediaUrls(urls);
+  if (!signed.size) return rows;
+  const sign = (u: string) => signed.get(u) ?? u;
+  const signOpt = <T extends string | null | undefined>(u: T): T => (u ? (sign(u) as T) : u);
+  return rows.map((r) => ({
+    ...r,
+    image_url: signOpt(r.image_url),
+    gallery_urls: (r.gallery_urls ?? []).map(sign),
+    video_urls: (r.video_urls ?? []).map(sign),
+    color_swatches: (r.color_swatches ?? []).map((sw) => ({
+      ...sw,
+      swatch_url: signOpt(sw.swatch_url),
+      image_url: signOpt(sw.image_url),
+      image_urls: sw.image_urls?.map(sign),
+    })),
+  }));
+}
+
 /** Fetch every visible DB product (cached). */
 export function useDbProducts() {
   return useQuery({
@@ -109,7 +144,7 @@ export function useDbProducts() {
         .order("display_order", { ascending: true })
         .order("name");
       if (error) throw error;
-      return (data ?? []) as unknown as DbProduct[];
+      return withSignedMedia((data ?? []) as unknown as DbProduct[]);
     },
     staleTime: 60_000,
   });
@@ -128,7 +163,7 @@ export function useDbProductsByCategory(slug: string) {
         .order("display_order", { ascending: true })
         .order("name");
       if (error) throw error;
-      return (data ?? []) as unknown as DbProduct[];
+      return withSignedMedia((data ?? []) as unknown as DbProduct[]);
     },
     staleTime: 60_000,
   });
@@ -146,7 +181,9 @@ export function useDbProductBySlug(slug: string) {
         .eq("hidden", false)
         .maybeSingle();
       if (error) throw error;
-      return data ? (data as unknown as DbProduct) : null;
+      if (!data) return null;
+      const [row] = await withSignedMedia([data as unknown as DbProduct]);
+      return row;
     },
     staleTime: 60_000,
   });

@@ -4,7 +4,7 @@ import { Shell } from "@/components/alps/Shell";
 import { SOCIALS } from "@/lib/alps-data";
 import { supabase } from "@/integrations/supabase/client";
 import designer from "@/assets/brand/annie-designer-portrait.png";
-import { useMediaUrl } from "@/lib/storage-url";
+import { signMediaUrls, useMediaUrl } from "@/lib/storage-url";
 import {
   asArray,
   eventDateLabel,
@@ -92,7 +92,11 @@ function MyJourney() {
       .select("id, kind, title, subtitle, url, image_url, sort_order")
       .eq("active", true)
       .order("sort_order")
-      .then(({ data }) => setItems((data ?? []) as JourneyItem[]));
+      .then(async ({ data }) => {
+        const rows = (data ?? []) as JourneyItem[];
+        const signed = await signMediaUrls(rows.map((r) => r.image_url));
+        setItems(rows.map((r) => (r.image_url ? { ...r, image_url: signed.get(r.image_url) ?? r.image_url } : r)));
+      });
 
     supabase
       .from("page_sections")

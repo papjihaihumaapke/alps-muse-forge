@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Shell } from "@/components/alps/Shell";
+import { signMediaUrls } from "@/lib/storage-url";
 import { supabase } from "@/integrations/supabase/client";
 import hero from "@/assets/backgrounds/bg-01.jpg";
 import textile from "@/assets/backgrounds/hightech-red.jpg";
@@ -116,9 +117,12 @@ function BannerBlock({
 function EditorialHero() {
   const [banners, setBanners] = useState<Record<string, Banner>>({});
   useEffect(() => {
-    supabase.from("homepage_banners").select("slot, image_url, link_url, title, subtitle, cta_label").then(({ data }) => {
+    supabase.from("homepage_banners").select("slot, image_url, link_url, title, subtitle, cta_label").then(async ({ data }) => {
+      const rows = (data ?? []) as Banner[];
+      // Uploaded banners sit in private storage; swap in signed urls so they show.
+      const signed = await signMediaUrls(rows.map((r) => r.image_url));
       const map: Record<string, Banner> = {};
-      (data ?? []).forEach((r: any) => { map[r.slot] = r as Banner; });
+      rows.forEach((r) => { map[r.slot] = { ...r, image_url: r.image_url ? signed.get(r.image_url) ?? r.image_url : null }; });
       setBanners(map);
     });
   }, []);

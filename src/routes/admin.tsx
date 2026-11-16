@@ -549,6 +549,12 @@ function ProductsTab() {
   );
 }
 
+/** <img> for admin-uploaded media: private-bucket urls need a signed url to load. */
+function StoredImg({ src, ...rest }: Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> & { src: string | null | undefined }) {
+  const resolved = useMediaUrl(src);
+  return resolved ? <img src={resolved} {...rest} /> : <div className={rest.className} />;
+}
+
 /* ---------- Product image preview ---------- */
 // Stored product urls are often dev-only "/src/assets/..." paths (the static
 // catalog import) or Lovable-hosted "/__l5e/..." paths, neither of which load
@@ -973,7 +979,7 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                   </div>
                   <div className="flex items-center gap-2">
                     {s.swatch_url
-                      ? <img src={s.swatch_url} alt="" className="h-10 w-10 rounded-full object-cover border border-border" />
+                      ? <StoredImg src={s.swatch_url} alt="" className="h-10 w-10 rounded-full object-cover border border-border" />
                       : <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
                     <SwatchLibraryPicker
                       onPick={(item) => {
@@ -1828,7 +1834,7 @@ function BannersTab() {
               </div>
               <div className="aspect-[4/1] bg-muted border border-border overflow-hidden">
                 {row?.image_url
-                  ? <img src={row.image_url} alt={m.label} className="h-full w-full object-cover" />
+                  ? <StoredImg src={row.image_url} alt={m.label} className="h-full w-full object-cover" />
                   : <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">no image</div>}
               </div>
               <div className="flex gap-2">
@@ -1962,7 +1968,7 @@ function JourneyTab() {
           <div key={r.id} className="border border-border bg-card p-4 grid grid-cols-1 md:grid-cols-[120px_1fr_auto] gap-4 items-start">
             <div className="space-y-2">
               <div className="aspect-video bg-muted overflow-hidden">
-                {r.image_url ? <img src={r.image_url} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
+                {r.image_url ? <StoredImg src={r.image_url} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
               </div>
               <label className="text-[0.588rem] block cursor-pointer hover:text-primary">
                 upload image
@@ -2130,7 +2136,7 @@ function JourneyPostsTab() {
             <div key={p.id} className="border border-border bg-card p-3 flex flex-wrap items-center gap-4">
               <div className="h-14 w-20 shrink-0 bg-muted overflow-hidden">
                 {p.cover_image_url ? (
-                  <img src={p.cover_image_url} alt="" className="h-full w-full object-cover" />
+                  <StoredImg src={p.cover_image_url} alt="" className="h-full w-full object-cover" />
                 ) : (
                   <div className="h-full w-full flex items-center justify-center">
                     <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -2278,7 +2284,7 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
               <div className="flex items-start gap-4">
                 <div className="h-24 w-36 shrink-0 bg-muted overflow-hidden">
                   {draft.cover_image_url ? (
-                    <img src={draft.cover_image_url} alt="" className="h-full w-full object-cover" />
+                    <StoredImg src={draft.cover_image_url} alt="" className="h-full w-full object-cover" />
                   ) : (
                     <div className="h-full w-full flex items-center justify-center">
                       <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -2322,7 +2328,7 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
                 </label>
                 {draft.images.map((img, i) => (
                   <div key={i} className="flex items-start gap-3 border border-border p-2">
-                    <img src={img.url} alt="" className="h-16 w-24 shrink-0 object-cover bg-muted" />
+                    <StoredImg src={img.url} alt="" className="h-16 w-24 shrink-0 object-cover bg-muted" />
                     <Input
                       value={img.caption ?? ""}
                       placeholder="caption (optional)"
