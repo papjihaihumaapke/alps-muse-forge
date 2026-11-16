@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Search, User, ShoppingBag, Globe, Menu, X, Heart } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
+import { SearchPanel } from "@/components/alps/SearchPanel";
 import logoBlack from "@/assets/brand/alps-logo-black.png";
 
 const NAV = [
@@ -29,6 +30,8 @@ const VEGAN_SUBNAV = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
   const { count, currency, setCurrency } = useCart();
   const { isAdmin } = useAuth();
 
@@ -81,7 +84,12 @@ export function Header() {
 
         {/* Right icons + mobile menu */}
         <div className="flex items-center gap-4 text-foreground">
-          <button aria-label="search" className="hover:text-primary transition-colors">
+          <button
+            aria-label="search"
+            aria-expanded={searchOpen}
+            onClick={() => setSearchOpen((v) => !v)}
+            className="hover:text-primary transition-colors"
+          >
             <Search className="h-4 w-4" />
           </button>
 
@@ -183,6 +191,7 @@ export function Header() {
           </Sheet>
         </div>
       </div>
+      {searchOpen && <SearchPanel onClose={closeSearch} />}
     </header>
   );
 }
