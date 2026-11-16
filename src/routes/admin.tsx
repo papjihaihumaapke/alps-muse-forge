@@ -349,7 +349,21 @@ function ProductsTab() {
     const { error } = payload.id
       ? await supabase.from("products").update(payload).eq("id", payload.id)
       : await supabase.from("products").insert(payload);
-    if (error) return toast.error(error.message);
+    if (error) {
+      // Slug already taken: tell her which product owns it and offer to open that one.
+      if (error.code === "23505" && /slug/.test(error.message)) {
+        const existing = rows.find((r) => r.slug === payload.slug && r.id !== payload.id);
+        const where = existing ? CATEGORY_GROUPS.find((c) => c.slug === existing.category)?.label ?? existing.category : "";
+        return toast.error(`"${payload.slug}" is already used by another product`, {
+          description: existing
+            ? `"${existing.name.trim()}" (${where}) already has this url id. open that one to edit it, or change the slug here.`
+            : "change the slug (url id) to something unique.",
+          duration: 15000,
+          ...(existing ? { action: { label: "open it", onClick: () => setEditing(existing) } } : {}),
+        });
+      }
+      return toast.error(error.message);
+    }
     toast.success("saved"); setEditing(null); load();
     qc.invalidateQueries({ queryKey: ["admin-brands"] });
     qc.invalidateQueries({ queryKey: ["brand-icons"] });

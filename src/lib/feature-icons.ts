@@ -59,6 +59,7 @@ export const FEATURE_ICONS: Record<string, string> = {
   "natural-fiber": natural,
   "vegan": vegan,
   "wind-resistant": windResistant,
+  "wind-resistance": windResistant,
   "windproof": windResistant,
   "wrinkle-resistant": wrinkleResistant,
   "wrinkle-free": wrinkleResistant,
