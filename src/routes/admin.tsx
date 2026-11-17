@@ -19,7 +19,7 @@ import { localizeAssetUrl } from "@/lib/local-asset-images";
 import { featureIcon } from "@/lib/feature-icons";
 import { ChevronDown, ChevronRight, ChevronUp, X, Plus, Image as ImageIcon, Palette } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { SWATCH_LIBRARY, type SwatchGroup } from "@/lib/color-swatches";
+import { SWATCH_LIBRARY, resolveSwatchUrl, type SwatchGroup } from "@/lib/color-swatches";
 import {
   asArray,
   eventDateLabel,
@@ -343,12 +343,19 @@ function ProductsTab() {
         }),
       );
       // Keep the HK / Canada totals equal to what's left in the grid.
+      // An empty grid means the old totals no longer apply: reset them to 0.
       const cells = Object.values(payload.variant_stock as VariantStock);
-      if (cells.length) {
+      if (cells.length || Object.keys(p.variant_stock ?? {}).length) {
         payload.stock = cells.reduce((n, c) => n + (c.hk ?? 0), 0);
         payload.stock_ca = cells.reduce((n, c) => n + (c.ca ?? 0), 0);
       }
     }
+    // Item 5: tidy name and slug. Existing slugs are only re-formatted when she edits them,
+    // so old urls (carts, wishlists, shared links) keep working.
+    payload.name = (payload.name ?? "").trim();
+    const originalSlug = payload.id ? rows.find((r) => r.id === payload.id)?.slug : undefined;
+    const rawSlug = (payload.slug ?? "").trim();
+    payload.slug = rawSlug === originalSlug ? rawSlug : slugify(rawSlug);
     if (!payload.slug) return toast.error("slug is required");
     if (!payload.name) return toast.error("name is required");
     if (!payload.category) return toast.error("choose a category first");
@@ -565,6 +572,8 @@ function ProductsTab() {
           onChange={setEditing}
           onSave={() => save(editing)}
           onCancel={() => setEditing(null)}
+          allProducts={rows}
+          onOpenExisting={(p) => setEditing(normalizeLists(p))}
         />
       )}
     </div>
@@ -724,8 +733,9 @@ function swatchImages(s: Swatch | undefined): string[] {
 }
 
 /* ---------- Editor modal ---------- */
-function ProductEditor({ product, onChange, onSave, onCancel }: {
+function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], onOpenExisting }: {
   product: ProductRow; onChange: (p: ProductRow) => void; onSave: () => void; onCancel: () => void;
+  allProducts?: ProductRow[]; onOpenExisting?: (p: ProductRow) => void;
 }) {
   const set = <K extends keyof ProductRow>(k: K, v: ProductRow[K]) => onChange({ ...product, [k]: v });
   const [uploading, setUploading] = useState(false);
@@ -821,12 +831,27 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
     onChange({
       ...product,
       variant_stock: vs,
-      ...(cells.length ? {
-        stock: cells.reduce((n, c) => n + (c.hk ?? 0), 0),
-        stock_ca: cells.reduce((n, c) => n + (c.ca ?? 0), 0),
-      } : {}),
+      // Totals follow the grid; clearing every box resets them to 0 (the fields then unlock).
+      stock: cells.reduce((n, c) => n + (c.hk ?? 0), 0),
+      stock_ca: cells.reduce((n, c) => n + (c.ca ?? 0), 0),
     });
   };
+
+  // Item 4: warn while typing when the slug already belongs to another product.
+  const typedSlug = product.slug.trim();
+  const slugOwner = typedSlug
+    ? allProducts.find((r) => r.id !== product.id && r.slug.toLowerCase() === (product.id ? typedSlug : slugify(typedSlug)).toLowerCase())
+    : undefined;
+  const slugOwnerCategory = slugOwner ? CATEGORY_GROUPS.find((c) => c.slug === slugOwner.category)?.label ?? slugOwner.category : "";
+
+  // Item 3: say when the region rule hides this product from one region's shoppers.
+  const regionNote = product.is_external
+    ? ""
+    : product.stock === 0 && product.stock_ca > 0
+      ? "hidden from Hong Kong visitors: HK stock is 0 (Canada only)."
+      : product.stock_ca === 0 && product.stock > 0
+        ? "hidden from Canada visitors: Canada stock is 0 (Hong Kong only)."
+        : "";
 
   const toggleFeature = (key: string) => {
     const has = product.features.includes(key);
@@ -854,7 +879,17 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
           <Section title="basics">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field label="product name *"><Input value={product.name} onChange={(e) => set("name", e.target.value)} /></Field>
-              <Field label="slug (url id) *"><Input value={product.slug} onChange={(e) => set("slug", e.target.value)} placeholder="e.g. botalab-cleanser" /></Field>
+              <Field label="slug (url id) *">
+                <Input value={product.slug} onChange={(e) => set("slug", e.target.value)} placeholder="e.g. botalab-cleanser" />
+                {slugOwner && (
+                  <p className="mt-1 text-xs text-destructive" data-testid="slug-taken">
+                    already used by "{slugOwner.name.trim()}" ({slugOwnerCategory}).{" "}
+                    {onOpenExisting && (
+                      <button type="button" className="link-red underline" onClick={() => onOpenExisting(slugOwner)}>open it</button>
+                    )}
+                  </p>
+                )}
+              </Field>
               <Field label="category">
                 <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={product.category} onChange={(e) => set("category", e.target.value)}>
                   {!product.category && <option value="">— choose a category —</option>}
@@ -885,6 +920,7 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
               </Field>
               <Field label={hasVariantStock ? "stock (Canada) — total from the colour × size grid" : "stock (Canada)"}>
                 <Input type="number" value={product.stock_ca} disabled={hasVariantStock} onChange={(e) => set("stock_ca", Number(e.target.value))} />
+                {regionNote && <p className="mt-1 text-xs text-muted-foreground" data-testid="region-note">{regionNote}</p>}
               </Field>
               <Field label="hidden from site">
                 <div className="flex items-center h-9"><Switch checked={product.hidden} onCheckedChange={(v) => set("hidden", v)} /></div>
@@ -967,10 +1003,10 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
           <Section title="colors & swatches" subtitle="click a dot to add that colour or print to this product. click it again to remove it.">
             <div className="space-y-2">
               <SwatchPalette
-                selected={(product.color_swatches ?? []).map((s) => s.swatch_url).filter((u): u is string => !!u)}
+                selected={(product.color_swatches ?? []).map((s) => resolveSwatchUrl(s.swatch_url)).filter((u): u is string => !!u)}
                 onToggle={(item) => {
                   const list = product.color_swatches ?? [];
-                  const at = list.findIndex((s) => s.swatch_url === item.url);
+                  const at = list.findIndex((s) => resolveSwatchUrl(s.swatch_url) === item.url);
                   if (at >= 0) set("color_swatches", list.filter((_, j) => j !== at));
                   else set("color_swatches", [...list, { name: item.key, swatch_url: item.url }]);
                 }}
@@ -1002,7 +1038,7 @@ function ProductEditor({ product, onChange, onSave, onCancel }: {
                   </div>
                   <div className="flex items-center gap-2">
                     {s.swatch_url
-                      ? <StoredImg src={s.swatch_url} alt="" className="h-10 w-10 rounded-full object-cover border border-border" />
+                      ? <StoredImg src={resolveSwatchUrl(s.swatch_url)} alt="" className="h-10 w-10 rounded-full object-cover border border-border" />
                       : <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
                     <SwatchLibraryPicker
                       onPick={(item) => {

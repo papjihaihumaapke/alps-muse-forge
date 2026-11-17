@@ -155,3 +155,21 @@ export const SWATCH_LIBRARY: Record<SwatchGroup, { key: string; label: string; u
   ],
 };
 
+
+// Built-in swatches are saved on products as the build file's url, e.g.
+// "/assets/black-DGYt2Ljm.png". That name changes whenever the picture file
+// changes (and differs in dev), so map any saved built-in path back to the
+// current file by its plain name. Uploaded swatches (full https urls) pass through.
+const SWATCH_FILES: Record<string, string> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob("../assets/swatches/*.png", { eager: true, import: "default" }) as Record<string, string>,
+  ).map(([path, url]) => [path.split("/").pop()!.replace(/\.png$/, ""), url]),
+);
+
+export function resolveSwatchUrl<T extends string | null | undefined>(url: T): T {
+  if (!url || !/^\/(src\/)?assets\//.test(url)) return url;
+  const base = url.split("/").pop()!.replace(/\.png$/, "");
+  // Exact name first (dev paths, and names like "black-titanium"), then without the 8-character build hash.
+  const hit = SWATCH_FILES[base] ?? SWATCH_FILES[base.replace(/-[A-Za-z0-9_-]{8}$/, "")];
+  return (hit ?? url) as T;
+}

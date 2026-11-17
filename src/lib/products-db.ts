@@ -4,6 +4,7 @@ import type { Product, CategorySlug } from "@/lib/alps-data";
 import { localizeAssetUrl } from "@/lib/local-asset-images";
 import type { VariantStock } from "@/lib/product-fields";
 import { signMediaUrls } from "@/lib/storage-url";
+import { resolveSwatchUrl } from "@/lib/color-swatches";
 
 export type DbProduct = {
   id: string;
@@ -89,7 +90,7 @@ export function dbProductToCatalog(d: DbProduct): Product & {
     swatches: (d.color_swatches ?? []).map((sw) => {
       const imgs = (sw.image_urls?.length ? sw.image_urls : sw.image_url ? [sw.image_url] : [])
         .filter(isProdSafe).filter(isRenderable).map(localizeAssetUrl);
-      return { ...sw, image_urls: imgs, image_url: imgs[0] };
+      return { ...sw, swatch_url: resolveSwatchUrl(sw.swatch_url), image_urls: imgs, image_url: imgs[0] };
     }),
     season: d.season,
     isExternal: d.is_external ?? false,
