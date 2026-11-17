@@ -17,7 +17,15 @@ import { PRODUCTS, FEATURES, PRODUCT_COLORS } from "@/lib/alps-data";
 import { productImage } from "@/lib/accessory-images";
 import { localizeAssetUrl } from "@/lib/local-asset-images";
 import { featureIcon } from "@/lib/feature-icons";
-import { ChevronDown, ChevronRight, ChevronUp, X, Plus, Image as ImageIcon, Palette } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
+  X,
+  Plus,
+  Image as ImageIcon,
+  Palette,
+} from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SWATCH_LIBRARY, resolveSwatchUrl, type SwatchGroup } from "@/lib/color-swatches";
 import {
@@ -38,7 +46,14 @@ import { normalizeUrl } from "@/lib/utils";
 import { useMediaUrl } from "@/lib/storage-url";
 import { BRAND_ICON_PAGE, BUILT_IN_BRAND_ICONS, collabBrand, brandKey } from "@/lib/collab-brands";
 import { SCIENCE_PAGE } from "@/components/alps/ScienceBehind";
-import { splitList, joinList, variantKey, isSizeless, SEASON_LABELS, type VariantStock } from "@/lib/product-fields";
+import {
+  splitList,
+  joinList,
+  variantKey,
+  isSizeless,
+  SEASON_LABELS,
+  type VariantStock,
+} from "@/lib/product-fields";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -64,13 +79,27 @@ function AdminLogin() {
         <form onSubmit={submit} className="space-y-4">
           <div>
             <Label className="text-xs text-muted-foreground mb-1 block">email</Label>
-            <Input type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div>
             <Label className="text-xs text-muted-foreground mb-1 block">password</Label>
-            <Input type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
-          <Button type="submit" disabled={busy} className="w-full">{busy ? "signing in…" : "sign in"}</Button>
+          <Button type="submit" disabled={busy} className="w-full">
+            {busy ? "signing in…" : "sign in"}
+          </Button>
         </form>
       </div>
     </Shell>
@@ -89,7 +118,11 @@ function AdminPage() {
   }, [loading]);
 
   if (loading && softLoading) {
-    return <Shell><div className="p-10 text-sm text-muted-foreground">loading admin…</div></Shell>;
+    return (
+      <Shell>
+        <div className="p-10 text-sm text-muted-foreground">loading admin…</div>
+      </Shell>
+    );
   }
   if (!user) return <AdminLogin />;
   if (!isAdmin) {
@@ -97,8 +130,12 @@ function AdminPage() {
       <Shell>
         <div className="p-10 max-w-md">
           <h1 className="text-2xl mb-4">access denied</h1>
-          <p className="mb-4 text-sm text-muted-foreground">signed in as {user.email} — this account is not an admin.</p>
-          <Button variant="outline" onClick={signOut}>sign out</Button>
+          <p className="mb-4 text-sm text-muted-foreground">
+            signed in as {user.email} — this account is not an admin.
+          </p>
+          <Button variant="outline" onClick={signOut}>
+            sign out
+          </Button>
         </div>
       </Shell>
     );
@@ -111,7 +148,9 @@ function AdminPage() {
           <h1 className="text-2xl sm:text-3xl font-light">admin panel</h1>
           <div className="flex items-center gap-4 text-xs text-muted-foreground min-w-0">
             <span className="truncate">{user.email}</span>
-            <button onClick={signOut} className="link-red">sign out</button>
+            <button onClick={signOut} className="link-red">
+              sign out
+            </button>
           </div>
         </div>
         <Tabs defaultValue="products">
@@ -130,11 +169,21 @@ function AdminPage() {
             <TabsTrigger value="newsletter">newsletter</TabsTrigger>
             <TabsTrigger value="admins">admins</TabsTrigger>
           </TabsList>
-          <TabsContent value="products"><ProductsTab /></TabsContent>
-          <TabsContent value="banners"><BannersTab /></TabsContent>
-          <TabsContent value="orders"><OrdersTab /></TabsContent>
-          <TabsContent value="customers"><CustomersTab /></TabsContent>
-          <TabsContent value="journal"><JourneyPostsTab /></TabsContent>
+          <TabsContent value="products">
+            <ProductsTab />
+          </TabsContent>
+          <TabsContent value="banners">
+            <BannersTab />
+          </TabsContent>
+          <TabsContent value="orders">
+            <OrdersTab />
+          </TabsContent>
+          <TabsContent value="customers">
+            <CustomersTab />
+          </TabsContent>
+          <TabsContent value="journal">
+            <JourneyPostsTab />
+          </TabsContent>
           <TabsContent value="page-content">
             <PageSectionsTab
               page={DESIGN_PATH_BIO_PAGE}
@@ -178,11 +227,21 @@ function AdminPage() {
               emptyHint='no write-ups yet — the page is still showing the old posts from the products tab. click "copy the old posts here" to bring them over, or "add section" to start a new technology.'
             />
           </TabsContent>
-          <TabsContent value="brands"><BrandIconsTab /></TabsContent>
-          <TabsContent value="journey"><JourneyTab /></TabsContent>
-          <TabsContent value="promos"><PromosTab /></TabsContent>
-          <TabsContent value="newsletter"><NewsletterTab /></TabsContent>
-          <TabsContent value="admins"><AdminsTab /></TabsContent>
+          <TabsContent value="brands">
+            <BrandIconsTab />
+          </TabsContent>
+          <TabsContent value="journey">
+            <JourneyTab />
+          </TabsContent>
+          <TabsContent value="promos">
+            <PromosTab />
+          </TabsContent>
+          <TabsContent value="newsletter">
+            <NewsletterTab />
+          </TabsContent>
+          <TabsContent value="admins">
+            <AdminsTab />
+          </TabsContent>
         </Tabs>
       </div>
     </Shell>
@@ -193,7 +252,13 @@ function AdminPage() {
    PRODUCTS
    ============================================================ */
 // image_urls: every photo of the product in this colour; image_url mirrors the first for older readers.
-type Swatch = { name: string; hex?: string; swatch_url?: string; image_url?: string; image_urls?: string[] };
+type Swatch = {
+  name: string;
+  hex?: string;
+  swatch_url?: string;
+  image_url?: string;
+  image_urls?: string[];
+};
 type ProductRow = {
   id?: string;
   slug: string;
@@ -251,15 +316,34 @@ const CATEGORY_GROUPS: { slug: string; label: string }[] = [
 
 const blankProduct = (): ProductRow => ({
   // No default: a silent default filed new clothes under skincare (JK1601, Nov 15).
-  slug: "", name: "", category: "",
-  subcategory: "", description: "", design_features: "", tech_info: "",
-  composition: "", care_instructions: "", package_size: "", package_weight: "",
-  price_cad: 0, price_hkd: 0,
-  colors: [], sizes: [], features: [], tags: [], hashtags: [],
-  stock: 0, stock_ca: 0, hidden: false,
-  is_external: false, external_url: "",
+  slug: "",
+  name: "",
+  category: "",
+  subcategory: "",
+  description: "",
+  design_features: "",
+  tech_info: "",
+  composition: "",
+  care_instructions: "",
+  package_size: "",
+  package_weight: "",
+  price_cad: 0,
+  price_hkd: 0,
+  colors: [],
+  sizes: [],
+  features: [],
+  tags: [],
+  hashtags: [],
+  stock: 0,
+  stock_ca: 0,
+  hidden: false,
+  is_external: false,
+  external_url: "",
   image_url: "",
-  gallery_urls: [], color_swatches: [], season: "all-season", display_order: 0,
+  gallery_urls: [],
+  color_swatches: [],
+  season: "all-season",
+  display_order: 0,
 });
 
 /** Re-split list entries saved before "/" was a separator (e.g. one hashtag holding "a / b / c"). */
@@ -270,7 +354,9 @@ function normalizeLists(p: ProductRow): ProductRow {
     sizes: fix(p.sizes),
     colors: fix(p.colors),
     tags: fix(p.tags),
-    hashtags: fix(p.hashtags).map((h) => h.replace(/^#+/, "").trim()).filter(Boolean),
+    hashtags: fix(p.hashtags)
+      .map((h) => h.replace(/^#+/, "").trim())
+      .filter(Boolean),
   };
 }
 
@@ -291,18 +377,30 @@ function ProductsTab() {
     // that category, so editing them changed nothing on the site while the live copy
     // (same product under vegan-skincare etc.) stayed as it was. Keep them out of reach.
     const { data, error } = await supabase
-      .from("products").select("*")
+      .from("products")
+      .select("*")
       .neq("category", LEGACY_CATEGORY)
-      .order("category").order("display_order").order("name");
-    if (error) { setLoadErr(error.message); setLoading(false); return; }
+      .order("category")
+      .order("display_order")
+      .order("name");
+    if (error) {
+      setLoadErr(error.message);
+      setLoading(false);
+      return;
+    }
     setRows((data ?? []) as unknown as ProductRow[]);
     setLoadErr(null);
     setLoading(false);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const collections = useMemo(
-    () => Array.from(new Set(rows.map((p) => p.collection?.trim()).filter((c): c is string => !!c))).sort(),
+    () =>
+      Array.from(
+        new Set(rows.map((p) => p.collection?.trim()).filter((c): c is string => !!c)),
+      ).sort(),
     [rows],
   );
 
@@ -311,8 +409,16 @@ function ProductsTab() {
     return rows.filter((p) => {
       if (seasonFilter !== "all" && p.season !== seasonFilter) return false;
       if (collectionFilter === "none" && p.collection?.trim()) return false;
-      if (collectionFilter !== "all" && collectionFilter !== "none" && p.collection?.trim() !== collectionFilter) return false;
-      return !q || `${p.name} ${p.slug} ${p.subcategory ?? ""} ${p.collection ?? ""}`.toLowerCase().includes(q);
+      if (
+        collectionFilter !== "all" &&
+        collectionFilter !== "none" &&
+        p.collection?.trim() !== collectionFilter
+      )
+        return false;
+      return (
+        !q ||
+        `${p.name} ${p.slug} ${p.subcategory ?? ""} ${p.collection ?? ""}`.toLowerCase().includes(q)
+      );
     });
   }, [rows, search, seasonFilter, collectionFilter]);
   const filtering = !!search.trim() || seasonFilter !== "all" || collectionFilter !== "all";
@@ -334,7 +440,10 @@ function ProductsTab() {
     payload.hashtags = payload.hashtags ?? [];
     if (payload.variant_stock) {
       // Drop grid entries for colours / sizes that were renamed or removed.
-      const colors = new Set([...payload.colors, ...payload.color_swatches.map((c: Swatch) => c.name.trim())]);
+      const colors = new Set([
+        ...payload.colors,
+        ...payload.color_swatches.map((c: Swatch) => c.name.trim()),
+      ]);
       const sizes = new Set(payload.sizes.length ? payload.sizes : ["one size"]);
       payload.variant_stock = Object.fromEntries(
         Object.entries(payload.variant_stock as VariantStock).filter(([k]) => {
@@ -366,18 +475,24 @@ function ProductsTab() {
       // Slug already taken: tell her which product owns it and offer to open that one.
       if (error.code === "23505" && /slug/.test(error.message)) {
         const existing = rows.find((r) => r.slug === payload.slug && r.id !== payload.id);
-        const where = existing ? CATEGORY_GROUPS.find((c) => c.slug === existing.category)?.label ?? existing.category : "";
+        const where = existing
+          ? (CATEGORY_GROUPS.find((c) => c.slug === existing.category)?.label ?? existing.category)
+          : "";
         return toast.error(`"${payload.slug}" is already used by another product`, {
           description: existing
             ? `"${existing.name.trim()}" (${where}) already has this url id. open that one to edit it, or change the slug here.`
             : "change the slug (url id) to something unique.",
           duration: 15000,
-          ...(existing ? { action: { label: "open it", onClick: () => setEditing(existing) } } : {}),
+          ...(existing
+            ? { action: { label: "open it", onClick: () => setEditing(existing) } }
+            : {}),
         });
       }
       return toast.error(error.message);
     }
-    toast.success("saved"); setEditing(null); load();
+    toast.success("saved");
+    setEditing(null);
+    load();
     qc.invalidateQueries({ queryKey: ["admin-brands"] });
     qc.invalidateQueries({ queryKey: ["brand-icons"] });
   };
@@ -399,30 +514,48 @@ function ProductsTab() {
         .sort((a, b) => a.category.localeCompare(b.category) || a.display_order - b.display_order),
     );
     const results = await Promise.all(
-      changed.map(({ r, order }) => supabase.from("products").update({ display_order: order }).eq("id", r.id!)),
+      changed.map(({ r, order }) =>
+        supabase.from("products").update({ display_order: order }).eq("id", r.id!),
+      ),
     );
     const failed = results.find((x) => x.error);
-    if (failed?.error) { toast.error(failed.error.message); load(); }
+    if (failed?.error) {
+      toast.error(failed.error.message);
+      load();
+    }
   };
 
   const remove = async (id: string, name: string) => {
     if (!confirm(`delete "${name}"?`)) return;
     const { error } = await supabase.from("products").delete().eq("id", id);
     if (error) return toast.error(error.message);
-    toast.success("deleted"); load();
+    toast.success("deleted");
+    load();
   };
 
   const [syncing, setSyncing] = useState(false);
   const syncCatalog = async () => {
-    if (!confirm(`import ${PRODUCTS.length} static-catalog products into the DB? existing rows (matched by slug) will be updated.`)) return;
+    if (
+      !confirm(
+        `import ${PRODUCTS.length} static-catalog products into the DB? existing rows (matched by slug) will be updated.`,
+      )
+    )
+      return;
     setSyncing(true);
     try {
       const payload = PRODUCTS.map((p) => ({
-        slug: p.id, name: p.name, category: p.category,
-        price_cad: p.priceCAD ?? 0, price_hkd: p.priceHKD ?? 0,
-        colors: p.colors ?? [], sizes: p.sizes ?? [],
-        features: p.features ?? [], tags: (p.tags as string[] | undefined) ?? [],
-        stock: 0, hidden: false, image_url: productImage(p.id) ?? null,
+        slug: p.id,
+        name: p.name,
+        category: p.category,
+        price_cad: p.priceCAD ?? 0,
+        price_hkd: p.priceHKD ?? 0,
+        colors: p.colors ?? [],
+        sizes: p.sizes ?? [],
+        features: p.features ?? [],
+        tags: (p.tags as string[] | undefined) ?? [],
+        stock: 0,
+        hidden: false,
+        image_url: productImage(p.id) ?? null,
       }));
       const { error } = await supabase.from("products").upsert(payload, { onConflict: "slug" });
       if (error) throw error;
@@ -430,7 +563,9 @@ function ProductsTab() {
       load();
     } catch (e: any) {
       toast.error(e.message ?? "sync failed");
-    } finally { setSyncing(false); }
+    } finally {
+      setSyncing(false);
+    }
   };
 
   return (
@@ -440,7 +575,8 @@ function ProductsTab() {
         <div className="min-w-0">
           <h2 className="text-lg">{rows.length} products in database</h2>
           <p className="text-xs text-muted-foreground">
-            grouped by category, in the order shown on the site. use the arrows to reorder. click a category to collapse it.
+            grouped by category, in the order shown on the site. use the arrows to reorder. click a
+            category to collapse it.
             {filtering && <> showing {filtered.length} matching.</>}
           </p>
         </div>
@@ -452,7 +588,11 @@ function ProductsTab() {
             onChange={(e) => setSeasonFilter(e.target.value)}
           >
             <option value="all">all seasons</option>
-            {[...SEASONS, ...LEGACY_SEASONS].map((s) => <option key={s} value={s}>{SEASON_LABELS[s] ?? s}</option>)}
+            {[...SEASONS, ...LEGACY_SEASONS].map((s) => (
+              <option key={s} value={s}>
+                {SEASON_LABELS[s] ?? s}
+              </option>
+            ))}
           </select>
           <select
             aria-label="filter by collection"
@@ -461,12 +601,26 @@ function ProductsTab() {
             onChange={(e) => setCollectionFilter(e.target.value)}
           >
             <option value="all">all collections</option>
-            {collections.map((c) => <option key={c} value={c}>{c}</option>)}
+            {collections.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
             <option value="none">no collection set</option>
           </select>
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="search name / slug…" className="w-full sm:w-64" />
-          <Button variant="outline" onClick={syncCatalog} disabled={syncing}>{syncing ? "syncing…" : "sync static catalog"}</Button>
-          <Button onClick={() => setEditing(blankProduct())}><Plus className="h-4 w-4 mr-1" />new product</Button>
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="search name / slug…"
+            className="w-full sm:w-64"
+          />
+          <Button variant="outline" onClick={syncCatalog} disabled={syncing}>
+            {syncing ? "syncing…" : "sync static catalog"}
+          </Button>
+          <Button onClick={() => setEditing(blankProduct())}>
+            <Plus className="h-4 w-4 mr-1" />
+            new product
+          </Button>
         </div>
       </div>
 
@@ -487,7 +641,11 @@ function ProductsTab() {
                   onClick={() => setOpenCats((s) => ({ ...s, [cat.slug]: !open }))}
                   className="flex flex-1 min-w-0 items-center gap-2 text-left"
                 >
-                  {open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  {open ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
                   <span className="font-medium">{cat.label}</span>
                   <span className="text-xs text-muted-foreground">({items.length})</span>
                 </button>
@@ -495,12 +653,16 @@ function ProductsTab() {
                   type="button"
                   onClick={() => setEditing({ ...blankProduct(), category: cat.slug })}
                   className="text-xs link-red shrink-0"
-                >+ add<span className="hidden sm:inline"> to {cat.label}</span></button>
+                >
+                  + add<span className="hidden sm:inline"> to {cat.label}</span>
+                </button>
               </div>
 
               {cat.slug === "vegan-tech" && (
                 <p className="px-4 pb-3 text-xs text-muted-foreground">
-                  the science behind page is now written in the "the science behind" tab (pictures with words beside them). posts here only show on the site until the first write-up is added there.
+                  the science behind page is now written in the "the science behind" tab (pictures
+                  with words beside them). posts here only show on the site until the first write-up
+                  is added there.
                 </p>
               )}
               {open && items.length > 0 && (
@@ -508,47 +670,81 @@ function ProductsTab() {
                   {items.map((p, idx) => {
                     const thumb = p.gallery_urls?.[0] || p.image_url;
                     return (
-                      <div key={p.id} className="flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 hover:bg-muted/30">
+                      <div
+                        key={p.id}
+                        className="flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 hover:bg-muted/30"
+                      >
                         {!filtering && (
-                          <div className="flex flex-col shrink-0" aria-label="change order on the site">
+                          <div
+                            className="flex flex-col shrink-0"
+                            aria-label="change order on the site"
+                          >
                             <button
                               type="button"
                               onClick={() => move(cat.slug, idx, -1)}
                               disabled={idx === 0}
                               title="move up"
                               className="p-0.5 hover:text-primary disabled:opacity-25"
-                            ><ChevronUp className="h-4 w-4" /></button>
+                            >
+                              <ChevronUp className="h-4 w-4" />
+                            </button>
                             <button
                               type="button"
                               onClick={() => move(cat.slug, idx, 1)}
                               disabled={idx === items.length - 1}
                               title="move down"
                               className="p-0.5 hover:text-primary disabled:opacity-25"
-                            ><ChevronDown className="h-4 w-4" /></button>
+                            >
+                              <ChevronDown className="h-4 w-4" />
+                            </button>
                           </div>
                         )}
                         <div className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 bg-muted overflow-hidden flex items-center justify-center">
-                          <ProductThumb url={thumb} slug={p.slug} className="h-full w-full object-cover" />
+                          <ProductThumb
+                            url={thumb}
+                            slug={p.slug}
+                            className="h-full w-full object-cover"
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm truncate">{p.name || <em className="text-muted-foreground">untitled</em>}</div>
-                          <div className="text-xs text-muted-foreground font-mono truncate">{p.slug}</div>
+                          <div className="text-sm truncate">
+                            {p.name || <em className="text-muted-foreground">untitled</em>}
+                          </div>
+                          <div className="text-xs text-muted-foreground font-mono truncate">
+                            {p.slug}
+                          </div>
                           <div className="text-xs text-muted-foreground sm:hidden truncate">
-                            CAD {p.price_cad} · HKD {p.price_hkd} · {p.hidden ? "hidden" : <span className="text-primary">live</span>}
+                            CAD {p.price_cad} · HKD {p.price_hkd} ·{" "}
+                            {p.hidden ? "hidden" : <span className="text-primary">live</span>}
                           </div>
                         </div>
                         <div className="text-xs text-muted-foreground hidden lg:block w-32 shrink-0">
                           {SEASON_LABELS[p.season] ?? p.season}
                           {p.collection && <div className="text-foreground/70">{p.collection}</div>}
                         </div>
-                        <div className="text-xs num text-primary w-28 text-right hidden sm:block shrink-0">CAD {p.price_cad} · HKD {p.price_hkd}</div>
+                        <div className="text-xs num text-primary w-28 text-right hidden sm:block shrink-0">
+                          CAD {p.price_cad} · HKD {p.price_hkd}
+                        </div>
                         <div className="text-xs w-16 text-center hidden md:block shrink-0">
                           {(p.gallery_urls ?? []).length || (p.image_url ? 1 : 0)} img
                         </div>
-                        <div className="text-xs w-16 text-center hidden sm:block shrink-0">{p.hidden ? <span className="text-muted-foreground">hidden</span> : <span className="text-primary">live</span>}</div>
+                        <div className="text-xs w-16 text-center hidden sm:block shrink-0">
+                          {p.hidden ? (
+                            <span className="text-muted-foreground">hidden</span>
+                          ) : (
+                            <span className="text-primary">live</span>
+                          )}
+                        </div>
                         <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 text-xs shrink-0 text-right">
-                          <button onClick={() => setEditing(normalizeLists(p))} className="link-red">edit</button>
-                          <button onClick={() => remove(p.id!, p.name)} className="link-red">delete</button>
+                          <button
+                            onClick={() => setEditing(normalizeLists(p))}
+                            className="link-red"
+                          >
+                            edit
+                          </button>
+                          <button onClick={() => remove(p.id!, p.name)} className="link-red">
+                            delete
+                          </button>
                         </div>
                       </div>
                     );
@@ -581,7 +777,10 @@ function ProductsTab() {
 }
 
 /** <img> for admin-uploaded media: private-bucket urls need a signed url to load. */
-function StoredImg({ src, ...rest }: Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> & { src: string | null | undefined }) {
+function StoredImg({
+  src,
+  ...rest
+}: Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> & { src: string | null | undefined }) {
   const resolved = useMediaUrl(src);
   return resolved ? <img src={resolved} {...rest} /> : <div className={rest.className} />;
 }
@@ -590,20 +789,39 @@ function StoredImg({ src, ...rest }: Omit<React.ImgHTMLAttributes<HTMLImageEleme
 // Stored product urls are often dev-only "/src/assets/..." paths (the static
 // catalog import) or Lovable-hosted "/__l5e/..." paths, neither of which load
 // on the published site. Resolve them the same way the storefront does.
-function ProductThumb({ url, slug, className }: { url: string | null | undefined; slug: string; className?: string }) {
-  const base = !url ? undefined : url.startsWith("/src/") ? productImage(slug) : localizeAssetUrl(url);
+function ProductThumb({
+  url,
+  slug,
+  className,
+}: {
+  url: string | null | undefined;
+  slug: string;
+  className?: string;
+}) {
+  const base = !url
+    ? undefined
+    : url.startsWith("/src/")
+      ? productImage(slug)
+      : localizeAssetUrl(url);
   const src = useMediaUrl(base);
-  return src
-    ? <img src={src} alt="" className={className} />
-    : <ImageIcon className="h-5 w-5 text-muted-foreground" />;
+  return src ? (
+    <img src={src} alt="" className={className} />
+  ) : (
+    <ImageIcon className="h-5 w-5 text-muted-foreground" />
+  );
 }
 
 /* ---------- Upload helper ---------- */
 async function uploadProductImage(file: File, slug: string): Promise<string | null> {
   const ext = file.name.split(".").pop() ?? "jpg";
   const path = `${slug || "untitled"}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage.from("product-media").upload(path, file, { upsert: false });
-  if (error) { toast.error(error.message); return null; }
+  const { error } = await supabase.storage
+    .from("product-media")
+    .upload(path, file, { upsert: false });
+  if (error) {
+    toast.error(error.message);
+    return null;
+  }
   const { data } = supabase.storage.from("product-media").getPublicUrl(path);
   return data.publicUrl;
 }
@@ -613,8 +831,16 @@ const MAX_PRODUCT_VIDEOS = 2;
 const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
 
 /** List input that accepts "/" or "," separators and keeps the raw text while typing. */
-function ListInput({ value, onChange, placeholder, className }: {
-  value: string[]; onChange: (v: string[]) => void; placeholder?: string; className?: string;
+function ListInput({
+  value,
+  onChange,
+  placeholder,
+  className,
+}: {
+  value: string[];
+  onChange: (v: string[]) => void;
+  placeholder?: string;
+  className?: string;
 }) {
   const [text, setText] = useState(() => joinList(value));
   // Pick up changes made elsewhere (presets, swatch names) without clobbering what's being typed.
@@ -627,14 +853,25 @@ function ListInput({ value, onChange, placeholder, className }: {
       className={className}
       value={text}
       placeholder={placeholder}
-      onChange={(e) => { setText(e.target.value); onChange(splitList(e.target.value)); }}
+      onChange={(e) => {
+        setText(e.target.value);
+        onChange(splitList(e.target.value));
+      }}
     />
   );
 }
 
 /** Units per colour × size, for Hong Kong and Canada. */
-function VariantStockGrid({ colors, sizes, stock, onChange }: {
-  colors: string[]; sizes: string[]; stock: VariantStock; onChange: (s: VariantStock) => void;
+function VariantStockGrid({
+  colors,
+  sizes,
+  stock,
+  onChange,
+}: {
+  colors: string[];
+  sizes: string[];
+  stock: VariantStock;
+  onChange: (s: VariantStock) => void;
 }) {
   const setCell = (c: string, sz: string, region: "hk" | "ca", raw: string) => {
     const k = variantKey(c, sz);
@@ -647,7 +884,11 @@ function VariantStockGrid({ colors, sizes, stock, onChange }: {
     onChange(next);
   };
   if (!colors.length || !sizes.length) {
-    return <p className="text-xs text-muted-foreground">add the colours and sizes first — a box for each combination will appear here.</p>;
+    return (
+      <p className="text-xs text-muted-foreground">
+        add the colours and sizes first — a box for each combination will appear here.
+      </p>
+    );
   }
   return (
     <div className="overflow-x-auto">
@@ -655,7 +896,11 @@ function VariantStockGrid({ colors, sizes, stock, onChange }: {
         <thead>
           <tr>
             <th className="text-left font-normal text-muted-foreground p-1 pr-3">colour \ size</th>
-            {sizes.map((sz) => <th key={sz} className="font-medium p-1 min-w-[7.5rem]">{sz}</th>)}
+            {sizes.map((sz) => (
+              <th key={sz} className="font-medium p-1 min-w-[7.5rem]">
+                {sz}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -669,9 +914,13 @@ function VariantStockGrid({ colors, sizes, stock, onChange }: {
                     <div className="flex gap-1">
                       {(["hk", "ca"] as const).map((r) => (
                         <label key={r} className="flex items-center gap-0.5">
-                          <span className="text-[0.588rem] uppercase text-muted-foreground">{r}</span>
+                          <span className="text-[0.588rem] uppercase text-muted-foreground">
+                            {r}
+                          </span>
                           <Input
-                            type="number" min={0} className="h-8 w-14 px-1.5"
+                            type="number"
+                            min={0}
+                            className="h-8 w-14 px-1.5"
                             value={cell[r] ?? ""}
                             onChange={(e) => setCell(c, sz, r, e.target.value)}
                           />
@@ -690,26 +939,45 @@ function VariantStockGrid({ colors, sizes, stock, onChange }: {
 }
 
 /** Pick any number of the product's already-uploaded gallery photos for a colour. */
-function GalleryImagePicker({ urls, slug, selected, onChange }: {
-  urls: string[]; slug: string; selected: string[]; onChange: (urls: string[]) => void;
+function GalleryImagePicker({
+  urls,
+  slug,
+  selected,
+  onChange,
+}: {
+  urls: string[];
+  slug: string;
+  selected: string[];
+  onChange: (urls: string[]) => void;
 }) {
   const toggle = (u: string) =>
     onChange(selected.includes(u) ? selected.filter((x) => x !== u) : [...selected, u]);
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button type="button" variant="outline" size="sm" disabled={!urls.length} title={urls.length ? undefined : "upload gallery images first"}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={!urls.length}
+          title={urls.length ? undefined : "upload gallery images first"}
+        >
           choose from gallery
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[min(24rem,calc(100vw-2rem))]">
-        <p className="text-xs text-muted-foreground mb-2">click every photo of this colour ({selected.length} selected)</p>
+        <p className="text-xs text-muted-foreground mb-2">
+          click every photo of this colour ({selected.length} selected)
+        </p>
         <div className="grid grid-cols-4 gap-1.5 max-h-80 overflow-y-auto">
           {urls.map((u) => {
             const on = selected.includes(u);
             return (
               <button
-                key={u} type="button" onClick={() => toggle(u)} aria-pressed={on}
+                key={u}
+                type="button"
+                onClick={() => toggle(u)}
+                aria-pressed={on}
                 className={`relative aspect-square border-2 ${on ? "border-primary" : "border-border hover:border-foreground/60"}`}
               >
                 <ProductThumb url={u} slug={slug} className="h-full w-full object-cover" />
@@ -733,11 +1001,23 @@ function swatchImages(s: Swatch | undefined): string[] {
 }
 
 /* ---------- Editor modal ---------- */
-function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], onOpenExisting }: {
-  product: ProductRow; onChange: (p: ProductRow) => void; onSave: () => void; onCancel: () => void;
-  allProducts?: ProductRow[]; onOpenExisting?: (p: ProductRow) => void;
+function ProductEditor({
+  product,
+  onChange,
+  onSave,
+  onCancel,
+  allProducts = [],
+  onOpenExisting,
+}: {
+  product: ProductRow;
+  onChange: (p: ProductRow) => void;
+  onSave: () => void;
+  onCancel: () => void;
+  allProducts?: ProductRow[];
+  onOpenExisting?: (p: ProductRow) => void;
 }) {
-  const set = <K extends keyof ProductRow>(k: K, v: ProductRow[K]) => onChange({ ...product, [k]: v });
+  const set = <K extends keyof ProductRow>(k: K, v: ProductRow[K]) =>
+    onChange({ ...product, [k]: v });
   const [uploading, setUploading] = useState(false);
 
   const handleGalleryUpload = async (files: FileList | null) => {
@@ -757,7 +1037,10 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
   };
 
   const removeGalleryUrl = (url: string) => {
-    set("gallery_urls", (product.gallery_urls ?? []).filter((u) => u !== url));
+    set(
+      "gallery_urls",
+      (product.gallery_urls ?? []).filter((u) => u !== url),
+    );
   };
 
   const moveGalleryUrl = (idx: number, dir: -1 | 1) => {
@@ -772,18 +1055,31 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
   const [videoText, setVideoText] = useState(() => (product.video_urls ?? []).join("\n"));
   const setVideos = (text: string) => {
     setVideoText(text);
-    set("video_urls", text.split("\n").map((x) => x.trim()).filter(Boolean));
+    set(
+      "video_urls",
+      text
+        .split("\n")
+        .map((x) => x.trim())
+        .filter(Boolean),
+    );
   };
   const [videoUploading, setVideoUploading] = useState(false);
   const videoCount = (product.video_urls ?? []).length;
   const handleVideoUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     const room = MAX_PRODUCT_VIDEOS - videoCount;
-    if (room <= 0) return toast.error(`up to ${MAX_PRODUCT_VIDEOS} videos per product — remove one first`);
+    if (room <= 0)
+      return toast.error(`up to ${MAX_PRODUCT_VIDEOS} videos per product — remove one first`);
     const picked = Array.from(files).slice(0, room);
-    if (files.length > room) toast.error(`only ${room} more video${room === 1 ? "" : "s"} fit — uploading the first ${room}`);
+    if (files.length > room)
+      toast.error(
+        `only ${room} more video${room === 1 ? "" : "s"} fit — uploading the first ${room}`,
+      );
     const tooBig = picked.find((f) => f.size > MAX_VIDEO_BYTES);
-    if (tooBig) return toast.error(`"${tooBig.name}" is over ${MAX_VIDEO_BYTES / 1024 / 1024} MB — please compress it first`);
+    if (tooBig)
+      return toast.error(
+        `"${tooBig.name}" is over ${MAX_VIDEO_BYTES / 1024 / 1024} MB — please compress it first`,
+      );
     setVideoUploading(true);
     const urls: string[] = [];
     for (const f of picked) {
@@ -811,7 +1107,10 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
   const swatchImageUpload = async (idx: number, files: FileList) => {
     const urls: string[] = [];
     for (const f of Array.from(files)) {
-      const u = await uploadProductImage(f, `${product.slug}-color-${product.color_swatches[idx]?.name || idx}`);
+      const u = await uploadProductImage(
+        f,
+        `${product.slug}-color-${product.color_swatches[idx]?.name || idx}`,
+      );
       if (u) urls.push(u);
     }
     if (urls.length) setSwatchImages(idx, [...swatchImages(product.color_swatches[idx]), ...urls]);
@@ -821,10 +1120,12 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
     set("color_swatches", [...(product.color_swatches ?? []), { name: "" }]);
   };
 
-  const variantColors = Array.from(new Set([
-    ...(product.color_swatches ?? []).map((s) => s.name.trim()).filter(Boolean),
-    ...product.colors,
-  ]));
+  const variantColors = Array.from(
+    new Set([
+      ...(product.color_swatches ?? []).map((s) => s.name.trim()).filter(Boolean),
+      ...product.colors,
+    ]),
+  );
   const hasVariantStock = Object.keys(product.variant_stock ?? {}).length > 0;
   const setVariantStock = (vs: VariantStock) => {
     const cells = Object.values(vs);
@@ -840,9 +1141,15 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
   // Item 4: warn while typing when the slug already belongs to another product.
   const typedSlug = product.slug.trim();
   const slugOwner = typedSlug
-    ? allProducts.find((r) => r.id !== product.id && r.slug.toLowerCase() === (product.id ? typedSlug : slugify(typedSlug)).toLowerCase())
+    ? allProducts.find(
+        (r) =>
+          r.id !== product.id &&
+          r.slug.toLowerCase() === (product.id ? typedSlug : slugify(typedSlug)).toLowerCase(),
+      )
     : undefined;
-  const slugOwnerCategory = slugOwner ? CATEGORY_GROUPS.find((c) => c.slug === slugOwner.category)?.label ?? slugOwner.category : "";
+  const slugOwnerCategory = slugOwner
+    ? (CATEGORY_GROUPS.find((c) => c.slug === slugOwner.category)?.label ?? slugOwner.category)
+    : "";
 
   // Item 3: say when the region rule hides this product from one region's shoppers.
   const regionNote = product.is_external
@@ -865,12 +1172,18 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
         <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
           <h3 className="text-lg min-w-0 truncate">
             {product.id ? "edit product" : "new product"}
-            {product.name && <span className="text-muted-foreground text-sm ml-2">· {product.name}</span>}
+            {product.name && (
+              <span className="text-muted-foreground text-sm ml-2">· {product.name}</span>
+            )}
           </h3>
           <div className="flex gap-2 shrink-0">
-            <Button variant="outline" onClick={onCancel}>cancel</Button>
+            <Button variant="outline" onClick={onCancel}>
+              cancel
+            </Button>
             <Button onClick={onSave}>save</Button>
-            <button onClick={onCancel} className="ml-2 p-1 hover:bg-muted"><X className="h-4 w-4" /></button>
+            <button onClick={onCancel} className="ml-2 p-1 hover:bg-muted">
+              <X className="h-4 w-4" />
+            </button>
           </div>
         </div>
 
@@ -878,58 +1191,158 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
           {/* SECTION: Basics */}
           <Section title="basics">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field label="product name *"><Input value={product.name} onChange={(e) => set("name", e.target.value)} /></Field>
+              <Field label="product name *">
+                <Input value={product.name} onChange={(e) => set("name", e.target.value)} />
+              </Field>
               <Field label="slug (url id) *">
-                <Input value={product.slug} onChange={(e) => set("slug", e.target.value)} placeholder="e.g. botalab-cleanser" />
+                <Input
+                  value={product.slug}
+                  onChange={(e) => set("slug", e.target.value)}
+                  placeholder="e.g. botalab-cleanser"
+                />
                 {slugOwner && (
                   <p className="mt-1 text-xs text-destructive" data-testid="slug-taken">
                     already used by "{slugOwner.name.trim()}" ({slugOwnerCategory}).{" "}
                     {onOpenExisting && (
-                      <button type="button" className="link-red underline" onClick={() => onOpenExisting(slugOwner)}>open it</button>
+                      <button
+                        type="button"
+                        className="link-red underline"
+                        onClick={() => onOpenExisting(slugOwner)}
+                      >
+                        open it
+                      </button>
                     )}
                   </p>
                 )}
               </Field>
               <Field label="category">
-                <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={product.category} onChange={(e) => set("category", e.target.value)}>
+                <select
+                  className="w-full h-9 border border-input bg-background px-3 text-sm"
+                  value={product.category}
+                  onChange={(e) => set("category", e.target.value)}
+                >
                   {!product.category && <option value="">— choose a category —</option>}
-                  {CATEGORY_GROUPS.map((c) => <option key={c.slug} value={c.slug}>{c.label}</option>)}
+                  {CATEGORY_GROUPS.map((c) => (
+                    <option key={c.slug} value={c.slug}>
+                      {c.label}
+                    </option>
+                  ))}
                 </select>
               </Field>
-              <Field label={product.category === "collaborations" ? "collaboration partner / brand (shows as a clickable icon)" : "subcategory (free text)"}>
-                {product.category === "collaborations"
-                  ? <BrandSelect value={product.subcategory ?? ""} onChange={(v) => set("subcategory", v || null)} />
-                  : <Input value={product.subcategory ?? ""} onChange={(e) => set("subcategory", e.target.value)} placeholder="e.g. botalab" />}
+              <Field
+                label={
+                  product.category === "collaborations"
+                    ? "collaboration partner / brand (shows as a clickable icon)"
+                    : "subcategory (free text)"
+                }
+              >
+                {product.category === "collaborations" ? (
+                  <BrandSelect
+                    value={product.subcategory ?? ""}
+                    onChange={(v) => set("subcategory", v || null)}
+                  />
+                ) : (
+                  <Input
+                    value={product.subcategory ?? ""}
+                    onChange={(e) => set("subcategory", e.target.value)}
+                    placeholder="e.g. botalab"
+                  />
+                )}
               </Field>
               <Field label="season">
-                <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={product.season} onChange={(e) => set("season", e.target.value as ProductRow["season"])}>
-                  {SEASONS.map((s) => <option key={s} value={s}>{SEASON_LABELS[s]}</option>)}
-                  {LEGACY_SEASONS.includes(product.season) && <option value={product.season}>{product.season} (old — please change)</option>}
+                <select
+                  className="w-full h-9 border border-input bg-background px-3 text-sm"
+                  value={product.season}
+                  onChange={(e) => set("season", e.target.value as ProductRow["season"])}
+                >
+                  {SEASONS.map((s) => (
+                    <option key={s} value={s}>
+                      {SEASON_LABELS[s]}
+                    </option>
+                  ))}
+                  {LEGACY_SEASONS.includes(product.season) && (
+                    <option value={product.season}>{product.season} (old — please change)</option>
+                  )}
                 </select>
               </Field>
               <Field label="collection (e.g. summer 1, summer 2 — matches your drive folders)">
-                <Input value={product.collection ?? ""} onChange={(e) => set("collection", e.target.value)} placeholder="e.g. summer 1" />
+                <Input
+                  value={product.collection ?? ""}
+                  onChange={(e) => set("collection", e.target.value)}
+                  placeholder="e.g. summer 1"
+                />
               </Field>
               <Field label="display order">
-                <Input type="number" value={product.display_order} onChange={(e) => set("display_order", Number(e.target.value))} />
+                <Input
+                  type="number"
+                  value={product.display_order}
+                  onChange={(e) => set("display_order", Number(e.target.value))}
+                />
               </Field>
-              <Field label="price CAD"><Input type="number" value={product.price_cad} onChange={(e) => set("price_cad", Number(e.target.value))} /></Field>
-              <Field label="price HKD"><Input type="number" value={product.price_hkd} onChange={(e) => set("price_hkd", Number(e.target.value))} /></Field>
-              <Field label={hasVariantStock ? "stock (HK) — total from the colour × size grid" : "stock (HK)"}>
-                <Input type="number" value={product.stock} disabled={hasVariantStock} onChange={(e) => set("stock", Number(e.target.value))} />
+              <Field label="price CAD">
+                <Input
+                  type="number"
+                  value={product.price_cad}
+                  onChange={(e) => set("price_cad", Number(e.target.value))}
+                />
               </Field>
-              <Field label={hasVariantStock ? "stock (Canada) — total from the colour × size grid" : "stock (Canada)"}>
-                <Input type="number" value={product.stock_ca} disabled={hasVariantStock} onChange={(e) => set("stock_ca", Number(e.target.value))} />
-                {regionNote && <p className="mt-1 text-xs text-muted-foreground" data-testid="region-note">{regionNote}</p>}
+              <Field label="price HKD">
+                <Input
+                  type="number"
+                  value={product.price_hkd}
+                  onChange={(e) => set("price_hkd", Number(e.target.value))}
+                />
+              </Field>
+              <Field
+                label={
+                  hasVariantStock ? "stock (HK) — total from the colour × size grid" : "stock (HK)"
+                }
+              >
+                <Input
+                  type="number"
+                  value={product.stock}
+                  disabled={hasVariantStock}
+                  onChange={(e) => set("stock", Number(e.target.value))}
+                />
+              </Field>
+              <Field
+                label={
+                  hasVariantStock
+                    ? "stock (Canada) — total from the colour × size grid"
+                    : "stock (Canada)"
+                }
+              >
+                <Input
+                  type="number"
+                  value={product.stock_ca}
+                  disabled={hasVariantStock}
+                  onChange={(e) => set("stock_ca", Number(e.target.value))}
+                />
+                {regionNote && (
+                  <p className="mt-1 text-xs text-muted-foreground" data-testid="region-note">
+                    {regionNote}
+                  </p>
+                )}
               </Field>
               <Field label="hidden from site">
-                <div className="flex items-center h-9"><Switch checked={product.hidden} onCheckedChange={(v) => set("hidden", v)} /></div>
+                <div className="flex items-center h-9">
+                  <Switch checked={product.hidden} onCheckedChange={(v) => set("hidden", v)} />
+                </div>
               </Field>
               <Field label="external referral (no cart)">
-                <div className="flex items-center h-9"><Switch checked={product.is_external} onCheckedChange={(v) => set("is_external", v)} /></div>
+                <div className="flex items-center h-9">
+                  <Switch
+                    checked={product.is_external}
+                    onCheckedChange={(v) => set("is_external", v)}
+                  />
+                </div>
               </Field>
               <Field label="external product url">
-                <Input value={product.external_url ?? ""} onChange={(e) => set("external_url", e.target.value)} placeholder="https://vendor-site.com/product" />
+                <Input
+                  value={product.external_url ?? ""}
+                  onChange={(e) => set("external_url", e.target.value)}
+                  placeholder="https://vendor-site.com/product"
+                />
               </Field>
             </div>
           </Section>
@@ -937,24 +1350,52 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
           {/* SECTION: Copy */}
           <Section title="description & content">
             <Field label="description">
-              <Textarea rows={4} value={product.description ?? ""} onChange={(e) => set("description", e.target.value)} placeholder="what this product is, who it's for, what makes it special" />
+              <Textarea
+                rows={4}
+                value={product.description ?? ""}
+                onChange={(e) => set("description", e.target.value)}
+                placeholder="what this product is, who it's for, what makes it special"
+              />
             </Field>
             <Field label="design features">
-              <Textarea rows={3} value={product.design_features ?? ""} onChange={(e) => set("design_features", e.target.value)} placeholder="silhouette, construction, details — what you can see" />
+              <Textarea
+                rows={3}
+                value={product.design_features ?? ""}
+                onChange={(e) => set("design_features", e.target.value)}
+                placeholder="silhouette, construction, details — what you can see"
+              />
             </Field>
             <Field label="technology benefits">
-              <Textarea rows={3} value={product.tech_info ?? ""} onChange={(e) => set("tech_info", e.target.value)} placeholder="what the technology does for the wearer / user" />
+              <Textarea
+                rows={3}
+                value={product.tech_info ?? ""}
+                onChange={(e) => set("tech_info", e.target.value)}
+                placeholder="what the technology does for the wearer / user"
+              />
             </Field>
             <Field label="composition">
-              <Textarea rows={2} value={product.composition ?? ""} onChange={(e) => set("composition", e.target.value)} placeholder="e.g. 78% recycled polyester, 22% elastane / aqua, glycerin, niacinamide…" />
+              <Textarea
+                rows={2}
+                value={product.composition ?? ""}
+                onChange={(e) => set("composition", e.target.value)}
+                placeholder="e.g. 78% recycled polyester, 22% elastane / aqua, glycerin, niacinamide…"
+              />
             </Field>
             <Field label="care instructions">
-              <Textarea rows={2} value={product.care_instructions ?? ""} onChange={(e) => set("care_instructions", e.target.value)} placeholder="washing / handling / storage" />
+              <Textarea
+                rows={2}
+                value={product.care_instructions ?? ""}
+                onChange={(e) => set("care_instructions", e.target.value)}
+                placeholder="washing / handling / storage"
+              />
             </Field>
           </Section>
 
           {/* SECTION: Feature icons */}
-          <Section title="properties / feature icons" subtitle="click to toggle. selected icons show on the product page.">
+          <Section
+            title="properties / feature icons"
+            subtitle="click to toggle. selected icons show on the product page."
+          >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {FEATURES.map((f) => {
                 const active = product.features.includes(f.key);
@@ -965,10 +1406,16 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
                     key={f.key}
                     onClick={() => toggleFeature(f.key)}
                     className={`flex items-center gap-2 p-2 border text-left transition ${
-                      active ? "border-primary bg-primary/5" : "border-border hover:border-foreground/60"
+                      active
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-foreground/60"
                     }`}
                   >
-                    {ic ? <img src={ic} alt="" className="h-6 w-6 object-contain shrink-0" /> : <div className="h-6 w-6 bg-muted shrink-0" />}
+                    {ic ? (
+                      <img src={ic} alt="" className="h-6 w-6 object-contain shrink-0" />
+                    ) : (
+                      <div className="h-6 w-6 bg-muted shrink-0" />
+                    )}
                     <span className="text-xs leading-tight">{f.name}</span>
                   </button>
                 );
@@ -977,20 +1424,40 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
           </Section>
 
           {/* SECTION: Sizes */}
-          <Section title="sizes" subtitle={isSizeless(product.category) ? "accessories are one size and personal care has no sizing — leave this empty." : "separate with / (or commas)."}>
+          <Section
+            title="sizes"
+            subtitle={
+              isSizeless(product.category)
+                ? "accessories are one size and personal care has no sizing — leave this empty."
+                : "separate with / (or commas)."
+            }
+          >
             <Field label="sizes">
-              <ListInput value={product.sizes} onChange={(v) => set("sizes", v)} placeholder="e.g. 0 / 1 / 2 / 3" />
+              <ListInput
+                value={product.sizes}
+                onChange={(v) => set("sizes", v)}
+                placeholder="e.g. 0 / 1 / 2 / 3"
+              />
             </Field>
             <div className="flex flex-wrap gap-2">
               {[["0", "1", "2", "3"], ["XS", "S", "M", "L"], []].map((preset) => (
-                <Button key={preset.join("/") || "none"} type="button" variant="outline" size="sm" onClick={() => set("sizes", preset)}>
+                <Button
+                  key={preset.join("/") || "none"}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => set("sizes", preset)}
+                >
                   {preset.length ? joinList(preset) : "one size / no sizing"}
                 </Button>
               ))}
             </div>
           </Section>
 
-          <Section title="stock by colour & size" subtitle="units for each colour and size. leave a box empty if you don't track it. totals fill the stock fields above.">
+          <Section
+            title="stock by colour & size"
+            subtitle="units for each colour and size. leave a box empty if you don't track it. totals fill the stock fields above."
+          >
             <VariantStockGrid
               colors={variantColors}
               sizes={product.sizes.length ? product.sizes : ["one size"]}
@@ -1000,21 +1467,35 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
           </Section>
 
           {/* SECTION: Colors + swatches */}
-          <Section title="colors & swatches" subtitle="click a dot to add that colour or print to this product. click it again to remove it.">
+          <Section
+            title="colors & swatches"
+            subtitle="click a dot to add that colour or print to this product. click it again to remove it."
+          >
             <div className="space-y-2">
               <SwatchPalette
-                selected={(product.color_swatches ?? []).map((s) => resolveSwatchUrl(s.swatch_url)).filter((u): u is string => !!u)}
+                selected={(product.color_swatches ?? [])
+                  .map((s) => resolveSwatchUrl(s.swatch_url))
+                  .filter((u): u is string => !!u)}
                 onToggle={(item) => {
                   const list = product.color_swatches ?? [];
                   const at = list.findIndex((s) => resolveSwatchUrl(s.swatch_url) === item.url);
-                  if (at >= 0) set("color_swatches", list.filter((_, j) => j !== at));
+                  if (at >= 0)
+                    set(
+                      "color_swatches",
+                      list.filter((_, j) => j !== at),
+                    );
                   else set("color_swatches", [...list, { name: item.key, swatch_url: item.url }]);
                 }}
               />
               {(product.color_swatches ?? []).map((s, i) => (
-                <div key={i} className="flex flex-wrap items-center gap-2 p-2 border border-border bg-background">
+                <div
+                  key={i}
+                  className="flex flex-wrap items-center gap-2 p-2 border border-border bg-background"
+                >
                   <Input
-                    className="w-40" value={s.name} placeholder="color name"
+                    className="w-40"
+                    value={s.name}
+                    placeholder="color name"
                     onChange={(e) => {
                       const next = [...product.color_swatches];
                       next[i] = { ...next[i], name: e.target.value };
@@ -1023,7 +1504,9 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
                   />
                   <div className="flex items-center gap-2">
                     <Input
-                      className="w-28" value={s.hex ?? ""} placeholder="#hex (optional)"
+                      className="w-28"
+                      value={s.hex ?? ""}
+                      placeholder="#hex (optional)"
                       onChange={(e) => {
                         const next = [...product.color_swatches];
                         next[i] = { ...next[i], hex: e.target.value };
@@ -1037,35 +1520,70 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    {s.swatch_url
-                      ? <StoredImg src={resolveSwatchUrl(s.swatch_url)} alt="" className="h-10 w-10 rounded-full object-cover border border-border" />
-                      : <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
+                    {s.swatch_url ? (
+                      <StoredImg
+                        src={resolveSwatchUrl(s.swatch_url)}
+                        alt=""
+                        className="h-10 w-10 rounded-full object-cover border border-border"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                        <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    )}
                     <SwatchLibraryPicker
                       onPick={(item) => {
                         const next = [...product.color_swatches];
-                        next[i] = { ...next[i], name: next[i].name || item.key, swatch_url: item.url };
+                        next[i] = {
+                          ...next[i],
+                          name: next[i].name || item.key,
+                          swatch_url: item.url,
+                        };
                         set("color_swatches", next);
                       }}
                     />
                     <input
-                      type="file" accept="image/*" className="text-xs"
+                      type="file"
+                      accept="image/*"
+                      className="text-xs"
                       onChange={(e) => e.target.files?.[0] && swatchUpload(i, e.target.files[0])}
                     />
                   </div>
                   <button
-                    onClick={() => set("color_swatches", product.color_swatches.filter((_, j) => j !== i))}
+                    onClick={() =>
+                      set(
+                        "color_swatches",
+                        product.color_swatches.filter((_, j) => j !== i),
+                      )
+                    }
                     className="link-red text-xs ml-auto"
-                  >remove colour</button>
+                  >
+                    remove colour
+                  </button>
                   <div className="basis-full flex flex-wrap items-center gap-2">
-                    <span className="text-[0.588rem] uppercase tracking-wider text-muted-foreground">photos for this colour</span>
+                    <span className="text-[0.588rem] uppercase tracking-wider text-muted-foreground">
+                      photos for this colour
+                    </span>
                     {swatchImages(s).map((u) => (
                       <div key={u} className="relative h-12 w-12 border border-border group">
-                        <ProductThumb url={u} slug={product.slug} className="h-full w-full object-cover" />
+                        <ProductThumb
+                          url={u}
+                          slug={product.slug}
+                          className="h-full w-full object-cover"
+                        />
                         <button
-                          type="button" aria-label="remove photo from this colour"
-                          onClick={() => setSwatchImages(i, swatchImages(s).filter((x) => x !== u))}
+                          type="button"
+                          aria-label="remove photo from this colour"
+                          onClick={() =>
+                            setSwatchImages(
+                              i,
+                              swatchImages(s).filter((x) => x !== u),
+                            )
+                          }
                           className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-background border border-border text-[0.588rem] leading-none opacity-0 group-hover:opacity-100"
-                        >×</button>
+                        >
+                          ×
+                        </button>
                       </div>
                     ))}
                     <GalleryImagePicker
@@ -1075,24 +1593,43 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
                       onChange={(urls) => setSwatchImages(i, urls)}
                     />
                     <input
-                      type="file" accept="image/*" multiple className="text-xs w-44"
-                      onChange={(e) => { if (e.target.files?.length) swatchImageUpload(i, e.target.files); e.target.value = ""; }}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="text-xs w-44"
+                      onChange={(e) => {
+                        if (e.target.files?.length) swatchImageUpload(i, e.target.files);
+                        e.target.value = "";
+                      }}
                     />
                   </div>
                 </div>
               ))}
-              <Button variant="outline" size="sm" onClick={addColorRow}><Plus className="h-3 w-3 mr-1" />add color</Button>
+              <Button variant="outline" size="sm" onClick={addColorRow}>
+                <Plus className="h-3 w-3 mr-1" />
+                add color
+              </Button>
               <p className="text-xs text-muted-foreground">
-                extra colour names without a swatch row (optional — every colour added above already shows on the product page):
+                extra colour names without a swatch row (optional — every colour added above already
+                shows on the product page):
               </p>
-              <ListInput value={product.colors} onChange={(v) => set("colors", v)} placeholder="e.g. ivory / navy / black" />
+              <ListInput
+                value={product.colors}
+                onChange={(v) => set("colors", v)}
+                placeholder="e.g. ivory / navy / black"
+              />
             </div>
           </Section>
 
           {/* SECTION: Gallery */}
-          <Section title="product images (gallery)" subtitle="upload 7–9 images. first image is the cover.">
+          <Section
+            title="product images (gallery)"
+            subtitle="upload 7–9 images. first image is the cover."
+          >
             <input
-              type="file" multiple accept="image/*"
+              type="file"
+              multiple
+              accept="image/*"
               onChange={(e) => handleGalleryUpload(e.target.files)}
               className="text-xs"
             />
@@ -1100,8 +1637,14 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
             {(product.gallery_urls ?? []).length === 0 && product.image_url && (
               <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-3">
                 <div className="relative aspect-square border border-border">
-                  <ProductThumb url={product.image_url} slug={product.slug} className="h-full w-full object-cover" />
-                  <span className="absolute bottom-0 left-0 text-[0.529rem] bg-primary text-primary-foreground px-1">current cover</span>
+                  <ProductThumb
+                    url={product.image_url}
+                    slug={product.slug}
+                    className="h-full w-full object-cover"
+                  />
+                  <span className="absolute bottom-0 left-0 text-[0.529rem] bg-primary text-primary-foreground px-1">
+                    current cover
+                  </span>
                 </div>
               </div>
             )}
@@ -1109,17 +1652,41 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
               <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-3">
                 {product.gallery_urls.map((url, idx) => (
                   <div key={url} className="relative group aspect-square border border-border">
-                    <ProductThumb url={url} slug={product.slug} className="h-full w-full object-cover" />
-                    {idx === 0 && <span className="absolute bottom-0 left-0 text-[0.529rem] bg-primary text-primary-foreground px-1">cover</span>}
+                    <ProductThumb
+                      url={url}
+                      slug={product.slug}
+                      className="h-full w-full object-cover"
+                    />
+                    {idx === 0 && (
+                      <span className="absolute bottom-0 left-0 text-[0.529rem] bg-primary text-primary-foreground px-1">
+                        cover
+                      </span>
+                    )}
                     <button
                       onClick={() => removeGalleryUrl(url)}
                       className="absolute top-1 right-1 bg-background/90 text-[0.588rem] px-1.5 py-0.5 opacity-0 group-hover:opacity-100"
-                    >remove</button>
+                    >
+                      remove
+                    </button>
                     <div className="absolute bottom-0 right-0 flex opacity-0 group-hover:opacity-100">
-                      <button type="button" disabled={idx === 0} onClick={() => moveGalleryUrl(idx, -1)}
-                        aria-label="move earlier" className="bg-background/90 px-1.5 text-[0.647rem] disabled:opacity-30">←</button>
-                      <button type="button" disabled={idx === product.gallery_urls.length - 1} onClick={() => moveGalleryUrl(idx, 1)}
-                        aria-label="move later" className="bg-background/90 px-1.5 text-[0.647rem] disabled:opacity-30">→</button>
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => moveGalleryUrl(idx, -1)}
+                        aria-label="move earlier"
+                        className="bg-background/90 px-1.5 text-[0.647rem] disabled:opacity-30"
+                      >
+                        ←
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === product.gallery_urls.length - 1}
+                        onClick={() => moveGalleryUrl(idx, 1)}
+                        aria-label="move later"
+                        className="bg-background/90 px-1.5 text-[0.647rem] disabled:opacity-30"
+                      >
+                        →
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -1128,7 +1695,10 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
           </Section>
 
           {/* SECTION: Videos */}
-          <Section title="videos" subtitle={`upload up to ${MAX_PRODUCT_VIDEOS} video files (max ${MAX_VIDEO_BYTES / 1024 / 1024} MB each), or paste youtube / vimeo links one per line. shown under the product images.`}>
+          <Section
+            title="videos"
+            subtitle={`upload up to ${MAX_PRODUCT_VIDEOS} video files (max ${MAX_VIDEO_BYTES / 1024 / 1024} MB each), or paste youtube / vimeo links one per line. shown under the product images.`}
+          >
             <Textarea
               rows={3}
               value={videoText}
@@ -1136,12 +1706,19 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
               placeholder="https://www.youtube.com/watch?v=…"
             />
             <input
-              type="file" multiple accept="video/*"
+              type="file"
+              multiple
+              accept="video/*"
               disabled={videoUploading || videoCount >= MAX_PRODUCT_VIDEOS}
-              onChange={(e) => { handleVideoUpload(e.target.files); e.target.value = ""; }}
+              onChange={(e) => {
+                handleVideoUpload(e.target.files);
+                e.target.value = "";
+              }}
               className="text-xs mt-2 disabled:opacity-40"
             />
-            <p className="text-xs text-muted-foreground mt-1">{videoCount} / {MAX_PRODUCT_VIDEOS} videos</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {videoCount} / {MAX_PRODUCT_VIDEOS} videos
+            </p>
             {videoUploading && <p className="text-xs text-muted-foreground mt-2">uploading…</p>}
           </Section>
 
@@ -1149,10 +1726,18 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
           <Section title="packaging & shipping">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field label="package size">
-                <Input value={product.package_size ?? ""} onChange={(e) => set("package_size", e.target.value)} placeholder="e.g. 20 × 12 × 6 cm" />
+                <Input
+                  value={product.package_size ?? ""}
+                  onChange={(e) => set("package_size", e.target.value)}
+                  placeholder="e.g. 20 × 12 × 6 cm"
+                />
               </Field>
               <Field label="package weight">
-                <Input value={product.package_weight ?? ""} onChange={(e) => set("package_weight", e.target.value)} placeholder="e.g. 350 g" />
+                <Input
+                  value={product.package_weight ?? ""}
+                  onChange={(e) => set("package_weight", e.target.value)}
+                  placeholder="e.g. 350 g"
+                />
               </Field>
             </div>
           </Section>
@@ -1167,16 +1752,27 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
                     <button
                       key={line}
                       type="button"
-                      onClick={() => set("tags", on ? product.tags.filter((t) => t !== line) : [...product.tags, line])}
+                      onClick={() =>
+                        set(
+                          "tags",
+                          on ? product.tags.filter((t) => t !== line) : [...product.tags, line],
+                        )
+                      }
                       className={`px-3 py-1 text-xs border ${on ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-foreground"}`}
                       aria-pressed={on}
-                    >{line}</button>
+                    >
+                      {line}
+                    </button>
                   );
                 })}
               </div>
             </Field>
             <Field label="filter tags (separate with / — used by accessories filter)">
-              <ListInput value={product.tags} onChange={(v) => set("tags", v)} placeholder="e.g. all-season / women / unisex / wearable" />
+              <ListInput
+                value={product.tags}
+                onChange={(v) => set("tags", v)}
+                placeholder="e.g. all-season / women / unisex / wearable"
+              />
             </Field>
             <Field label="hashtags (separate with / — for marketing / social)">
               <ListInput
@@ -1187,7 +1783,9 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
               {product.hashtags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {product.hashtags.map((h) => (
-                    <span key={h} className="text-[0.588rem] bg-muted px-2 py-0.5 rounded-full">{h.replace(/^#+/, "")}</span>
+                    <span key={h} className="text-[0.588rem] bg-muted px-2 py-0.5 rounded-full">
+                      {h.replace(/^#+/, "")}
+                    </span>
                   ))}
                 </div>
               )}
@@ -1196,7 +1794,9 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
         </div>
 
         <div className="sticky bottom-0 bg-card border-t border-border px-6 py-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={onCancel}>cancel</Button>
+          <Button variant="outline" onClick={onCancel}>
+            cancel
+          </Button>
           <Button onClick={onSave}>save product</Button>
         </div>
       </div>
@@ -1204,7 +1804,15 @@ function ProductEditor({ product, onChange, onSave, onCancel, allProducts = [], 
   );
 }
 
-function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+function Section({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-3">
       <div className="border-b border-border pb-2">
@@ -1217,7 +1825,12 @@ function Section({ title, subtitle, children }: { title: string; subtitle?: stri
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div><Label className="text-xs text-muted-foreground mb-1 block">{label}</Label>{children}</div>;
+  return (
+    <div>
+      <Label className="text-xs text-muted-foreground mb-1 block">{label}</Label>
+      {children}
+    </div>
+  );
 }
 
 /* ============================================================
@@ -1227,15 +1840,22 @@ function AdminsTab() {
   const list = useServerFn(listAdmins);
   const grant = useServerFn(grantAdminByEmail);
   const revoke = useServerFn(revokeAdmin);
-  const [rows, setRows] = useState<Array<{ user_id: string; email: string; created_at: string }>>([]);
+  const [rows, setRows] = useState<Array<{ user_id: string; email: string; created_at: string }>>(
+    [],
+  );
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
-    try { setRows(await list()); }
-    catch (e: any) { toast.error(e.message); }
+    try {
+      setRows(await list());
+    } catch (e: any) {
+      toast.error(e.message);
+    }
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1245,14 +1865,22 @@ function AdminsTab() {
       toast.success("admin granted");
       setEmail("");
       load();
-    } catch (e: any) { toast.error(e.message); }
-    finally { setBusy(false); }
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const remove = async (user_id: string, em: string) => {
     if (!confirm(`revoke admin from ${em}?`)) return;
-    try { await revoke({ data: { user_id } }); toast.success("revoked"); load(); }
-    catch (e: any) { toast.error(e.message); }
+    try {
+      await revoke({ data: { user_id } });
+      toast.success("revoked");
+      load();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
   };
 
   return (
@@ -1260,28 +1888,42 @@ function AdminsTab() {
       <form onSubmit={add} className="flex gap-3 items-end max-w-xl">
         <div className="flex-1">
           <Label className="text-xs text-muted-foreground mb-1 block">grant admin by email</Label>
-          <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@example.com" />
+          <Input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="user@example.com"
+          />
         </div>
-        <Button type="submit" disabled={busy}>grant</Button>
+        <Button type="submit" disabled={busy}>
+          grant
+        </Button>
       </form>
       <p className="text-xs text-muted-foreground">user must have signed up first.</p>
       <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead><tr className="text-left text-muted-foreground border-b border-border">
-          <th className="py-2">email</th><th>granted</th><th></th>
-        </tr></thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.user_id} className="border-b border-border">
-              <td className="py-2">{r.email}</td>
-              <td className="text-xs">{new Date(r.created_at).toLocaleDateString()}</td>
-              <td className="text-right">
-                <button onClick={() => remove(r.user_id, r.email)} className="link-red">revoke</button>
-              </td>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-muted-foreground border-b border-border">
+              <th className="py-2">email</th>
+              <th>granted</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.user_id} className="border-b border-border">
+                <td className="py-2">{r.email}</td>
+                <td className="text-xs">{new Date(r.created_at).toLocaleDateString()}</td>
+                <td className="text-right">
+                  <button onClick={() => remove(r.user_id, r.email)} className="link-red">
+                    revoke
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -1297,16 +1939,22 @@ function OrdersTab() {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const load = async () => {
-    const { data } = await supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false });
+    const { data } = await supabase
+      .from("orders")
+      .select("*, order_items(*)")
+      .order("created_at", { ascending: false });
     setRows(data ?? []);
-    setSelected((cur: any) => (cur ? (data ?? []).find((o) => o.id === cur.id) ?? null : null));
+    setSelected((cur: any) => (cur ? ((data ?? []).find((o) => o.id === cur.id) ?? null) : null));
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const setStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
-    toast.success("updated"); load();
+    toast.success("updated");
+    load();
   };
 
   const filtered = useMemo(() => {
@@ -1314,8 +1962,9 @@ function OrdersTab() {
     return rows.filter((o) => {
       if (statusFilter !== "all" && o.status !== statusFilter) return false;
       if (!q) return true;
-      return [o.order_number, o.full_name, o.email, o.mobile, o.promo_code]
-        .some((v) => (v ?? "").toString().toLowerCase().includes(q));
+      return [o.order_number, o.full_name, o.email, o.mobile, o.promo_code].some((v) =>
+        (v ?? "").toString().toLowerCase().includes(q),
+      );
     });
   }, [rows, query, statusFilter]);
 
@@ -1333,36 +1982,67 @@ function OrdersTab() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="h-9 border border-input bg-background px-3 text-sm"
         >
-          {["all", ...ORDER_STATUSES].map((s) => <option key={s} value={s}>{s}</option>)}
+          {["all", ...ORDER_STATUSES].map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
         </select>
-        <span className="text-xs text-muted-foreground">{filtered.length} of {rows.length} orders</span>
+        <span className="text-xs text-muted-foreground">
+          {filtered.length} of {rows.length} orders
+        </span>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead><tr className="text-left text-muted-foreground border-b border-border">
-            <th className="py-2">order #</th><th>date</th><th>customer</th><th>items</th><th>total</th><th>status</th><th></th>
-          </tr></thead>
+          <thead>
+            <tr className="text-left text-muted-foreground border-b border-border">
+              <th className="py-2">order #</th>
+              <th>date</th>
+              <th>customer</th>
+              <th>items</th>
+              <th>total</th>
+              <th>status</th>
+              <th></th>
+            </tr>
+          </thead>
           <tbody>
             {filtered.map((o) => (
               <tr key={o.id} className="border-b border-border align-top">
                 <td className="py-3 font-mono text-xs">{o.order_number}</td>
                 <td className="text-xs">{new Date(o.created_at).toLocaleDateString()}</td>
-                <td><div>{o.full_name}</div><div className="text-xs text-muted-foreground">{o.email}</div></td>
-                <td className="text-xs">{orderItemCount(o)}</td>
-                <td className="num">{o.currency} {Number(o.total).toFixed(2)}</td>
                 <td>
-                  <select value={o.status} onChange={(e) => setStatus(o.id, e.target.value)} className="border border-input bg-background px-2 py-1 text-xs">
-                    {ORDER_STATUSES.map((s) => <option key={s}>{s}</option>)}
+                  <div>{o.full_name}</div>
+                  <div className="text-xs text-muted-foreground">{o.email}</div>
+                </td>
+                <td className="text-xs">{orderItemCount(o)}</td>
+                <td className="num">
+                  {o.currency} {Number(o.total).toFixed(2)}
+                </td>
+                <td>
+                  <select
+                    value={o.status}
+                    onChange={(e) => setStatus(o.id, e.target.value)}
+                    className="border border-input bg-background px-2 py-1 text-xs"
+                  >
+                    {ORDER_STATUSES.map((s) => (
+                      <option key={s}>{s}</option>
+                    ))}
                   </select>
                 </td>
                 <td className="text-right">
-                  <Button variant="outline" size="sm" onClick={() => setSelected(o)}>view</Button>
+                  <Button variant="outline" size="sm" onClick={() => setSelected(o)}>
+                    view
+                  </Button>
                 </td>
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={7} className="py-8 text-center text-xs text-muted-foreground">no orders match</td></tr>
+              <tr>
+                <td colSpan={7} className="py-8 text-center text-xs text-muted-foreground">
+                  no orders match
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
@@ -1387,18 +2067,29 @@ function orderItemCount(o: any) {
   return `${items.length} line${items.length === 1 ? "" : "s"} / ${units} unit${units === 1 ? "" : "s"}`;
 }
 
-function OrderDetail({ order, onClose, onStatus }: { order: any; onClose: () => void; onStatus: (s: string) => void }) {
+function OrderDetail({
+  order,
+  onClose,
+  onStatus,
+}: {
+  order: any;
+  onClose: () => void;
+  onStatus: (s: string) => void;
+}) {
   const items = order.order_items ?? [];
   const money = (v: any) => `${order.currency} ${Number(v ?? 0).toFixed(2)}`;
   const copy = () => {
     navigator.clipboard.writeText(
-      [order.full_name, order.mobile, order.address, order.country].filter(Boolean).join("\n")
+      [order.full_name, order.mobile, order.address, order.country].filter(Boolean).join("\n"),
     );
     toast.success("address copied");
   };
   return (
     <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto" onClick={onClose}>
-      <div className="max-w-3xl mx-auto my-8 bg-card border border-border shadow-lg" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="max-w-3xl mx-auto my-8 bg-card border border-border shadow-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="font-mono text-sm">{order.order_number}</div>
@@ -1412,9 +2103,13 @@ function OrderDetail({ order, onClose, onStatus }: { order: any; onClose: () => 
               onChange={(e) => onStatus(e.target.value)}
               className="border border-input bg-background px-2 py-1 text-xs"
             >
-              {ORDER_STATUSES.map((s) => <option key={s}>{s}</option>)}
+              {ORDER_STATUSES.map((s) => (
+                <option key={s}>{s}</option>
+              ))}
             </select>
-            <button onClick={onClose} className="p-1 hover:bg-muted"><X className="h-4 w-4" /></button>
+            <button onClick={onClose} className="p-1 hover:bg-muted">
+              <X className="h-4 w-4" />
+            </button>
           </div>
         </div>
 
@@ -1424,10 +2119,16 @@ function OrderDetail({ order, onClose, onStatus }: { order: any; onClose: () => 
               <div className="text-xs uppercase tracking-wider text-muted-foreground">customer</div>
               <div className="text-sm">{order.full_name}</div>
               <div className="text-sm">
-                <a className="underline" href={`mailto:${order.email}`}>{order.email}</a>
+                <a className="underline" href={`mailto:${order.email}`}>
+                  {order.email}
+                </a>
               </div>
               {order.mobile && (
-                <div className="text-sm"><a className="underline" href={`tel:${order.mobile}`}>{order.mobile}</a></div>
+                <div className="text-sm">
+                  <a className="underline" href={`tel:${order.mobile}`}>
+                    {order.mobile}
+                  </a>
+                </div>
               )}
               <div className="text-xs text-muted-foreground">
                 {order.user_id ? "registered account" : "guest checkout"}
@@ -1436,7 +2137,9 @@ function OrderDetail({ order, onClose, onStatus }: { order: any; onClose: () => 
             <div className="space-y-1">
               <div className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-3">
                 shipping address
-                <button onClick={copy} className="underline normal-case tracking-normal">copy</button>
+                <button onClick={copy} className="underline normal-case tracking-normal">
+                  copy
+                </button>
               </div>
               <div className="text-sm whitespace-pre-wrap">{order.address || "—"}</div>
               <div className="text-sm">{order.country || ""}</div>
@@ -1447,24 +2150,42 @@ function OrderDetail({ order, onClose, onStatus }: { order: any; onClose: () => 
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">items</div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="text-left text-muted-foreground border-b border-border">
-                  <th className="py-2">product</th><th>variant</th><th className="text-right">qty</th><th className="text-right">unit</th><th className="text-right">line</th>
-                </tr></thead>
+                <thead>
+                  <tr className="text-left text-muted-foreground border-b border-border">
+                    <th className="py-2">product</th>
+                    <th>variant</th>
+                    <th className="text-right">qty</th>
+                    <th className="text-right">unit</th>
+                    <th className="text-right">line</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {items.map((i: any) => (
                     <tr key={i.id} className="border-b border-border align-top">
                       <td className="py-3">
                         <div>{i.name}</div>
-                        {i.product_slug && <div className="text-xs text-muted-foreground font-mono">{i.product_slug}</div>}
+                        {i.product_slug && (
+                          <div className="text-xs text-muted-foreground font-mono">
+                            {i.product_slug}
+                          </div>
+                        )}
                       </td>
-                      <td className="text-xs">{[i.color, i.size].filter(Boolean).join(" / ") || "—"}</td>
+                      <td className="text-xs">
+                        {[i.color, i.size].filter(Boolean).join(" / ") || "—"}
+                      </td>
                       <td className="text-right num">{i.qty}</td>
                       <td className="text-right num">{money(i.unit_price)}</td>
-                      <td className="text-right num">{money(Number(i.unit_price) * Number(i.qty))}</td>
+                      <td className="text-right num">
+                        {money(Number(i.unit_price) * Number(i.qty))}
+                      </td>
                     </tr>
                   ))}
                   {items.length === 0 && (
-                    <tr><td colSpan={5} className="py-6 text-center text-xs text-muted-foreground">no line items recorded</td></tr>
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center text-xs text-muted-foreground">
+                        no line items recorded
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>
@@ -1490,7 +2211,9 @@ function OrderDetail({ order, onClose, onStatus }: { order: any; onClose: () => 
         </div>
 
         <div className="sticky bottom-0 bg-card border-t border-border px-6 py-4 flex justify-end">
-          <Button variant="outline" onClick={onClose}>close</Button>
+          <Button variant="outline" onClick={onClose}>
+            close
+          </Button>
         </div>
       </div>
     </div>
@@ -1515,12 +2238,20 @@ function CustomersTab() {
   const [importing, setImporting] = useState(false);
   const [source, setSource] = useState("");
   const load = () => {
-    supabase.from("profiles").select("*").order("created_at", { ascending: false })
+    supabase
+      .from("profiles")
+      .select("*")
+      .order("created_at", { ascending: false })
       .then(({ data }) => setRows(data ?? []));
-    supabase.from("imported_customers").select("*").order("imported_at", { ascending: false })
+    supabase
+      .from("imported_customers")
+      .select("*")
+      .order("imported_at", { ascending: false })
       .then(({ data }) => setImported(data ?? []));
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const importCsv = async (file: File) => {
     setImporting(true);
@@ -1534,16 +2265,19 @@ function CustomersTab() {
       const iEmail = idx("email");
       const iPhone = idx("phone") >= 0 ? idx("phone") : idx("mobile");
       const iNotes = idx("notes");
-      const rows = lines.slice(1).map((line) => {
-        const cells = line.split(",").map((c) => c.trim().replace(/^"|"$/g, ""));
-        return {
-          full_name: iName >= 0 ? cells[iName] : null,
-          email: iEmail >= 0 ? cells[iEmail] : null,
-          phone: iPhone >= 0 ? cells[iPhone] : null,
-          notes: iNotes >= 0 ? cells[iNotes] : null,
-          source: source || file.name,
-        };
-      }).filter((r) => r.full_name || r.email || r.phone);
+      const rows = lines
+        .slice(1)
+        .map((line) => {
+          const cells = line.split(",").map((c) => c.trim().replace(/^"|"$/g, ""));
+          return {
+            full_name: iName >= 0 ? cells[iName] : null,
+            email: iEmail >= 0 ? cells[iEmail] : null,
+            phone: iPhone >= 0 ? cells[iPhone] : null,
+            notes: iNotes >= 0 ? cells[iNotes] : null,
+            source: source || file.name,
+          };
+        })
+        .filter((r) => r.full_name || r.email || r.phone);
       if (rows.length === 0) throw new Error("no valid rows found");
       const { error } = await supabase.from("imported_customers").insert(rows);
       if (error) throw error;
@@ -1561,18 +2295,33 @@ function CustomersTab() {
       <div className="border border-border bg-card p-4 space-y-3">
         <h3 className="text-sm font-medium">import previous customers (CSV)</h3>
         <p className="text-xs text-muted-foreground">
-          headers accepted: <code>name</code> (or <code>full_name</code>), <code>email</code>, <code>phone</code> (or <code>mobile</code>), <code>notes</code>.
+          headers accepted: <code>name</code> (or <code>full_name</code>), <code>email</code>,{" "}
+          <code>phone</code> (or <code>mobile</code>), <code>notes</code>.
         </p>
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex-1 min-w-[180px]">
-            <Label className="text-xs text-muted-foreground mb-1 block">source label (optional)</Label>
-            <Input value={source} onChange={(e) => setSource(e.target.value)} placeholder="e.g. shopify-2023, mailchimp" />
+            <Label className="text-xs text-muted-foreground mb-1 block">
+              source label (optional)
+            </Label>
+            <Input
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              placeholder="e.g. shopify-2023, mailchimp"
+            />
           </div>
           <label className="inline-flex items-center gap-2 text-xs border border-input px-3 py-2 cursor-pointer hover:bg-muted">
             <Plus className="h-3 w-3" />
             {importing ? "importing…" : "upload CSV"}
-            <input type="file" accept=".csv,text/csv" className="hidden"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) importCsv(f); e.currentTarget.value = ""; }} />
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) importCsv(f);
+                e.currentTarget.value = "";
+              }}
+            />
           </label>
         </div>
       </div>
@@ -1580,43 +2329,54 @@ function CustomersTab() {
       <div>
         <h3 className="text-sm font-medium mb-3">registered accounts ({rows.length})</h3>
         <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead><tr className="text-left text-muted-foreground border-b border-border">
-            <th className="py-2">name</th><th>mobile</th><th>newsletter</th><th>joined</th>
-          </tr></thead>
-          <tbody>
-            {rows.map((p) => (
-              <tr key={p.id} className="border-b border-border">
-                <td className="py-2">{p.full_name || "—"}</td>
-                <td>{p.mobile || "—"}</td>
-                <td>{p.newsletter_opt_in ? "yes" : "no"}</td>
-                <td className="text-xs">{new Date(p.created_at).toLocaleDateString()}</td>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-muted-foreground border-b border-border">
+                <th className="py-2">name</th>
+                <th>mobile</th>
+                <th>newsletter</th>
+                <th>joined</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((p) => (
+                <tr key={p.id} className="border-b border-border">
+                  <td className="py-2">{p.full_name || "—"}</td>
+                  <td>{p.mobile || "—"}</td>
+                  <td>{p.newsletter_opt_in ? "yes" : "no"}</td>
+                  <td className="text-xs">{new Date(p.created_at).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
       <div>
         <h3 className="text-sm font-medium mb-3">imported customers ({imported.length})</h3>
         <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead><tr className="text-left text-muted-foreground border-b border-border">
-            <th className="py-2">name</th><th>email</th><th>phone</th><th>source</th><th>imported</th>
-          </tr></thead>
-          <tbody>
-            {imported.map((p) => (
-              <tr key={p.id} className="border-b border-border">
-                <td className="py-2">{p.full_name || "—"}</td>
-                <td>{p.email || "—"}</td>
-                <td>{p.phone || "—"}</td>
-                <td className="text-xs">{p.source || "—"}</td>
-                <td className="text-xs">{new Date(p.imported_at).toLocaleDateString()}</td>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-muted-foreground border-b border-border">
+                <th className="py-2">name</th>
+                <th>email</th>
+                <th>phone</th>
+                <th>source</th>
+                <th>imported</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {imported.map((p) => (
+                <tr key={p.id} className="border-b border-border">
+                  <td className="py-2">{p.full_name || "—"}</td>
+                  <td>{p.email || "—"}</td>
+                  <td>{p.phone || "—"}</td>
+                  <td className="text-xs">{p.source || "—"}</td>
+                  <td className="text-xs">{new Date(p.imported_at).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -1627,20 +2387,42 @@ function CustomersTab() {
    PROMOS
    ============================================================ */
 type Promo = {
-  id?: string; code: string; discount_type: string; amount: number;
-  currency: string | null; usage_limit: number | null; used_count: number;
-  active: boolean; expires_at: string | null; applicable_products: string[] | null;
+  id?: string;
+  code: string;
+  discount_type: string;
+  amount: number;
+  currency: string | null;
+  usage_limit: number | null;
+  used_count: number;
+  active: boolean;
+  expires_at: string | null;
+  applicable_products: string[] | null;
 };
-const blankPromo: Promo = { code: "", discount_type: "percent", amount: 10, currency: null, usage_limit: null, used_count: 0, active: true, expires_at: null, applicable_products: null };
+const blankPromo: Promo = {
+  code: "",
+  discount_type: "percent",
+  amount: 10,
+  currency: null,
+  usage_limit: null,
+  used_count: 0,
+  active: true,
+  expires_at: null,
+  applicable_products: null,
+};
 
 function PromosTab() {
   const [rows, setRows] = useState<Promo[]>([]);
   const [editing, setEditing] = useState<Promo | null>(null);
   const load = async () => {
-    const { data } = await supabase.from("promo_codes").select("*").order("created_at", { ascending: false });
+    const { data } = await supabase
+      .from("promo_codes")
+      .select("*")
+      .order("created_at", { ascending: false });
     setRows((data ?? []) as Promo[]);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
   const save = async () => {
     if (!editing) return;
     const p = { ...editing };
@@ -1648,7 +2430,9 @@ function PromosTab() {
       ? await supabase.from("promo_codes").update(p).eq("id", p.id)
       : await supabase.from("promo_codes").insert(p);
     if (error) return toast.error(error.message);
-    toast.success("saved"); setEditing(null); load();
+    toast.success("saved");
+    setEditing(null);
+    load();
   };
   const remove = async (id: string) => {
     if (!confirm("delete?")) return;
@@ -1657,46 +2441,117 @@ function PromosTab() {
   };
   return (
     <div className="py-6 space-y-6">
-      <div className="flex flex-wrap gap-3 items-center justify-between"><h2>{rows.length} codes</h2><Button onClick={() => setEditing({ ...blankPromo })}>+ new code</Button></div>
+      <div className="flex flex-wrap gap-3 items-center justify-between">
+        <h2>{rows.length} codes</h2>
+        <Button onClick={() => setEditing({ ...blankPromo })}>+ new code</Button>
+      </div>
       {editing && (
         <div className="border border-border p-6 bg-card space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="code"><Input value={editing.code} onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })} /></Field>
+            <Field label="code">
+              <Input
+                value={editing.code}
+                onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })}
+              />
+            </Field>
             <Field label="type">
-              <select className="w-full h-9 border border-input bg-background px-3 text-sm" value={editing.discount_type} onChange={(e) => setEditing({ ...editing, discount_type: e.target.value })}>
+              <select
+                className="w-full h-9 border border-input bg-background px-3 text-sm"
+                value={editing.discount_type}
+                onChange={(e) => setEditing({ ...editing, discount_type: e.target.value })}
+              >
                 <option value="percent">percent</option>
                 <option value="fixed">fixed</option>
               </select>
             </Field>
-            <Field label="amount"><Input type="number" value={editing.amount} onChange={(e) => setEditing({ ...editing, amount: Number(e.target.value) })} /></Field>
-            <Field label="currency (fixed only)"><Input value={editing.currency ?? ""} onChange={(e) => setEditing({ ...editing, currency: e.target.value || null })} placeholder="CAD or HKD" /></Field>
-            <Field label="usage limit"><Input type="number" value={editing.usage_limit ?? ""} onChange={(e) => setEditing({ ...editing, usage_limit: e.target.value ? Number(e.target.value) : null })} /></Field>
-            <Field label="expires (ISO)"><Input value={editing.expires_at ?? ""} onChange={(e) => setEditing({ ...editing, expires_at: e.target.value || null })} placeholder="2026-12-31" /></Field>
-            <Field label="active"><div className="flex h-9 items-center"><Switch checked={editing.active} onCheckedChange={(v) => setEditing({ ...editing, active: v })} /></div></Field>
+            <Field label="amount">
+              <Input
+                type="number"
+                value={editing.amount}
+                onChange={(e) => setEditing({ ...editing, amount: Number(e.target.value) })}
+              />
+            </Field>
+            <Field label="currency (fixed only)">
+              <Input
+                value={editing.currency ?? ""}
+                onChange={(e) => setEditing({ ...editing, currency: e.target.value || null })}
+                placeholder="CAD or HKD"
+              />
+            </Field>
+            <Field label="usage limit">
+              <Input
+                type="number"
+                value={editing.usage_limit ?? ""}
+                onChange={(e) =>
+                  setEditing({
+                    ...editing,
+                    usage_limit: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+              />
+            </Field>
+            <Field label="expires (ISO)">
+              <Input
+                value={editing.expires_at ?? ""}
+                onChange={(e) => setEditing({ ...editing, expires_at: e.target.value || null })}
+                placeholder="2026-12-31"
+              />
+            </Field>
+            <Field label="active">
+              <div className="flex h-9 items-center">
+                <Switch
+                  checked={editing.active}
+                  onCheckedChange={(v) => setEditing({ ...editing, active: v })}
+                />
+              </div>
+            </Field>
           </div>
-          <div className="flex gap-3"><Button onClick={save}>save</Button><Button variant="outline" onClick={() => setEditing(null)}>cancel</Button></div>
+          <div className="flex gap-3">
+            <Button onClick={save}>save</Button>
+            <Button variant="outline" onClick={() => setEditing(null)}>
+              cancel
+            </Button>
+          </div>
         </div>
       )}
       <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead><tr className="text-left text-muted-foreground border-b border-border">
-          <th className="py-2">code</th><th>type</th><th>amount</th><th>used</th><th>active</th><th></th>
-        </tr></thead>
-        <tbody>
-          {rows.map((p) => (
-            <tr key={p.id} className="border-b border-border">
-              <td className="py-2 font-mono">{p.code}</td><td>{p.discount_type}</td>
-              <td className="num">{p.amount}{p.discount_type === "percent" ? "%" : ` ${p.currency ?? ""}`}</td>
-              <td className="num">{p.used_count}{p.usage_limit ? `/${p.usage_limit}` : ""}</td>
-              <td>{p.active ? "yes" : "no"}</td>
-              <td className="text-right">
-                <button onClick={() => setEditing(p)} className="link-red mr-3">edit</button>
-                <button onClick={() => remove(p.id!)} className="link-red">delete</button>
-              </td>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-muted-foreground border-b border-border">
+              <th className="py-2">code</th>
+              <th>type</th>
+              <th>amount</th>
+              <th>used</th>
+              <th>active</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((p) => (
+              <tr key={p.id} className="border-b border-border">
+                <td className="py-2 font-mono">{p.code}</td>
+                <td>{p.discount_type}</td>
+                <td className="num">
+                  {p.amount}
+                  {p.discount_type === "percent" ? "%" : ` ${p.currency ?? ""}`}
+                </td>
+                <td className="num">
+                  {p.used_count}
+                  {p.usage_limit ? `/${p.usage_limit}` : ""}
+                </td>
+                <td>{p.active ? "yes" : "no"}</td>
+                <td className="text-right">
+                  <button onClick={() => setEditing(p)} className="link-red mr-3">
+                    edit
+                  </button>
+                  <button onClick={() => remove(p.id!)} className="link-red">
+                    delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -1708,29 +2563,45 @@ function PromosTab() {
 function NewsletterTab() {
   const [rows, setRows] = useState<any[]>([]);
   useEffect(() => {
-    supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false })
+    supabase
+      .from("newsletter_subscribers")
+      .select("*")
+      .order("created_at", { ascending: false })
       .then(({ data }) => setRows(data ?? []));
   }, []);
   const csv = () => {
     const text = "email,created_at\n" + rows.map((r) => `${r.email},${r.created_at}`).join("\n");
     const blob = new Blob([text], { type: "text/csv" });
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "subscribers.csv"; a.click();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "subscribers.csv";
+    a.click();
   };
   return (
     <div className="py-6 space-y-4">
-      <div className="flex flex-wrap gap-3 items-center justify-between"><h2>{rows.length} subscribers</h2><Button onClick={csv} variant="outline">export CSV</Button></div>
+      <div className="flex flex-wrap gap-3 items-center justify-between">
+        <h2>{rows.length} subscribers</h2>
+        <Button onClick={csv} variant="outline">
+          export CSV
+        </Button>
+      </div>
       <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead><tr className="text-left text-muted-foreground border-b border-border"><th className="py-2">email</th><th>subscribed</th></tr></thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.id} className="border-b border-border">
-              <td className="py-2">{r.email}</td>
-              <td className="text-xs">{new Date(r.created_at).toLocaleDateString()}</td>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-muted-foreground border-b border-border">
+              <th className="py-2">email</th>
+              <th>subscribed</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.id} className="border-b border-border">
+                <td className="py-2">{r.email}</td>
+                <td className="text-xs">{new Date(r.created_at).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -1740,9 +2611,15 @@ function NewsletterTab() {
    SWATCH PALETTE — every dot, always visible, click to add/remove
    ============================================================ */
 const SWATCH_GROUP_LABELS: Record<SwatchGroup, string> = {
-  solid: "solid colours", "bi-color": "two-colour", "little-prince": "little prince", prints: "prints",
+  solid: "solid colours",
+  "bi-color": "two-colour",
+  "little-prince": "little prince",
+  prints: "prints",
 };
-function SwatchPalette({ selected, onToggle }: {
+function SwatchPalette({
+  selected,
+  onToggle,
+}: {
   selected: string[];
   onToggle: (item: { key: string; label: string; url: string }) => void;
 }) {
@@ -1751,21 +2628,31 @@ function SwatchPalette({ selected, onToggle }: {
     <div className="space-y-3 p-3 border border-border bg-background">
       {groups.map((g) => (
         <div key={g}>
-          <p className="text-[0.588rem] uppercase tracking-wider text-muted-foreground mb-1">{SWATCH_GROUP_LABELS[g]}</p>
+          <p className="text-[0.588rem] uppercase tracking-wider text-muted-foreground mb-1">
+            {SWATCH_GROUP_LABELS[g]}
+          </p>
           <div className="flex flex-wrap gap-2">
             {SWATCH_LIBRARY[g].map((item) => {
               const on = selected.includes(item.url);
               return (
                 <button
-                  key={item.key} type="button" title={item.label} aria-pressed={on}
+                  key={item.key}
+                  type="button"
+                  title={item.label}
+                  aria-pressed={on}
                   onClick={() => onToggle(item)}
                   className="flex w-14 flex-col items-center gap-1"
                 >
                   <img
-                    src={item.url} alt={item.label}
+                    src={item.url}
+                    alt={item.label}
                     className={`h-10 w-10 rounded-full object-cover border ${on ? "ring-2 ring-foreground ring-offset-2 border-foreground" : "border-border opacity-80 hover:opacity-100"}`}
                   />
-                  <span className={`text-[0.529rem] text-center leading-tight line-clamp-2 ${on ? "text-foreground" : "text-muted-foreground"}`}>{item.label}</span>
+                  <span
+                    className={`text-[0.529rem] text-center leading-tight line-clamp-2 ${on ? "text-foreground" : "text-muted-foreground"}`}
+                  >
+                    {item.label}
+                  </span>
                 </button>
               );
             })}
@@ -1779,7 +2666,11 @@ function SwatchPalette({ selected, onToggle }: {
 /* ============================================================
    SWATCH LIBRARY PICKER
    ============================================================ */
-function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: string; url: string }) => void }) {
+function SwatchLibraryPicker({
+  onPick,
+}: {
+  onPick: (item: { key: string; label: string; url: string }) => void;
+}) {
   const [open, setOpen] = useState(false);
   const [group, setGroup] = useState<SwatchGroup>("solid");
   const groups: SwatchGroup[] = ["solid", "bi-color", "little-prince", "prints"];
@@ -1798,7 +2689,9 @@ function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: 
               type="button"
               onClick={() => setGroup(g)}
               className={`text-[0.588rem] uppercase tracking-wider px-2 py-1 border ${
-                group === g ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
+                group === g
+                  ? "bg-foreground text-background border-foreground"
+                  : "border-border hover:border-foreground"
               }`}
             >
               {g.replace("-", " ")}
@@ -1811,11 +2704,20 @@ function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: 
               key={item.key}
               type="button"
               title={item.label}
-              onClick={() => { onPick(item); setOpen(false); }}
+              onClick={() => {
+                onPick(item);
+                setOpen(false);
+              }}
               className="flex flex-col items-center gap-1 p-1 rounded hover:bg-muted transition"
             >
-              <img src={item.url} alt={item.label} className="h-12 w-12 rounded-full object-cover border border-border" />
-              <span className="text-[0.529rem] text-center leading-tight text-muted-foreground line-clamp-2">{item.label}</span>
+              <img
+                src={item.url}
+                alt={item.label}
+                className="h-12 w-12 rounded-full object-cover border border-border"
+              />
+              <span className="text-[0.529rem] text-center leading-tight text-muted-foreground line-clamp-2">
+                {item.label}
+              </span>
             </button>
           ))}
         </div>
@@ -1824,12 +2726,18 @@ function SwatchLibraryPicker({ onPick }: { onPick: (item: { key: string; label: 
   );
 }
 
-
 /* ============================================================
    HOMEPAGE BANNERS
    ============================================================ */
 type BannerSlot = "hero" | "red" | "black" | "grey_large" | "grey_small";
-type BannerRow = { slot: BannerSlot; image_url: string | null; link_url: string | null; title: string | null; subtitle: string | null; cta_label: string | null };
+type BannerRow = {
+  slot: BannerSlot;
+  image_url: string | null;
+  link_url: string | null;
+  title: string | null;
+  subtitle: string | null;
+  cta_label: string | null;
+};
 const SLOT_META: { slot: BannerSlot; label: string; hint: string }[] = [
   { slot: "hero", label: "hero (top-left wide)", hint: "recommended ~1600×300" },
   { slot: "red", label: "top-right (red block)", hint: "recommended ~400×300" },
@@ -1841,8 +2749,13 @@ const SLOT_META: { slot: BannerSlot; label: string; hint: string }[] = [
 async function uploadBannerImage(file: File, slot: string): Promise<string | null> {
   const ext = file.name.split(".").pop() ?? "jpg";
   const path = `banners/${slot}-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from("product-media").upload(path, file, { upsert: true });
-  if (error) { toast.error(error.message); return null; }
+  const { error } = await supabase.storage
+    .from("product-media")
+    .upload(path, file, { upsert: true });
+  if (error) {
+    toast.error(error.message);
+    return null;
+  }
   const { data } = supabase.storage.from("product-media").getPublicUrl(path);
   return data.publicUrl;
 }
@@ -1852,23 +2765,48 @@ function BannersTab() {
   const [busy, setBusy] = useState<string | null>(null);
 
   const load = async () => {
-    const { data } = await supabase.from("homepage_banners").select("slot, image_url, link_url, title, subtitle, cta_label");
+    const { data } = await supabase
+      .from("homepage_banners")
+      .select("slot, image_url, link_url, title, subtitle, cta_label");
     const map = new Map<string, BannerRow>((data ?? []).map((r: any) => [r.slot, r as BannerRow]));
-    setRows(SLOT_META.map((m) => map.get(m.slot) ?? { slot: m.slot, image_url: null, link_url: null, title: null, subtitle: null, cta_label: null }));
+    setRows(
+      SLOT_META.map(
+        (m) =>
+          map.get(m.slot) ?? {
+            slot: m.slot,
+            image_url: null,
+            link_url: null,
+            title: null,
+            subtitle: null,
+            cta_label: null,
+          },
+      ),
+    );
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const save = async (slot: BannerSlot, patch: Partial<BannerRow>) => {
-    const current = rows.find((r) => r.slot === slot) ?? { slot, image_url: null, link_url: null, title: null, subtitle: null, cta_label: null };
+    const current = rows.find((r) => r.slot === slot) ?? {
+      slot,
+      image_url: null,
+      link_url: null,
+      title: null,
+      subtitle: null,
+      cta_label: null,
+    };
     const next = { ...current, ...patch, slot };
-    const { error } = await supabase.from("homepage_banners").upsert(next as any, { onConflict: "slot" });
+    const { error } = await supabase
+      .from("homepage_banners")
+      .upsert(next as any, { onConflict: "slot" });
     if (error) return toast.error(error.message);
     toast.success("saved");
     load();
   };
 
   const patchRow = (slot: BannerSlot, patch: Partial<BannerRow>) =>
-    setRows((prev) => prev.map((r) => r.slot === slot ? { ...r, ...patch } : r));
+    setRows((prev) => prev.map((r) => (r.slot === slot ? { ...r, ...patch } : r)));
 
   const onUpload = async (slot: BannerSlot, file: File) => {
     setBusy(slot);
@@ -1880,7 +2818,8 @@ function BannersTab() {
   return (
     <div className="py-6 space-y-4">
       <p className="text-sm text-muted-foreground">
-        upload promotional images and copy for each hero slot on the homepage. leave any field blank to fall back to the default.
+        upload promotional images and copy for each hero slot on the homepage. leave any field blank
+        to fall back to the default.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {SLOT_META.map((m) => {
@@ -1892,50 +2831,97 @@ function BannersTab() {
                 <div className="text-xs text-muted-foreground">{m.hint}</div>
               </div>
               <div className="aspect-[4/1] bg-muted border border-border overflow-hidden">
-                {row?.image_url
-                  ? <StoredImg src={row.image_url} alt={m.label} className="h-full w-full object-cover" />
-                  : <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">no image</div>}
+                {row?.image_url ? (
+                  <StoredImg
+                    src={row.image_url}
+                    alt={m.label}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">
+                    no image
+                  </div>
+                )}
               </div>
               <div className="flex gap-2">
                 <label className="inline-flex items-center gap-2 text-xs border border-input px-3 py-2 cursor-pointer hover:bg-muted">
                   <ImageIcon className="h-3 w-3" />
                   {busy === m.slot ? "uploading…" : "upload image"}
-                  <input type="file" accept="image/*" className="hidden"
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(m.slot, f); e.currentTarget.value = ""; }} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) onUpload(m.slot, f);
+                      e.currentTarget.value = "";
+                    }}
+                  />
                 </label>
                 {row?.image_url && (
-                  <Button variant="outline" size="sm" onClick={() => save(m.slot, { image_url: null })}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => save(m.slot, { image_url: null })}
+                  >
                     <X className="h-3 w-3 mr-1" /> remove
                   </Button>
                 )}
               </div>
               <div className="grid grid-cols-1 gap-2">
                 <div>
-                  <Label className="text-xs text-muted-foreground mb-1 block">title (optional)</Label>
-                  <Input value={row?.title ?? ""} placeholder="e.g. new arrivals"
-                    onChange={(e) => patchRow(m.slot, { title: e.target.value })} />
+                  <Label className="text-xs text-muted-foreground mb-1 block">
+                    title (optional)
+                  </Label>
+                  <Input
+                    value={row?.title ?? ""}
+                    placeholder="e.g. new arrivals"
+                    onChange={(e) => patchRow(m.slot, { title: e.target.value })}
+                  />
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground mb-1 block">subtitle (optional)</Label>
-                  <Input value={row?.subtitle ?? ""} placeholder="short line beneath the title"
-                    onChange={(e) => patchRow(m.slot, { subtitle: e.target.value })} />
+                  <Label className="text-xs text-muted-foreground mb-1 block">
+                    subtitle (optional)
+                  </Label>
+                  <Input
+                    value={row?.subtitle ?? ""}
+                    placeholder="short line beneath the title"
+                    onChange={(e) => patchRow(m.slot, { subtitle: e.target.value })}
+                  />
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground mb-1 block">cta label (optional)</Label>
-                  <Input value={row?.cta_label ?? ""} placeholder="e.g. shop now"
-                    onChange={(e) => patchRow(m.slot, { cta_label: e.target.value })} />
+                  <Label className="text-xs text-muted-foreground mb-1 block">
+                    cta label (optional)
+                  </Label>
+                  <Input
+                    value={row?.cta_label ?? ""}
+                    placeholder="e.g. shop now"
+                    onChange={(e) => patchRow(m.slot, { cta_label: e.target.value })}
+                  />
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground mb-1 block">link url (optional)</Label>
-                  <Input value={row?.link_url ?? ""} placeholder="/innovation or https://…"
-                    onChange={(e) => patchRow(m.slot, { link_url: e.target.value })} />
+                  <Label className="text-xs text-muted-foreground mb-1 block">
+                    link url (optional)
+                  </Label>
+                  <Input
+                    value={row?.link_url ?? ""}
+                    placeholder="/innovation or https://…"
+                    onChange={(e) => patchRow(m.slot, { link_url: e.target.value })}
+                  />
                 </div>
-                <Button size="sm" onClick={() => save(m.slot, {
-                  title: row?.title || null,
-                  subtitle: row?.subtitle || null,
-                  cta_label: row?.cta_label || null,
-                  link_url: row?.link_url || null,
-                })}>save text</Button>
+                <Button
+                  size="sm"
+                  onClick={() =>
+                    save(m.slot, {
+                      title: row?.title || null,
+                      subtitle: row?.subtitle || null,
+                      cta_label: row?.cta_label || null,
+                      link_url: row?.link_url || null,
+                    })
+                  }
+                >
+                  save text
+                </Button>
               </div>
             </div>
           );
@@ -1970,8 +2956,13 @@ const JOURNEY_KINDS: { key: JourneyKind; label: string }[] = [
 async function uploadJourneyImage(file: File, kind: string): Promise<string | null> {
   const ext = file.name.split(".").pop() ?? "jpg";
   const path = `journey/${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
-  const { error } = await supabase.storage.from("product-media").upload(path, file, { upsert: false });
-  if (error) { toast.error(error.message); return null; }
+  const { error } = await supabase.storage
+    .from("product-media")
+    .upload(path, file, { upsert: false });
+  if (error) {
+    toast.error(error.message);
+    return null;
+  }
   const { data } = supabase.storage.from("product-media").getPublicUrl(path);
   return data.publicUrl;
 }
@@ -1984,11 +2975,19 @@ function JourneyTab() {
     const { data } = await supabase.from("journey_items").select("*").order("sort_order");
     setRows((data ?? []) as JourneyRow[]);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const add = async () => {
     const { error } = await supabase.from("journey_items").insert({
-      kind, title: "new item", subtitle: null, url: null, image_url: null, sort_order: rows.length, active: true,
+      kind,
+      title: "new item",
+      subtitle: null,
+      url: null,
+      image_url: null,
+      sort_order: rows.length,
+      active: true,
     });
     if (error) return toast.error(error.message);
     load();
@@ -2013,58 +3012,110 @@ function JourneyTab() {
     <div className="py-6 space-y-6">
       <div className="flex flex-wrap gap-2 items-center">
         {JOURNEY_KINDS.map((k) => (
-          <button key={k.key} onClick={() => setKind(k.key)}
-            className={`text-xs px-3 py-1.5 border ${kind === k.key ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"}`}>
+          <button
+            key={k.key}
+            onClick={() => setKind(k.key)}
+            className={`text-xs px-3 py-1.5 border ${kind === k.key ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"}`}
+          >
             {k.label}
           </button>
         ))}
-        <div className="ml-auto"><Button size="sm" onClick={add}><Plus className="h-3 w-3 mr-1" />add {kind}</Button></div>
+        <div className="ml-auto">
+          <Button size="sm" onClick={add}>
+            <Plus className="h-3 w-3 mr-1" />
+            add {kind}
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-3">
-        {filtered.length === 0 && <p className="text-xs text-muted-foreground">no items yet. click "add {kind}".</p>}
+        {filtered.length === 0 && (
+          <p className="text-xs text-muted-foreground">no items yet. click "add {kind}".</p>
+        )}
         {filtered.map((r) => (
-          <div key={r.id} className="border border-border bg-card p-4 grid grid-cols-1 md:grid-cols-[120px_1fr_auto] gap-4 items-start">
+          <div
+            key={r.id}
+            className="border border-border bg-card p-4 grid grid-cols-1 md:grid-cols-[120px_1fr_auto] gap-4 items-start"
+          >
             <div className="space-y-2">
               <div className="aspect-video bg-muted overflow-hidden">
-                {r.image_url ? <StoredImg src={r.image_url} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>}
+                {r.image_url ? (
+                  <StoredImg src={r.image_url} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center">
+                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                )}
               </div>
               <label className="text-[0.588rem] block cursor-pointer hover:text-primary">
                 upload image
-                <input type="file" accept="image/*" className="hidden"
-                  onChange={async (e) => { const f = e.target.files?.[0]; if (!f) return; const u = await uploadJourneyImage(f, r.kind); if (u) update(r.id!, { image_url: u }); }} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    const u = await uploadJourneyImage(f, r.kind);
+                    if (u) update(r.id!, { image_url: u });
+                  }}
+                />
               </label>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <div>
                 <Label className="text-xs text-muted-foreground mb-1 block">title</Label>
-                <Input defaultValue={r.title} onBlur={(e) => e.target.value !== r.title && update(r.id!, { title: e.target.value })} />
+                <Input
+                  defaultValue={r.title}
+                  onBlur={(e) =>
+                    e.target.value !== r.title && update(r.id!, { title: e.target.value })
+                  }
+                />
               </div>
               <div>
                 <Label className="text-xs text-muted-foreground mb-1 block">subtitle</Label>
-                <Input defaultValue={r.subtitle ?? ""} onBlur={(e) => update(r.id!, { subtitle: e.target.value || null })} />
+                <Input
+                  defaultValue={r.subtitle ?? ""}
+                  onBlur={(e) => update(r.id!, { subtitle: e.target.value || null })}
+                />
               </div>
               <div className="md:col-span-2">
-                <Label className="text-xs text-muted-foreground mb-1 block">url (youtube / external / product page)</Label>
-                <Input defaultValue={r.url ?? ""} placeholder="https://…" onBlur={(e) => update(r.id!, { url: e.target.value || null })} />
+                <Label className="text-xs text-muted-foreground mb-1 block">
+                  url (youtube / external / product page)
+                </Label>
+                <Input
+                  defaultValue={r.url ?? ""}
+                  placeholder="https://…"
+                  onBlur={(e) => update(r.id!, { url: e.target.value || null })}
+                />
               </div>
               <div>
                 <Label className="text-xs text-muted-foreground mb-1 block">sort order</Label>
-                <Input type="number" defaultValue={r.sort_order} onBlur={(e) => update(r.id!, { sort_order: Number(e.target.value) })} />
+                <Input
+                  type="number"
+                  defaultValue={r.sort_order}
+                  onBlur={(e) => update(r.id!, { sort_order: Number(e.target.value) })}
+                />
               </div>
               <div>
                 <Label className="text-xs text-muted-foreground mb-1 block">active</Label>
-                <div className="flex items-center h-9"><Switch checked={r.active} onCheckedChange={(v) => update(r.id!, { active: v })} /></div>
+                <div className="flex items-center h-9">
+                  <Switch
+                    checked={r.active}
+                    onCheckedChange={(v) => update(r.id!, { active: v })}
+                  />
+                </div>
               </div>
             </div>
-            <button onClick={() => remove(r.id!)} className="link-red text-xs">delete</button>
+            <button onClick={() => remove(r.id!)} className="link-red text-xs">
+              delete
+            </button>
           </div>
         ))}
       </div>
     </div>
   );
 }
-
 
 /* ============================================================
    MY JOURNEY — BLOG / JOURNAL CMS
@@ -2073,8 +3124,13 @@ function JourneyTab() {
 async function uploadJournalImage(file: File): Promise<string | null> {
   const ext = file.name.split(".").pop() ?? "jpg";
   const path = `journal/${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
-  const { error } = await supabase.storage.from("product-media").upload(path, file, { upsert: false });
-  if (error) { toast.error(error.message); return null; }
+  const { error } = await supabase.storage
+    .from("product-media")
+    .upload(path, file, { upsert: false });
+  if (error) {
+    toast.error(error.message);
+    return null;
+  }
   const { data } = supabase.storage.from("product-media").getPublicUrl(path);
   return data.publicUrl;
 }
@@ -2120,7 +3176,9 @@ function JourneyPostsTab() {
       })) as JourneyPost[],
     );
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const save = async (draft: PostDraft) => {
     if (!draft.title.trim()) return toast.error("a title is required");
@@ -2168,7 +3226,14 @@ function JourneyPostsTab() {
   };
 
   if (editing) {
-    return <PostEditor draft={editing} onChange={setEditing} onSave={save} onCancel={() => setEditing(null)} />;
+    return (
+      <PostEditor
+        draft={editing}
+        onChange={setEditing}
+        onSave={save}
+        onCancel={() => setEditing(null)}
+      />
+    );
   }
 
   return (
@@ -2179,7 +3244,8 @@ function JourneyPostsTab() {
       >
         <div className="flex justify-end mb-4">
           <Button size="sm" onClick={() => setEditing(blankPost())}>
-            <Plus className="h-3 w-3 mr-1" />new post
+            <Plus className="h-3 w-3 mr-1" />
+            new post
           </Button>
         </div>
 
@@ -2192,10 +3258,17 @@ function JourneyPostsTab() {
 
         <div className="space-y-2">
           {posts.map((p) => (
-            <div key={p.id} className="border border-border bg-card p-3 flex flex-wrap items-center gap-4">
+            <div
+              key={p.id}
+              className="border border-border bg-card p-3 flex flex-wrap items-center gap-4"
+            >
               <div className="h-14 w-20 shrink-0 bg-muted overflow-hidden">
                 {p.cover_image_url ? (
-                  <StoredImg src={p.cover_image_url} alt="" className="h-full w-full object-cover" />
+                  <StoredImg
+                    src={p.cover_image_url}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
                   <div className="h-full w-full flex items-center justify-center">
                     <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -2215,7 +3288,9 @@ function JourneyPostsTab() {
                 <p className="text-[0.588rem] text-muted-foreground mt-0.5">
                   {p.images.length} image{p.images.length === 1 ? "" : "s"}
                   {p.video_url ? " · video" : ""}
-                  {p.links.length > 0 ? ` · ${p.links.length} link${p.links.length === 1 ? "" : "s"}` : ""}
+                  {p.links.length > 0
+                    ? ` · ${p.links.length} link${p.links.length === 1 ? "" : "s"}`
+                    : ""}
                 </p>
               </div>
               <div className="flex items-center gap-2 text-xs">
@@ -2225,8 +3300,12 @@ function JourneyPostsTab() {
                 <Switch checked={p.published} onCheckedChange={() => togglePublished(p)} />
               </div>
               <div className="flex items-center gap-3 text-xs">
-                <button className="link-red" onClick={() => setEditing({ ...p })}>edit</button>
-                <button className="link-red" onClick={() => remove(p.id, p.title)}>delete</button>
+                <button className="link-red" onClick={() => setEditing({ ...p })}>
+                  edit
+                </button>
+                <button className="link-red" onClick={() => remove(p.id, p.title)}>
+                  delete
+                </button>
               </div>
             </div>
           ))}
@@ -2236,7 +3315,12 @@ function JourneyPostsTab() {
   );
 }
 
-function PostEditor({ draft, onChange, onSave, onCancel }: {
+function PostEditor({
+  draft,
+  onChange,
+  onSave,
+  onCancel,
+}: {
   draft: PostDraft;
   onChange: (d: PostDraft) => void;
   onSave: (d: PostDraft) => void;
@@ -2259,7 +3343,9 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
   return (
     <div className="py-6 space-y-6">
       <div className="flex items-center gap-4">
-        <button onClick={onCancel} className="text-xs link-red">← back to posts</button>
+        <button onClick={onCancel} className="text-xs link-red">
+          ← back to posts
+        </button>
         <div className="ml-auto flex items-center gap-3">
           <div className="flex items-center gap-2 text-xs">
             <span className="text-muted-foreground">{draft.published ? "published" : "draft"}</span>
@@ -2271,7 +3357,10 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
         </div>
       </div>
 
-      <Section title={draft.id ? "edit post" : "new post"} subtitle="the event year decides where this entry sits on the page.">
+      <Section
+        title={draft.id ? "edit post" : "new post"}
+        subtitle="the event year decides where this entry sits on the page."
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <Field label="title">
@@ -2314,7 +3403,9 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
               className="h-9 w-full border border-input bg-background px-3 text-sm"
             >
               {JOURNEY_POST_KINDS.map((k) => (
-                <option key={k.key} value={k.key}>{k.label}</option>
+                <option key={k.key} value={k.key}>
+                  {k.label}
+                </option>
               ))}
             </select>
           </Field>
@@ -2343,7 +3434,11 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
               <div className="flex items-start gap-4">
                 <div className="h-24 w-36 shrink-0 bg-muted overflow-hidden">
                   {draft.cover_image_url ? (
-                    <StoredImg src={draft.cover_image_url} alt="" className="h-full w-full object-cover" />
+                    <StoredImg
+                      src={draft.cover_image_url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <div className="h-full w-full flex items-center justify-center">
                       <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -2353,13 +3448,19 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
                 <div className="space-y-2">
                   <label className="text-xs block cursor-pointer link-red">
                     upload cover image
-                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
-                      const f = e.target.files?.[0]; if (!f) return;
-                      setBusy(true);
-                      const url = await uploadJournalImage(f);
-                      setBusy(false);
-                      if (url) set({ cover_image_url: url });
-                    }} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const f = e.target.files?.[0];
+                        if (!f) return;
+                        setBusy(true);
+                        const url = await uploadJournalImage(f);
+                        setBusy(false);
+                        if (url) set({ cover_image_url: url });
+                      }}
+                    />
                   </label>
                   <Input
                     value={draft.cover_image_url ?? ""}
@@ -2367,7 +3468,10 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
                     onChange={(e) => set({ cover_image_url: e.target.value || null })}
                   />
                   {draft.cover_image_url && (
-                    <button className="text-xs link-red" onClick={() => set({ cover_image_url: null })}>
+                    <button
+                      className="text-xs link-red"
+                      onClick={() => set({ cover_image_url: null })}
+                    >
                       remove cover image
                     </button>
                   )}
@@ -2381,13 +3485,23 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
               <div className="space-y-3">
                 <label className="text-xs inline-block cursor-pointer link-red">
                   upload images
-                  <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
-                    if (e.target.files?.length) addImages(e.target.files);
-                  }} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files?.length) addImages(e.target.files);
+                    }}
+                  />
                 </label>
                 {draft.images.map((img, i) => (
                   <div key={i} className="flex items-start gap-3 border border-border p-2">
-                    <StoredImg src={img.url} alt="" className="h-16 w-24 shrink-0 object-cover bg-muted" />
+                    <StoredImg
+                      src={img.url}
+                      alt=""
+                      className="h-16 w-24 shrink-0 object-cover bg-muted"
+                    />
                     <Input
                       value={img.caption ?? ""}
                       placeholder="caption (optional)"
@@ -2406,11 +3520,15 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
                           [next[i - 1], next[i]] = [next[i], next[i - 1]];
                           set({ images: next });
                         }}
-                      >move up</button>
+                      >
+                        move up
+                      </button>
                       <button
                         className="text-[0.588rem] link-red"
                         onClick={() => set({ images: draft.images.filter((_, j) => j !== i) })}
-                      >remove</button>
+                      >
+                        remove
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -2454,13 +3572,17 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
                     <button
                       className="text-xs link-red shrink-0"
                       onClick={() => set({ links: draft.links.filter((_, j) => j !== i) })}
-                    >remove</button>
+                    >
+                      remove
+                    </button>
                   </div>
                 ))}
                 <button
                   className="text-xs link-red"
                   onClick={() => set({ links: [...draft.links, { label: "", url: "" }] })}
-                >+ add a link</button>
+                >
+                  + add a link
+                </button>
               </div>
             </Field>
           </div>
@@ -2482,8 +3604,12 @@ function PostEditor({ draft, onChange, onSave, onCancel }: {
         </div>
 
         <div className="flex gap-3 mt-6">
-          <Button disabled={busy} onClick={() => onSave(draft)}>{busy ? "uploading…" : "save post"}</Button>
-          <Button variant="outline" onClick={onCancel}>cancel</Button>
+          <Button disabled={busy} onClick={() => onSave(draft)}>
+            {busy ? "uploading…" : "save post"}
+          </Button>
+          <Button variant="outline" onClick={onCancel}>
+            cancel
+          </Button>
         </div>
       </Section>
     </div>
@@ -2501,12 +3627,20 @@ async function uploadSectionMedia(file: File, kind: "image" | "video"): Promise<
     upsert: false,
     contentType: file.type || undefined,
   });
-  if (error) { toast.error(error.message); return null; }
+  if (error) {
+    toast.error(error.message);
+    return null;
+  }
   return supabase.storage.from("product-media").getPublicUrl(path).data.publicUrl;
 }
 
 /** Ordered list of image or video URLs with multi-file upload, reorder and remove. */
-function MediaListEditor({ kind, items, onChange, single = false }: {
+function MediaListEditor({
+  kind,
+  items,
+  onChange,
+  single = false,
+}: {
   kind: "image" | "video";
   items: string[];
   onChange: (urls: string[]) => void;
@@ -2532,7 +3666,9 @@ function MediaListEditor({ kind, items, onChange, single = false }: {
     setUploading(false);
     if (!added.length) return;
     onChange(single ? added : [...items.filter(Boolean), ...added]);
-    toast.success(`${added.length} ${kind}${added.length === 1 ? "" : "s"} uploaded — remember to save the section`);
+    toast.success(
+      `${added.length} ${kind}${added.length === 1 ? "" : "s"} uploaded — remember to save the section`,
+    );
   };
 
   return (
@@ -2547,26 +3683,55 @@ function MediaListEditor({ kind, items, onChange, single = false }: {
           />
           {!single && (
             <>
-              <button type="button" className="text-xs link-red disabled:opacity-30" disabled={i === 0} onClick={() => move(i, -1)}>up</button>
-              <button type="button" className="text-xs link-red disabled:opacity-30" disabled={i === items.length - 1} onClick={() => move(i, 1)}>down</button>
+              <button
+                type="button"
+                className="text-xs link-red disabled:opacity-30"
+                disabled={i === 0}
+                onClick={() => move(i, -1)}
+              >
+                up
+              </button>
+              <button
+                type="button"
+                className="text-xs link-red disabled:opacity-30"
+                disabled={i === items.length - 1}
+                onClick={() => move(i, 1)}
+              >
+                down
+              </button>
             </>
           )}
-          <button type="button" className="text-xs link-red shrink-0" onClick={() => onChange(items.filter((_, j) => j !== i))}>remove</button>
+          <button
+            type="button"
+            className="text-xs link-red shrink-0"
+            onClick={() => onChange(items.filter((_, j) => j !== i))}
+          >
+            remove
+          </button>
         </div>
       ))}
       <div className="flex flex-wrap items-center gap-4">
-        <label className={`text-xs cursor-pointer link-red ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+        <label
+          className={`text-xs cursor-pointer link-red ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+        >
           {uploading ? "uploading…" : single ? `upload ${kind}` : `+ upload ${kind}s`}
           <input
             type="file"
             accept={`${kind}/*`}
             multiple={!single}
             className="hidden"
-            onChange={(e) => { onFiles(e.target.files); e.target.value = ""; }}
+            onChange={(e) => {
+              onFiles(e.target.files);
+              e.target.value = "";
+            }}
           />
         </label>
         {!(single && items.length) && (
-          <button type="button" className="text-xs link-red" onClick={() => onChange([...items, ""])}>
+          <button
+            type="button"
+            className="text-xs link-red"
+            onClick={() => onChange([...items, ""])}
+          >
             {kind === "video" ? "+ paste a YouTube / Vimeo link" : "+ paste an image url"}
           </button>
         )}
@@ -2612,7 +3777,11 @@ function ensureBioSection() {
       .order("sort_order")
       .order("created_at")
       .limit(1);
-    if (data?.[0]) await supabase.from("page_sections").update({ page: DESIGN_PATH_BIO_PAGE }).eq("id", data[0].id);
+    if (data?.[0])
+      await supabase
+        .from("page_sections")
+        .update({ page: DESIGN_PATH_BIO_PAGE })
+        .eq("id", data[0].id);
   })();
   return bioMove;
 }
@@ -2662,32 +3831,42 @@ function PageSectionsTab({
     if (error) return toast.error(error.message);
     const all = (data ?? []).map((r) => toPageSection(r));
     // Same order as the live page: pinned first section (design path bio), then newest first.
-    setRows(pinFirst ? [...all.slice(0, 1), ...all.slice(1).sort(newestFirst)] : all.sort(newestFirst));
+    setRows(
+      pinFirst ? [...all.slice(0, 1), ...all.slice(1).sort(newestFirst)] : all.sort(newestFirst),
+    );
   };
-  useEffect(() => { load(); }, [page]);
+  useEffect(() => {
+    load();
+  }, [page]);
 
   // Scroll to a section that was just added so it can be filled in straight away.
   const [focusId, setFocusId] = useState<string | null>(null);
   useEffect(() => {
     if (!focusId) return;
-    document.getElementById(`section-${focusId}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(`section-${focusId}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [focusId, rows]);
 
   const add = async () => {
-    const { data, error } = await supabase.from("page_sections").insert({
-      page,
-      eyebrow: null,
-      heading: "new section",
-      subheading: null,
-      body: null,
-      image_url: null,
-      images: [] as unknown as Json,
-      video_urls: [],
-      entry_date: new Date().toISOString().slice(0, 10),
-      links: [] as unknown as Json,
-      sort_order: rows.length,
-      active: true,
-    }).select("id").single();
+    const { data, error } = await supabase
+      .from("page_sections")
+      .insert({
+        page,
+        eyebrow: null,
+        heading: "new section",
+        subheading: null,
+        body: null,
+        image_url: null,
+        images: [] as unknown as Json,
+        video_urls: [],
+        entry_date: new Date().toISOString().slice(0, 10),
+        links: [] as unknown as Json,
+        sort_order: rows.length,
+        active: true,
+      })
+      .select("id")
+      .single();
     if (error) return toast.error(error.message);
     await load();
     setFocusId(data.id);
@@ -2695,22 +3874,25 @@ function PageSectionsTab({
 
   const save = async (row: SectionDraft) => {
     if (!row.id) return;
-    const { error } = await supabase.from("page_sections").update({
-      eyebrow: row.eyebrow?.trim() || null,
-      heading: row.heading?.trim() || null,
-      subheading: row.subheading?.trim() || null,
-      body: row.body || null,
-      images: row.images
-        .map((i) => ({ ...i, url: normalizeUrl(i.url) ?? "" }))
-        .filter((i) => i.url) as unknown as Json,
-      // Legacy single-image column mirrors the first gallery image.
-      image_url: normalizeUrl(row.images[0]?.url) ?? null,
-      video_urls: row.video_urls.map((v) => v.trim()).filter(Boolean),
-      entry_date: row.entry_date || null,
-      links: row.links.map((l) => ({ ...l, url: normalizeUrl(l.url) ?? "" })) as unknown as Json,
-      sort_order: Number(row.sort_order) || 0,
-      active: row.active,
-    }).eq("id", row.id);
+    const { error } = await supabase
+      .from("page_sections")
+      .update({
+        eyebrow: row.eyebrow?.trim() || null,
+        heading: row.heading?.trim() || null,
+        subheading: row.subheading?.trim() || null,
+        body: row.body || null,
+        images: row.images
+          .map((i) => ({ ...i, url: normalizeUrl(i.url) ?? "" }))
+          .filter((i) => i.url) as unknown as Json,
+        // Legacy single-image column mirrors the first gallery image.
+        image_url: normalizeUrl(row.images[0]?.url) ?? null,
+        video_urls: row.video_urls.map((v) => v.trim()).filter(Boolean),
+        entry_date: row.entry_date || null,
+        links: row.links.map((l) => ({ ...l, url: normalizeUrl(l.url) ?? "" })) as unknown as Json,
+        sort_order: Number(row.sort_order) || 0,
+        active: row.active,
+      })
+      .eq("id", row.id);
     if (error) return toast.error(error.message);
     toast.success("section saved");
     load();
@@ -2722,10 +3904,13 @@ function PageSectionsTab({
     const target = rows.find((r) => r.id === targetId);
     if (!img || !target || !draft.id) return;
     const images = [...target.images, img];
-    const { error } = await supabase.from("page_sections").update({
-      images: images as unknown as Json,
-      image_url: normalizeUrl(images[0]?.url) ?? null,
-    }).eq("id", targetId);
+    const { error } = await supabase
+      .from("page_sections")
+      .update({
+        images: images as unknown as Json,
+        image_url: normalizeUrl(images[0]?.url) ?? null,
+      })
+      .eq("id", targetId);
     if (error) return toast.error(error.message);
     await save({ ...draft, images: draft.images.filter((_, j) => j !== index) });
     toast.success(`picture moved to "${target.heading || "untitled"}"`);
@@ -2733,18 +3918,39 @@ function PageSectionsTab({
 
   /** Copy the old product-style science behind posts (products tab) into write-ups. */
   const copyOldPosts = async () => {
-    const { data, error } = await supabase.from("products").select("*").eq("category", "vegan-tech").order("display_order");
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("category", "vegan-tech")
+      .order("display_order");
     if (error) return toast.error(error.message);
     const have = new Set(rows.map((r) => (r.heading ?? "").trim().toLowerCase()));
     const fresh = (data ?? []).filter((p) => !have.has(p.name.trim().toLowerCase()));
     if (!fresh.length) return toast("nothing new to copy — every old post is already here");
-    if (!confirm(`copy ${fresh.length} old post${fresh.length === 1 ? "" : "s"} (${fresh.map((p) => p.name).join(", ")}) into write-ups? the old posts stay in the products tab; you can delete them after.`)) return;
-    const usable = (u: string | null | undefined): u is string => !!u && !u.startsWith("/src/") && !/\.(psd|ai|tiff?|heic)$/i.test(u);
+    if (
+      !confirm(
+        `copy ${fresh.length} old post${fresh.length === 1 ? "" : "s"} (${fresh.map((p) => p.name).join(", ")}) into write-ups? the old posts stay in the products tab; you can delete them after.`,
+      )
+    )
+      return;
+    const usable = (u: string | null | undefined): u is string =>
+      !!u && !u.startsWith("/src/") && !/\.(psd|ai|tiff?|heic)$/i.test(u);
     const payload = fresh.map((p, i) => {
-      const row = p as unknown as Record<string, unknown> & { gallery_urls?: string[]; image_url?: string | null; video_urls?: string[] };
+      const row = p as unknown as Record<string, unknown> & {
+        gallery_urls?: string[];
+        image_url?: string | null;
+        video_urls?: string[];
+      };
       const urls = (row.gallery_urls?.length ? row.gallery_urls : [row.image_url]).filter(usable);
-      const text = ["description", "tech_info", "design_features", "composition", "care_instructions"]
-        .map((k) => row[k]).filter((t): t is string => typeof t === "string" && !!t.trim());
+      const text = [
+        "description",
+        "tech_info",
+        "design_features",
+        "composition",
+        "care_instructions",
+      ]
+        .map((k) => row[k])
+        .filter((t): t is string => typeof t === "string" && !!t.trim());
       return {
         page,
         eyebrow: null,
@@ -2762,7 +3968,9 @@ function PageSectionsTab({
     });
     const { error: insErr } = await supabase.from("page_sections").insert(payload);
     if (insErr) return toast.error(insErr.message);
-    toast.success("copied — now type the words beside each picture, and move pictures that belong to another technology");
+    toast.success(
+      "copied — now type the words beside each picture, and move pictures that belong to another technology",
+    );
     load();
   };
 
@@ -2777,8 +3985,17 @@ function PageSectionsTab({
     <div className="py-6 space-y-6">
       <Section title={title} subtitle={subtitle}>
         <div className="flex justify-end gap-2 mb-4">
-          {importOld && <Button size="sm" variant="outline" onClick={copyOldPosts}>copy the old posts here</Button>}
-          {!(single && rows.length > 0) && <Button size="sm" onClick={add}><Plus className="h-3 w-3 mr-1" />add section</Button>}
+          {importOld && (
+            <Button size="sm" variant="outline" onClick={copyOldPosts}>
+              copy the old posts here
+            </Button>
+          )}
+          {!(single && rows.length > 0) && (
+            <Button size="sm" onClick={add}>
+              <Plus className="h-3 w-3 mr-1" />
+              add section
+            </Button>
+          )}
         </div>
 
         {loading && <p className="text-xs text-muted-foreground">loading…</p>}
@@ -2798,7 +4015,13 @@ function PageSectionsTab({
               onSave={save}
               onDelete={() => remove(row.id)}
               captions={captions}
-              moveTargets={captions ? rows.filter((r) => r.id !== row.id).map((r) => ({ id: r.id, heading: r.heading || "untitled" })) : []}
+              moveTargets={
+                captions
+                  ? rows
+                      .filter((r) => r.id !== row.id)
+                      .map((r) => ({ id: r.id, heading: r.heading || "untitled" }))
+                  : []
+              }
               onMoveImage={moveImage}
             />
           ))}
@@ -2808,7 +4031,18 @@ function PageSectionsTab({
   );
 }
 
-function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, onSave, onDelete, captions = false, moveTargets = [], onMoveImage }: {
+function SectionEditor({
+  row,
+  isFirst,
+  firstLabel,
+  restLabel,
+  firstImageLabel,
+  onSave,
+  onDelete,
+  captions = false,
+  moveTargets = [],
+  onMoveImage,
+}: {
   row: PageSection;
   isFirst: boolean;
   firstLabel: string;
@@ -2821,10 +4055,15 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
   onMoveImage?: (draft: SectionDraft, index: number, targetId: string) => void;
 }) {
   const [draft, setDraft] = useState<PageSection>(row);
-  useEffect(() => { setDraft(row); }, [row]);
+  useEffect(() => {
+    setDraft(row);
+  }, [row]);
   const set = (patch: Partial<PageSection>) => setDraft({ ...draft, ...patch });
   return (
-    <div id={`section-${row.id}`} className="border border-border bg-card p-4 space-y-4 scroll-mt-24">
+    <div
+      id={`section-${row.id}`}
+      className="border border-border bg-card p-4 space-y-4 scroll-mt-24"
+    >
       <div className="flex items-center gap-3">
         <span className="text-[0.588rem] tracking-[0.2em] uppercase text-primary">
           {isFirst ? firstLabel : restLabel}
@@ -2832,7 +4071,9 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
         <div className="ml-auto flex items-center gap-3 text-xs">
           <span className="text-muted-foreground">{draft.active ? "visible" : "hidden"}</span>
           <Switch checked={draft.active} onCheckedChange={(v) => set({ active: v })} />
-          <button className="link-red" onClick={onDelete}>delete</button>
+          <button className="link-red" onClick={onDelete}>
+            delete
+          </button>
         </div>
       </div>
 
@@ -2844,20 +4085,42 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
           <Input value={draft.heading ?? ""} onChange={(e) => set({ heading: e.target.value })} />
         </Field>
         <Field label="subheading">
-          <Input value={draft.subheading ?? ""} onChange={(e) => set({ subheading: e.target.value })} />
+          <Input
+            value={draft.subheading ?? ""}
+            onChange={(e) => set({ subheading: e.target.value })}
+          />
         </Field>
       </div>
 
       <Field label="body — leave a blank line between paragraphs">
-        <Textarea rows={10} value={draft.body ?? ""} onChange={(e) => set({ body: e.target.value })} />
+        <Textarea
+          rows={10}
+          value={draft.body ?? ""}
+          onChange={(e) => set({ body: e.target.value })}
+        />
       </Field>
 
-      <Field label={captions ? "pictures — upload as many as you like; type the words for each one below" : isFirst ? firstImageLabel : "pictures — upload as many as you like; they scroll sideways on the page"}>
+      <Field
+        label={
+          captions
+            ? "pictures — upload as many as you like; type the words for each one below"
+            : isFirst
+              ? firstImageLabel
+              : "pictures — upload as many as you like; they scroll sideways on the page"
+        }
+      >
         <MediaListEditor
           kind="image"
           items={draft.images.map((i) => i.url)}
           single={isFirst && !captions}
-          onChange={(urls) => set({ images: urls.map((url) => ({ url, caption: draft.images.find((i) => i.url === url)?.caption ?? null })) })}
+          onChange={(urls) =>
+            set({
+              images: urls.map((url) => ({
+                url,
+                caption: draft.images.find((i) => i.url === url)?.caption ?? null,
+              })),
+            })
+          }
         />
       </Field>
 
@@ -2872,7 +4135,13 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
                   className="flex-1"
                   placeholder={`words for picture ${i + 1}`}
                   value={img.caption ?? ""}
-                  onChange={(e) => set({ images: draft.images.map((x, j) => (j === i ? { ...x, caption: e.target.value } : x)) })}
+                  onChange={(e) =>
+                    set({
+                      images: draft.images.map((x, j) =>
+                        j === i ? { ...x, caption: e.target.value } : x,
+                      ),
+                    })
+                  }
                 />
                 {moveTargets.length > 0 && onMoveImage && (
                   <select
@@ -2881,11 +4150,21 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
                     value=""
                     onChange={(e) => {
                       const t = moveTargets.find((m) => m.id === e.target.value);
-                      if (t && confirm(`move this picture (and its words) to "${t.heading}"? this write-up is saved at the same time.`)) onMoveImage(draft, i, t.id);
+                      if (
+                        t &&
+                        confirm(
+                          `move this picture (and its words) to "${t.heading}"? this write-up is saved at the same time.`,
+                        )
+                      )
+                        onMoveImage(draft, i, t.id);
                     }}
                   >
                     <option value="">move to…</option>
-                    {moveTargets.map((m) => <option key={m.id} value={m.id}>{m.heading}</option>)}
+                    {moveTargets.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.heading}
+                      </option>
+                    ))}
                   </select>
                 )}
               </div>
@@ -2896,7 +4175,11 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
 
       {(!isFirst || captions) && (
         <Field label="videos — upload a video file or paste a YouTube / Vimeo link">
-          <MediaListEditor kind="video" items={draft.video_urls} onChange={(urls) => set({ video_urls: urls })} />
+          <MediaListEditor
+            kind="video"
+            items={draft.video_urls}
+            onChange={(urls) => set({ video_urls: urls })}
+          />
         </Field>
       )}
 
@@ -2904,18 +4187,38 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
         <div className="space-y-2">
           {draft.links.map((l, i) => (
             <div key={i} className="flex gap-2">
-              <Input value={l.label} placeholder="link text" onChange={(e) => {
-                const next = [...draft.links]; next[i] = { ...l, label: e.target.value }; set({ links: next });
-              }} />
-              <Input value={l.url} placeholder="https://…" onChange={(e) => {
-                const next = [...draft.links]; next[i] = { ...l, url: e.target.value }; set({ links: next });
-              }} />
-              <button className="text-xs link-red shrink-0"
-                onClick={() => set({ links: draft.links.filter((_, j) => j !== i) })}>remove</button>
+              <Input
+                value={l.label}
+                placeholder="link text"
+                onChange={(e) => {
+                  const next = [...draft.links];
+                  next[i] = { ...l, label: e.target.value };
+                  set({ links: next });
+                }}
+              />
+              <Input
+                value={l.url}
+                placeholder="https://…"
+                onChange={(e) => {
+                  const next = [...draft.links];
+                  next[i] = { ...l, url: e.target.value };
+                  set({ links: next });
+                }}
+              />
+              <button
+                className="text-xs link-red shrink-0"
+                onClick={() => set({ links: draft.links.filter((_, j) => j !== i) })}
+              >
+                remove
+              </button>
             </div>
           ))}
-          <button className="text-xs link-red"
-            onClick={() => set({ links: [...draft.links, { label: "", url: "" }] })}>+ add a link</button>
+          <button
+            className="text-xs link-red"
+            onClick={() => set({ links: [...draft.links, { label: "", url: "" }] })}
+          >
+            + add a link
+          </button>
         </div>
       </Field>
 
@@ -2923,15 +4226,21 @@ function SectionEditor({ row, isFirst, firstLabel, restLabel, firstImageLabel, o
         {(!isFirst || captions) && (
           <div className="w-48">
             <Field label="date (newest shows first)">
-              <Input type="date" value={draft.entry_date ?? ""}
-                onChange={(e) => set({ entry_date: e.target.value || null })} />
+              <Input
+                type="date"
+                value={draft.entry_date ?? ""}
+                onChange={(e) => set({ entry_date: e.target.value || null })}
+              />
             </Field>
           </div>
         )}
-        <Button size="sm" onClick={() => onSave(draft)}>save section</Button>
+        <Button size="sm" onClick={() => onSave(draft)}>
+          save section
+        </Button>
         {(!isFirst || captions) && (
           <p className="text-[0.647rem] text-muted-foreground basis-full">
-            write-ups are ordered by this date, newest at the top. for older stories (e.g. school days) just pick the old date — newer posts will appear above them automatically.
+            write-ups are ordered by this date, newest at the top. for older stories (e.g. school
+            days) just pick the old date — newer posts will appear above them automatically.
           </p>
         )}
       </div>
@@ -2953,7 +4262,9 @@ function useAdminBrands() {
       ]);
       if (prods.error) throw prods.error;
       if (rows.error) throw rows.error;
-      const icons = (rows.data ?? []).map((r) => toPageSection(r)).filter((r) => r.heading?.trim())
+      const icons = (rows.data ?? [])
+        .map((r) => toPageSection(r))
+        .filter((r) => r.heading?.trim())
         .map((r) => ({ id: r.id, name: brandKey(r.heading!), url: r.images[0]?.url ?? null }));
       const usage: Record<string, { id: string; name: string }[]> = {};
       for (const p of prods.data ?? []) {
@@ -2961,7 +4272,11 @@ function useAdminBrands() {
         if (b) (usage[b] ??= []).push({ id: p.id, name: p.name });
       }
       const found = new Set<string>([...icons.map((i) => i.name), ...Object.keys(usage)]);
-      for (const p of PRODUCTS) if (p.category === "collaborations") { const b = collabBrand(p.name, null); if (b) found.add(b); }
+      for (const p of PRODUCTS)
+        if (p.category === "collaborations") {
+          const b = collabBrand(p.name, null);
+          if (b) found.add(b);
+        }
       return { names: Array.from(found).sort(), icons, usage };
     },
   });
@@ -2970,13 +4285,28 @@ function useAdminBrands() {
 /** Adds a brand (a page_sections row with no icon yet). Returns its key, or null on failure. */
 async function addBrand(raw: string, existing: string[]): Promise<string | null> {
   const name = brandKey(raw);
-  if (!name) { toast.error("type a brand name first"); return null; }
-  if (existing.includes(name)) { toast.message(`${name} is already a brand`); return name; }
+  if (!name) {
+    toast.error("type a brand name first");
+    return null;
+  }
+  if (existing.includes(name)) {
+    toast.message(`${name} is already a brand`);
+    return name;
+  }
   const { error } = await supabase.from("page_sections").insert({
-    page: BRAND_ICON_PAGE, heading: name, images: [] as unknown as Json, image_url: null,
-    links: [] as unknown as Json, video_urls: [], sort_order: 0, active: true,
+    page: BRAND_ICON_PAGE,
+    heading: name,
+    images: [] as unknown as Json,
+    image_url: null,
+    links: [] as unknown as Json,
+    video_urls: [],
+    sort_order: 0,
+    active: true,
   });
-  if (error) { toast.error(error.message); return null; }
+  if (error) {
+    toast.error(error.message);
+    return null;
+  }
   toast.success(`brand "${name}" added`);
   return name;
 }
@@ -2999,19 +4329,33 @@ function BrandIconsTab() {
     setBusy("__new");
     const ok = await addBrand(newName, names);
     setBusy(null);
-    if (ok) { setNewName(""); refresh(); }
+    if (ok) {
+      setNewName("");
+      refresh();
+    }
   };
 
   const upload = async (name: string, file: File | undefined) => {
     if (!file) return;
     setBusy(name);
     const url = await uploadSectionMedia(file, "image");
-    if (!url) { setBusy(null); return; }
+    if (!url) {
+      setBusy(null);
+      return;
+    }
     const existing = icons.find((i) => i.name === name);
     const fields = { images: [{ url }] as unknown as Json, image_url: url };
     const { error } = existing
       ? await supabase.from("page_sections").update(fields).eq("id", existing.id)
-      : await supabase.from("page_sections").insert({ page: BRAND_ICON_PAGE, heading: name, links: [] as unknown as Json, video_urls: [], sort_order: 0, active: true, ...fields });
+      : await supabase.from("page_sections").insert({
+          page: BRAND_ICON_PAGE,
+          heading: name,
+          links: [] as unknown as Json,
+          video_urls: [],
+          sort_order: 0,
+          active: true,
+          ...fields,
+        });
     setBusy(null);
     if (error) return toast.error(error.message);
     toast.success(`new icon for ${name} saved`);
@@ -3021,7 +4365,10 @@ function BrandIconsTab() {
   // Clears the uploaded picture but keeps the brand.
   const resetIcon = async (id: string, name: string) => {
     if (!confirm(`remove the uploaded icon for ${name}?`)) return;
-    const { error } = await supabase.from("page_sections").update({ images: [] as unknown as Json, image_url: null }).eq("id", id);
+    const { error } = await supabase
+      .from("page_sections")
+      .update({ images: [] as unknown as Json, image_url: null })
+      .eq("id", id);
     if (error) return toast.error(error.message);
     refresh();
   };
@@ -3036,8 +4383,18 @@ function BrandIconsTab() {
     setBusy(name);
     const row = icons.find((i) => i.name === name);
     const results = await Promise.all([
-      row ? supabase.from("page_sections").delete().eq("id", row.id) : Promise.resolve({ error: null }),
-      used.length ? supabase.from("products").update({ subcategory: null }).in("id", used.map((p) => p.id)) : Promise.resolve({ error: null }),
+      row
+        ? supabase.from("page_sections").delete().eq("id", row.id)
+        : Promise.resolve({ error: null }),
+      used.length
+        ? supabase
+            .from("products")
+            .update({ subcategory: null })
+            .in(
+              "id",
+              used.map((p) => p.id),
+            )
+        : Promise.resolve({ error: null }),
     ]);
     setBusy(null);
     const failed = results.find((r) => r.error);
@@ -3053,35 +4410,72 @@ function BrandIconsTab() {
         subtitle="each brand shows as a round icon on the collaborations page; tapping it shows that brand’s pieces. add a brand here, then pick it from the “collaboration partner” list when adding a product. upload a square picture — the circle shows the middle of it."
       >
         <form onSubmit={add} className="flex flex-col sm:flex-row gap-2 sm:items-center max-w-xl">
-          <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="new brand name, e.g. tatou" className="sm:flex-1" />
+          <Input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="new brand name, e.g. tatou"
+            className="sm:flex-1"
+          />
           <Button type="submit" disabled={busy === "__new" || !newName.trim()}>
-            <Plus className="h-4 w-4 mr-1" />{busy === "__new" ? "adding…" : "add brand"}
+            <Plus className="h-4 w-4 mr-1" />
+            {busy === "__new" ? "adding…" : "add brand"}
           </Button>
         </form>
         {isLoading && <p className="text-xs text-muted-foreground">loading brands…</p>}
-        {error && <p className="text-xs text-destructive">failed to load: {(error as Error).message}</p>}
-        {!isLoading && names.length === 0 && <p className="text-xs text-muted-foreground">no collaboration brands yet.</p>}
+        {error && (
+          <p className="text-xs text-destructive">failed to load: {(error as Error).message}</p>
+        )}
+        {!isLoading && names.length === 0 && (
+          <p className="text-xs text-muted-foreground">no collaboration brands yet.</p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {names.map((name) => {
             const row = icons.find((i) => i.name === name);
             const current = row?.url || BUILT_IN_BRAND_ICONS[name] || null;
             const count = usage[name]?.length ?? 0;
             return (
-              <div key={name} className="border border-border bg-card p-4 flex items-center gap-4 min-w-0">
+              <div
+                key={name}
+                className="border border-border bg-card p-4 flex items-center gap-4 min-w-0"
+              >
                 <BrandIconPreview url={current} />
                 <div className="space-y-1.5 min-w-0 flex-1">
                   <p className="font-medium truncate">{name}</p>
                   <p className="text-[0.647rem] text-muted-foreground">
                     {count} product{count === 1 ? "" : "s"} ·{" "}
-                    {row?.url ? "your uploaded icon" : BUILT_IN_BRAND_ICONS[name] ? "built-in logo" : "using the first product photo"}
+                    {row?.url
+                      ? "your uploaded icon"
+                      : BUILT_IN_BRAND_ICONS[name]
+                        ? "built-in logo"
+                        : "using the first product photo"}
                   </p>
                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-                    <label className={`cursor-pointer link-red ${busy === name ? "opacity-50 pointer-events-none" : ""}`}>
+                    <label
+                      className={`cursor-pointer link-red ${busy === name ? "opacity-50 pointer-events-none" : ""}`}
+                    >
                       {busy === name ? "working…" : "change icon"}
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => { upload(name, e.target.files?.[0]); e.target.value = ""; }} />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          upload(name, e.target.files?.[0]);
+                          e.target.value = "";
+                        }}
+                      />
                     </label>
-                    {row?.url && <button className="link-red" onClick={() => resetIcon(row.id, name)}>remove icon</button>}
-                    <button className="link-red" disabled={busy === name} onClick={() => removeBrand(name)}>remove brand</button>
+                    {row?.url && (
+                      <button className="link-red" onClick={() => resetIcon(row.id, name)}>
+                        remove icon
+                      </button>
+                    )}
+                    <button
+                      className="link-red"
+                      disabled={busy === name}
+                      onClick={() => removeBrand(name)}
+                    >
+                      remove brand
+                    </button>
                   </div>
                 </div>
               </div>
@@ -3112,16 +4506,44 @@ function BrandSelect({ value, onChange }: { value: string; onChange: (v: string)
     qc.invalidateQueries({ queryKey: ["admin-brands"] });
     qc.invalidateQueries({ queryKey: ["brand-icons"] });
     onChange(name);
-    setDraft(""); setAdding(false);
+    setDraft("");
+    setAdding(false);
   };
 
   if (adding) {
     return (
       <div className="flex gap-2">
-        <Input autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="new brand name"
-          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); save(); } if (e.key === "Escape") setAdding(false); }} />
-        <Button type="button" size="sm" className="h-9" onClick={save} disabled={busy || !draft.trim()}>{busy ? "adding…" : "add"}</Button>
-        <Button type="button" size="sm" variant="outline" className="h-9" onClick={() => setAdding(false)}>cancel</Button>
+        <Input
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="new brand name"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              save();
+            }
+            if (e.key === "Escape") setAdding(false);
+          }}
+        />
+        <Button
+          type="button"
+          size="sm"
+          className="h-9"
+          onClick={save}
+          disabled={busy || !draft.trim()}
+        >
+          {busy ? "adding…" : "add"}
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="h-9"
+          onClick={() => setAdding(false)}
+        >
+          cancel
+        </Button>
       </div>
     );
   }
@@ -3132,7 +4554,11 @@ function BrandSelect({ value, onChange }: { value: string; onChange: (v: string)
       onChange={(e) => (e.target.value === "__add" ? setAdding(true) : onChange(e.target.value))}
     >
       <option value="">— no brand —</option>
-      {options.map((n) => <option key={n} value={n}>{n}</option>)}
+      {options.map((n) => (
+        <option key={n} value={n}>
+          {n}
+        </option>
+      ))}
       <option value="__add">+ add a new brand…</option>
     </select>
   );
@@ -3142,7 +4568,11 @@ function BrandIconPreview({ url }: { url: string | null }) {
   const src = useMediaUrl(url);
   return (
     <span className="h-20 w-20 shrink-0 rounded-full overflow-hidden bg-muted ring-1 ring-border flex items-center justify-center">
-      {src ? <img src={src} alt="" className="h-full w-full object-cover" /> : <ImageIcon className="h-5 w-5 text-muted-foreground" />}
+      {src ? (
+        <img src={src} alt="" className="h-full w-full object-cover" />
+      ) : (
+        <ImageIcon className="h-5 w-5 text-muted-foreground" />
+      )}
     </span>
   );
 }
