@@ -342,6 +342,12 @@ function ProductsTab() {
           return colors.has(c) && sizes.has(sz);
         }),
       );
+      // Keep the HK / Canada totals equal to what's left in the grid.
+      const cells = Object.values(payload.variant_stock as VariantStock);
+      if (cells.length) {
+        payload.stock = cells.reduce((n, c) => n + (c.hk ?? 0), 0);
+        payload.stock_ca = cells.reduce((n, c) => n + (c.ca ?? 0), 0);
+      }
     }
     if (!payload.slug) return toast.error("slug is required");
     if (!payload.name) return toast.error("name is required");
